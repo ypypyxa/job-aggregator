@@ -71,7 +71,7 @@ dependencies {
     // viewmodel
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
     implementation("androidx.activity:activity-ktx:1.9.3")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.6")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
 
     // koin
     implementation("io.insert-koin:koin-android:4.0.0")
@@ -85,8 +85,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
 
     // room
-    val room_version = "2.6.1"
-    ksp("androidx.room:room-compiler:$room_version")
-    implementation("androidx.room:room-runtime:$room_version")
-    implementation("androidx.room:room-ktx:$room_version")
+    ksp("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
 }
