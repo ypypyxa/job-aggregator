@@ -1,6 +1,6 @@
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.android") version "1.9.24"
     id("ru.practicum.android.diploma.plugins.developproperties")
     id("com.google.devtools.ksp") version "2.1.0-1.0.29"
 }
@@ -89,6 +89,4 @@ dependencies {
     ksp("androidx.room:room-compiler:$room_version")
     implementation("androidx.room:room-runtime:$room_version")
     implementation("androidx.room:room-ktx:$room_version")
-
-
 }
