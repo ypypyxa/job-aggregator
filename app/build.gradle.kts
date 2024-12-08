@@ -65,9 +65,13 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
 
+    // OkHttp3
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
     // viewmodel
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
     implementation("androidx.activity:activity-ktx:1.9.3")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.6")
 
     // koin
     implementation("io.insert-koin:koin-android:4.0.0")
@@ -85,4 +89,6 @@ dependencies {
     ksp("androidx.room:room-compiler:$room_version")
     implementation("androidx.room:room-runtime:$room_version")
     implementation("androidx.room:room-ktx:$room_version")
+
+
 }
