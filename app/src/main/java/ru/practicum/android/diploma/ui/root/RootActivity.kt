@@ -15,7 +15,7 @@ class RootActivity : AppCompatActivity() {
     }
 
     private fun networkRequestExample(accessToken: String) {
-        // ...
+        // hello world test 1
     }
 
 }
