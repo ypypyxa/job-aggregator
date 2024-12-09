@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--    bottom_navigation_view-->
+    <style name="NavigationViewStyle">
+        <item name="android:background">@color/white</item>
+        <item name="itemIconTint">@drawable/bottomnav_main_menu_color</item>
+        <item name="itemTextColor">@drawable/bottomnav_main_menu_color</item>
+        <item name="itemTextAppearanceActive">@style/navigation_text</item>
+        <item name="itemTextAppearanceInactive">@style/navigation_text</item>
+        <item name="itemPaddingTop">@dimen/dimens_8</item>
+        <item name="itemPaddingBottom">@dimen/dimens_8</item>
+    </style>
+
+    <style name="navigation_text" parent="NavigationViewStyle">
+        <item name="fontFamily">@font/ys_display_regular</item>
+        <item name="android:textSize">@dimen/text_size_12</item>
+    </style>
+</resources>
