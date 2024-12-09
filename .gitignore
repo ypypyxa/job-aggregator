@@ -47,3 +47,7 @@ google-services.json
 # OS specific
 .DS_Store
 *.log
+/.idea/runConfigurations.xml
+/.kotlin/sessions/kotlin-compiler-3573397148404646445.salive
+/.idea/migrations.xml
+/.idea/deploymentTargetSelector.xml
