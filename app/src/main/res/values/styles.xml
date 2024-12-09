@@ -2,7 +2,7 @@
 <resources>
     <!--    bottom_navigation_view-->
     <style name="NavigationViewStyle">
-        <item name="android:background">@color/white</item>
+        <item name="android:background">@color/day_night</item>
         <item name="itemIconTint">@drawable/bottomnav_main_menu_color</item>
         <item name="itemTextColor">@drawable/bottomnav_main_menu_color</item>
         <item name="itemTextAppearanceActive">@style/navigation_text</item>

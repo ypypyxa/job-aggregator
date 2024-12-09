@@ -10,7 +10,7 @@
         android:id="@+id/border"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dimens_2"
-        android:background="#AEAFB4"
+        android:background="@color/grey"
         app:layout_constraintBottom_toTopOf="@id/bottomNavigationView" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
