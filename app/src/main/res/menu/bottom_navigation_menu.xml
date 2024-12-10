@@ -11,7 +11,7 @@
         android:title="@string/bottom_navigation_title_favorite" />
 
     <item
-        android:id="@+id/commandFragment"
+        android:id="@+id/teamFragment"
         android:icon="@drawable/bottomnav_team"
         android:title="@string/bottom_navigation_title_team" />
 </menu>
