@@ -1,20 +1,21 @@
 package ru.practicum.android.diploma.common.utils
+
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
-/*
-   delayMillis: Long — задержка (в миллисекундах), которая должна пройти между последним вызовом и выполнением действия.
-   coroutineScope: CoroutineScope — корутинный скоуп, в котором будет выполняться задержка и действие.
-   useLastParam: Boolean — если true, будет использоваться параметр из последнего вызова функции (актуально для нескольких вызовов в коротком интервале).
-   actionWithDelay: Boolean — если true, действие выполняется только после истечения задержки. Если false, действие выполняется немедленно перед началом задержки.
-   action: (T) -> Unit — действие, которое будет выполняться. Это лямбда-функция, принимающая параметр типа T.
-
-*/
-
-
+/**
+ * Создает функцию с механизмом дебаунса.
+ *
+ * @param delayMillis Задержка (в миллисекундах), которая должна пройти между последним вызовом и выполнением действия.
+ * @param coroutineScope Корутинный скоуп, в котором будет выполняться задержка и действие.
+ * @param useLastParam Если true, будет использоваться параметр из последнего вызова функции.
+ * @param actionWithDelay Если true, действие выполняется только после истечения задержки.
+ * Если  false, действие выполняется немедленно перед началом задержки.
+ * @param action Лямбда-функция, которая выполняет нужное действие с параметром типа T.
+ * @return Функция с дебаунсом, принимающая параметр типа T.
+ */
 fun <T> debounce(
     delayMillis: Long,
     coroutineScope: CoroutineScope,
