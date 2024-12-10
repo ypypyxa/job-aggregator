@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<!--    text_size-->
+    <item name="text_size_12" type="dimen">12sp</item>
+<!--    dp-dimens-->
+    <item name="dimens_2" type="dimen">2dp</item>
+    <item name="dimens_8" type="dimen">8dp</item>
+    <item name="dimens_56" type="dimen">56dp</item>
+</resources>
