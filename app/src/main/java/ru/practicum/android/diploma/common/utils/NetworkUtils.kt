@@ -7,31 +7,15 @@ import android.net.NetworkCapabilities
 object NetworkUtils {
 
     /**
-    Context
-    Метод требует Context для получения ConnectivityManager, который управляет сетевыми подключениями устройства.
-
-    ConnectivityManager
-    Используемый системный сервис для управления сетями. Мы получаем активную сеть через connectivityManager.activeNetwork.
-
-    NetworkCapabilities
-    Проверяем, может ли текущая сеть обеспечивать доступ к интернету. Это делается через вызов hasCapability с параметром NET_CAPABILITY_INTERNET.
-
-    Обработка null значений
-
-    Если активная сеть (activeNetwork) отсутствует, возвращаем false.
-    Если NetworkCapabilities отсутствуют, также возвращаем false.
+     * Проверяет доступность интернета.
+     *
+     * @param context Context приложения для доступа к системным службам.
+     * @return true, если интернет доступен; false в противном случае.
      */
     fun isInternetAvailable(context: Context): Boolean {
-        // Получаем системную службу для управления сетевыми подключениями
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-        // Проверяем текущее активное сетевое подключение
-        val activeNetwork = connectivityManager.activeNetwork ?: return false
-
-        // Получаем способности (capabilities) текущей сети
-        val networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
-
-        // Проверяем наличие возможности подключения к интернету
-        return networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+        val activeNetwork = connectivityManager?.activeNetwork
+        val networkCapabilities = connectivityManager?.getNetworkCapabilities(activeNetwork)
+        return networkCapabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
     }
 }
