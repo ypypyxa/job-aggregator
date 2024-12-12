@@ -11,14 +11,8 @@ import ru.practicum.android.diploma.vacancy.search.di.vacancySearchModule
 
 class App : Application() {
 
-    companion object {
-        lateinit var instance: App
-            private set
-    }
-
     override fun onCreate() {
         super.onCreate()
-        instance = this
         startKoin {
             androidContext(this@App)
             modules(appModule, dataModule, favoritesModule, vacancyFilterModule, vacancySearchModule)
