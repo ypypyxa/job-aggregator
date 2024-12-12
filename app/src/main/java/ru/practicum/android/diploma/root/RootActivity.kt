@@ -2,13 +2,14 @@ package ru.practicum.android.diploma.root
 
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import ru.practicum.android.diploma.BuildConfig
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.common.utils.gone
+import ru.practicum.android.diploma.common.utils.show
 
 class RootActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,17 +24,13 @@ class RootActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.vacancyFragment -> {
-                    bottomNavigationView.visibility = View.VISIBLE
-                }
-                R.id.favoritesFragment -> {
-                    bottomNavigationView.visibility = View.VISIBLE
-                }
+                R.id.searchFragment,
+                R.id.favoritesFragment,
                 R.id.teamFragment -> {
-                    bottomNavigationView.visibility = View.VISIBLE
+                    bottomNavigationView.show()
                 }
                 else -> {
-                    bottomNavigationView.visibility = View.GONE
+                    bottomNavigationView.gone()
                 }
             }
         }

@@ -3,11 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".vacancy.ui.VacancyFragment">
+    tools:context=".vacancy.details.ui.DetailsFragment">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="Вакансии" />
+        android:text="Hello" />
+
 </FrameLayout>
