@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.vacancy.search.domain.VacancyRepository
 
-class SearchViewModel : ViewModel(){
+class SearchViewModel : ViewModel() {
 
     private val repository = VacancyRepository()
 
@@ -14,13 +14,24 @@ class SearchViewModel : ViewModel(){
         viewModelScope.launch {
             try {
                 val response = repository.fetchVacancies(
-                    text = "Android developer",
-                    area = "1",
-                    industry = null,
-                    salary = null
+                    text = "Android developer", area = "1", industry = null, salary = null
                 )
                 // Логируем результат
-                Log.d("SearchViewModel", "Fetched Vacancies: $response")
+                response.items.forEach { vacancy ->
+                    val logMessage = """
+        Vacancy ID: ${vacancy.id}
+        Name: ${vacancy.name}
+        Region ID: ${vacancy.area.id}
+        Region Name: ${vacancy.area.name}
+        Salary: ${vacancy.salary?.from ?: "N/A"} - ${vacancy.salary?.to ?: "N/A"} ${vacancy.salary?.currency ?: "N/A"}
+        Employer ID: ${vacancy.employer.id}
+        Employer Name: ${vacancy.employer.name}
+        Phone: ${vacancy.contacts?.phone ?: "Телефон не указан"}
+        Email: ${vacancy.contacts?.email ?: "Email не указан"}
+    """.trimIndent()
+                    Log.d("SearchViewModel", logMessage)
+                }
+
             } catch (e: Exception) {
                 Log.e("SearchViewModel", "Error fetching vacancies", e)
             }

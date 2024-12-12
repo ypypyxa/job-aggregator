@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.vacancy.search.data.network
 
+
 import com.google.gson.annotations.SerializedName
 
 data class VacanciesResponse(
@@ -23,7 +24,10 @@ data class Vacancy(
     @SerializedName("salary")
     val salary: Salary?,
     @SerializedName("employer")
-    val employer: Employer
+    val employer: Employer,
+    @SerializedName("contacts")
+val contacts: Contacts?
+
 )
 
 data class Area(
@@ -47,4 +51,11 @@ data class Employer(
     val id: String,
     @SerializedName("name")
     val name: String
+)
+
+data class Contacts(
+    @SerializedName("phone")
+    val phone: String?,
+    @SerializedName("email")
+    val email: String?
 )
