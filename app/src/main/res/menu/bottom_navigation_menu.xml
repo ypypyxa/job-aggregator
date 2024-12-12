@@ -6,7 +6,7 @@
         android:title="@string/bottom_navigation_title_main" />
 
     <item
-        android:id="@+id/favouriteFragment"
+        android:id="@+id/favoritesFragment"
         android:icon="@drawable/bottomnav_favorite"
         android:title="@string/bottom_navigation_title_favorite" />
 
