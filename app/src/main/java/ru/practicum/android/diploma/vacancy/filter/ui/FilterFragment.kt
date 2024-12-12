@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.vacancy.details.ui
+package ru.practicum.android.diploma.vacancy.filter.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,13 +8,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import ru.practicum.android.diploma.R
 
-class DetailsFragment : Fragment() {
+class FilterFragment : Fragment() {
 
     companion object {
-        fun newInstance() = DetailsFragment()
+        fun newInstance() = FilterFragment()
     }
 
-    private val viewModel: DetailsViewModel by viewModels()
+    private val viewModel: FilterViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +25,6 @@ class DetailsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.fragment_details, container, false)
+        return inflater.inflate(R.layout.fragment_filter, container, false)
     }
 }
