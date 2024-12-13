@@ -12,13 +12,15 @@ class SearchViewModel : ViewModel() {
 
     fun loadVacancies() {
         viewModelScope.launch {
-            try {
-                val response = repository.fetchVacancies(
-                    text = "Android developer", area = "1", industry = null, salary = null
-                )
-                // Логируем результат
-                response.items.forEach { vacancy ->
-                    val logMessage = """
+            val response = repository.fetchVacancies(
+                text = "Android developer",
+                area = "1",
+                industry = null,
+                salary = null
+            )
+            // Логируем результат
+            response.items.forEach { vacancy ->
+                val logMessage = """
         Vacancy ID: ${vacancy.id}
         Name: ${vacancy.name}
         Region ID: ${vacancy.area.id}
@@ -28,12 +30,8 @@ class SearchViewModel : ViewModel() {
         Employer Name: ${vacancy.employer.name}
         Phone: ${vacancy.contacts?.phone ?: "Телефон не указан"}
         Email: ${vacancy.contacts?.email ?: "Email не указан"}
-    """.trimIndent()
-                    Log.d("SearchViewModel", logMessage)
-                }
-
-            } catch (e: Exception) {
-                Log.e("SearchViewModel", "Error fetching vacancies", e)
+                """.trimIndent()
+                Log.d("SearchViewModel", logMessage)
             }
         }
     }

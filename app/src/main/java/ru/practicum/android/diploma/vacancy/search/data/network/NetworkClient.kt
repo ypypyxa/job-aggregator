@@ -1,9 +1,9 @@
 package ru.practicum.android.diploma.vacancy.search.data.network
 
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import okhttp3.OkHttpClient
-import okhttp3.Interceptor
 import ru.practicum.android.diploma.BuildConfig
 
 object NetworkClient {
@@ -27,4 +27,3 @@ object NetworkClient {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 }
-

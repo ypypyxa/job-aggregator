@@ -13,4 +13,3 @@ interface HeadHunterApi {
         @Query("salary") salary: Int?
     ): VacanciesResponse
 }
-
