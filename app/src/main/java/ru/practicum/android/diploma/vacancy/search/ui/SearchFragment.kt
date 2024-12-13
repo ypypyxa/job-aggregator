@@ -23,4 +23,11 @@ class SearchFragment : Fragment() {
     ): View {
         return inflater.inflate(R.layout.fragment_search, container, false)
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.loadVacancies()
+
+    }
 }
