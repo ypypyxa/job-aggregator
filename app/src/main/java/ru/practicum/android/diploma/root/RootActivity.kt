@@ -1,12 +1,10 @@
 package ru.practicum.android.diploma.root
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import ru.practicum.android.diploma.BuildConfig
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.common.utils.gone
 import ru.practicum.android.diploma.common.utils.show
@@ -34,16 +32,5 @@ class RootActivity : AppCompatActivity() {
                 }
             }
         }
-
-        // Логируем токен для проверки
-        val accessToken = BuildConfig.HH_ACCESS_TOKEN
-        Log.d("RootActivity", "Access Token: $accessToken")
-
-        // Пример использования access token для HeadHunter API
-        networkRequestExample(accessToken = BuildConfig.HH_ACCESS_TOKEN)
     }
-
-    private fun networkRequestExample(accessToken: String) {
-    }
-
 }
