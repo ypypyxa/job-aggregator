@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/app_name"
             android:padding="@dimen/dimens_8"
-            android:paddingStart="0dp"
+            android:paddingStart="@dimen/_0dp"
             android:src="@drawable/ic_arrow_back" />
 
         <TextView
@@ -56,7 +56,7 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="@dimen/_0dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ll_header"
@@ -87,7 +87,7 @@
                 android:id="@+id/tv_salary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="0dp"
+                android:layout_marginStart="@dimen/_0dp"
                 android:fontFamily="@font/ys_display_medium"
                 android:textSize="@dimen/text_size_22"
                 app:layout_constraintStart_toStartOf="parent"
@@ -138,7 +138,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dimens_72"
-                    android:layout_marginTop="42dp"
+                    android:layout_marginTop="@dimen/_42dp"
                     android:fontFamily="@font/ys_display_medium"
                     android:textColor="?attr/colorTertiary"
                     android:textSize="@dimen/text_size_16"
