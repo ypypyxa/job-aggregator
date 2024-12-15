@@ -11,4 +11,8 @@
     <string name="ali_lagkonov">Али Лагконов</string>
     <string name="damir_garipov">Дамир Гарипов</string>
     <string name="polina_domahina">Полина Домахина</string>
+    <string name="vacancy">Вакансия</string>
+    <string name="server_error">Ошибка сервера</string>
+    <string name="similar_vacancies">Похожие вакансии</string>
+    <string name="required_expirience">Требуемый опыт</string>
 </resources>

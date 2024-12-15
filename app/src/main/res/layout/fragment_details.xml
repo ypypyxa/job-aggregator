@@ -1,13 +1,238 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".vacancy.details.ui.DetailsFragment">
+    android:layout_marginHorizontal="@dimen/dimens_16"
+    android:background="@color/day_night"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/ll_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingVertical="@dimen/dimens_8"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/iv_arrow_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/app_name"
+            android:padding="@dimen/dimens_8"
+            android:paddingStart="0dp"
+            android:src="@drawable/ic_arrow_back" />
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimens_16"
+            android:layout_weight="1"
+            android:fontFamily="@font/ys_display_medium"
+            android:text="@string/vacancy"
+            android:textSize="@dimen/text_size_22" />
+
+        <ImageView
+            android:id="@+id/iv_share_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dimens_26"
+            android:src="@drawable/ic_share" />
+
+        <ImageView
+            android:id="@+id/iv_like_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_heart"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ll_header"
+        app:layout_constraintVertical_bias="0.0"
+        tools:layout_editor_absoluteX="0dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_body"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ll_header">
+
+            <TextView
+                android:id="@+id/tv_vacancy_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimens_24"
+                android:fontFamily="@font/ys_display_medium"
+                android:textSize="@dimen/text_size_32"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="[Наименование вакансии]" />
+
+            <TextView
+                android:id="@+id/tv_salary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:fontFamily="@font/ys_display_medium"
+                android:textSize="@dimen/text_size_22"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_vacancy_name"
+                tools:text="[ЗП от %s до %s %s]" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_view"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/dimens_24"
+                android:backgroundTint="@color/light_grey"
+                app:cardCornerRadius="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_salary">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/iv_employer_logo"
+                    android:layout_width="@dimen/dimens_48"
+                    android:layout_height="@dimen/dimens_48"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="@dimen/dimens_16"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/placeholder"
+                    app:layout_constraintBottom_toBottomOf="@id/card_view"
+                    app:layout_constraintStart_toStartOf="@id/card_view"
+                    app:layout_constraintTop_toTopOf="@id/card_view" />
+
+                <TextView
+                    android:id="@+id/tv_employer_text"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dimens_72"
+                    android:layout_marginTop="@dimen/text_size_16"
+                    android:fontFamily="@font/ys_display_medium"
+                    android:maxLines="1"
+                    android:textColor="?attr/colorTertiary"
+                    android:textSize="@dimen/text_size_22"
+                    app:layout_constraintStart_toEndOf="@id/card_view"
+                    app:layout_constraintTop_toBottomOf="@id/card_view"
+                    tools:text="[Название компании]" />
+
+                <TextView
+                    android:id="@+id/tv_city_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dimens_72"
+                    android:layout_marginTop="42dp"
+                    android:fontFamily="@font/ys_display_medium"
+                    android:textColor="?attr/colorTertiary"
+                    android:textSize="@dimen/dimens_16"
+                    app:layout_constraintStart_toEndOf="@id/card_view"
+                    app:layout_constraintTop_toBottomOf="@id/card_view"
+                    tools:text="[Город]" />
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/tv_experience_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimens_24"
+                android:fontFamily="@font/ys_display_medium"
+                android:text="@string/required_expirience"
+                android:textSize="@dimen/dimens_16"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/card_view" />
+
+            <TextView
+                android:id="@+id/tv_experience"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimens_4"
+                android:fontFamily="@font/ys_display_medium"
+                android:textSize="@dimen/dimens_16"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_experience_text"
+                tools:text="[От %s до %s]" />
+
+            <TextView
+                android:id="@+id/tv_schedule"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimens_8"
+                android:fontFamily="@font/ys_display_medium"
+                android:textSize="@dimen/dimens_16"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_experience"
+                tools:text="[График работы]" />
+
+            <WebView
+                android:id="@+id/wv_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimens_8"
+                android:layout_marginTop="@dimen/dimens_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_schedule" />
+
+            <!--            <androidx.appcompat.widget.AppCompatButton-->
+            <!--                android:id="@+id/btn_to_similar_vacations"-->
+            <!--                android:layout_height="match_parent"-->
+            <!--                android:layout_width="0dp"-->
+            <!--                android:layout_marginTop="@dimen/dimens_24"-->
+
+            <!--                android:layout_marginBottom="@dimen/dimens_24"-->
+            <!--                android:backgroundTint="@color/blue"-->
+            <!--                android:text="@string/similar_vacancies"-->
+            <!--                android:textColor="@color/white_universal"-->
+            <!--                app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--                app:layout_constraintEnd_toEndOf="parent"-->
+            <!--                app:layout_constraintStart_toStartOf="parent"-->
+            <!--                app:layout_constraintTop_toBottomOf="@id/wv_description" />-->
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="@dimen/dimens_48"
+        android:layout_height="@dimen/dimens_48"
+        android:indeterminateTint="@color/blue"
+        android:indeterminateTintMode="src_in"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ll_header"
+        tools:visibility="gone" />
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Hello" />
+        android:id="@+id/tv_state_error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimens_16"
+        android:fontFamily="@font/ys_display_medium"
+        android:gravity="center_horizontal"
+        android:text="@string/server_error"
+        android:textSize="@dimen/text_size_22"
+        app:drawableTopCompat="@drawable/placeholder_server_error"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ll_header"
+        tools:visibility="gone" />
 
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
