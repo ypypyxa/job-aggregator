@@ -27,4 +27,6 @@
     <item name="dimens_72" type="dimen">72dp</item>
     <item name="dimens_82" type="dimen">82dp</item>
     <item name="dimens_268" type="dimen">268dp</item>
+    <dimen name="_0dp">0dp</dimen>
+    <dimen name="_42dp">42dp</dimen>
 </resources>

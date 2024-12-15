@@ -17,4 +17,7 @@
     <string name="search_nothing_found">Не удалось получить\nсписок вакансий</string>
     <string name="server_error">Ошибка сервера</string>
     <string name="search_state_nothing_found">Таких вакансий нет</string>
+    <string name="vacancy">Вакансия</string>
+    <string name="similar_vacancies">Похожие вакансии</string>
+    <string name="required_expirience">Требуемый опыт</string>
 </resources>
