@@ -9,9 +9,7 @@
 
     <ImageView
         android:id="@+id/item_vacancy_company_image"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:background="@drawable/background_rounded_cornered_company_image"
+        style="@style/company_image"
         tools:src="@drawable/placeholder"
         tools:ignore="ContentDescription" />
 
