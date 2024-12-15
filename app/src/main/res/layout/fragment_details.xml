@@ -34,6 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dimens_16"
             android:layout_weight="1"
+            android:textColor="@color/night_day"
             android:fontFamily="@font/ys_display_medium"
             android:text="@string/vacancy"
             android:textSize="@dimen/text_size_22" />
@@ -77,6 +78,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimens_24"
+                android:textColor="@color/night_day"
                 android:fontFamily="@font/ys_display_medium"
                 android:textSize="@dimen/text_size_32"
                 app:layout_constraintStart_toStartOf="parent"
@@ -90,6 +92,7 @@
                 android:layout_marginStart="@dimen/_0dp"
                 android:fontFamily="@font/ys_display_medium"
                 android:textSize="@dimen/text_size_22"
+                android:textColor="@color/night_day"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_vacancy_name"
                 tools:text="[ЗП от %s до %s %s]" />
@@ -120,7 +123,6 @@
 
                 <TextView
                     android:id="@+id/tv_employer_text"
-
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dimens_72"
@@ -152,6 +154,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimens_24"
+                android:textColor="@color/night_day"
                 android:fontFamily="@font/ys_display_medium"
                 android:text="@string/required_expirience"
                 android:textSize="@dimen/text_size_16"
@@ -165,6 +168,7 @@
                 android:layout_marginTop="@dimen/dimens_4"
                 android:fontFamily="@font/ys_display_medium"
                 android:textSize="@dimen/text_size_16"
+                android:textColor="@color/night_day"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_experience_text"
                 tools:text="[От %s до %s]" />
@@ -174,6 +178,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimens_8"
+                android:textColor="@color/night_day"
                 android:fontFamily="@font/ys_display_medium"
                 android:textSize="@dimen/text_size_16"
                 app:layout_constraintStart_toStartOf="parent"
@@ -186,6 +191,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dimens_8"
                 android:layout_marginTop="@dimen/dimens_24"
+                android:textColor="@color/night_day"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_schedule" />
 
