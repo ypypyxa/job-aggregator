@@ -8,8 +8,8 @@ import kotlinx.parcelize.Parcelize
 /**Отображает данные о работодателе.*/
 @Parcelize
 data class EmployerDto(
-    val id: Int,                    // Идентификатор работодателя
-    val name: String,               // Название компании
+    val id: Int,
+    val name: String,
     @SerializedName("logo_urls")
-    val logoUrls: LogoDto?          // Логотипы компании
-):Parcelable
+    val logoUrls: LogoDto?
+) : Parcelable

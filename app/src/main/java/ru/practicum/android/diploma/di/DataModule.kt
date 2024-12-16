@@ -4,8 +4,6 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.practicum.android.diploma.common.data.network.HeadHunterApi
-import ru.practicum.android.diploma.vacancy.search.domain.VacancyRepository
-
 
 val dataModule = module {
 
