@@ -6,9 +6,9 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class LogoDto(
-    val original: String,           // Оригинальный размер логотипа
+    val original: String,// Оригинальный размер логотипа
     @SerializedName("90")
-    val little: String,             // Маленький логотип
+    val little: String,// Маленький логотип
     @SerializedName("240")
-    val medium: String              // Средний логотип
+    val medium: String// Средний логотип
 ) : Parcelable

@@ -18,6 +18,4 @@ object NetworkClient {
     private val okHttpClient = OkHttpClient.Builder()
         .addInterceptor(authInterceptor)
         .build()
-
-
 }

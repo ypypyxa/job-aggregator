@@ -1,6 +1,7 @@
 package ru.practicum.android.diploma.common.data.dto
 
 import com.google.gson.annotations.SerializedName
+
 /**
  * ID вакансии
  * Название вакансии
@@ -17,6 +18,7 @@ import com.google.gson.annotations.SerializedName
  * Ключевые навыки
  *
  */
+
 data class VacancyItemDto(
     val id: Int,
     val name: String,
