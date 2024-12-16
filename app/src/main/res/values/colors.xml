@@ -13,4 +13,5 @@
     <!--    color_changes-->
     <color name="day_night">#FDFDFD</color>
     <color name="night_day">#1A1B22</color>
+    <color name="search_edit_hint_color">#AEAFB4</color>
 </resources>
