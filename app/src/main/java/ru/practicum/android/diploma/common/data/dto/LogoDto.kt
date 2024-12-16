@@ -4,11 +4,17 @@ import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
+/**
+ * ригинальный размер логотипа
+ * Маленький логотип
+ * Средний логотип
+ */
+
 @Parcelize
 data class LogoDto(
-    val original: String,// Оригинальный размер логотипа
+    val original: String,
     @SerializedName("90")
-    val little: String,// Маленький логотип
+    val little: String,
     @SerializedName("240")
-    val medium: String// Средний логотип
+    val medium: String
 ) : Parcelable
