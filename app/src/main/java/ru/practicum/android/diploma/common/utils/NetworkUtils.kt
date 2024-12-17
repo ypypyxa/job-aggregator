@@ -8,7 +8,7 @@ import android.net.NetworkCapabilities
  *
  * Проверяет доступность интернета.
  *
- * @param context Context приложения для доступа к системным службам.
+ * context Context приложения для доступа к системным службам.
  * @return true, если интернет доступен; false в противном случае.
  */
 
