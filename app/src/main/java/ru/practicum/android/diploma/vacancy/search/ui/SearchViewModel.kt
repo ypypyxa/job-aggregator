@@ -19,24 +19,31 @@ class SearchViewModel : ViewModel() {
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> get() = _isLoading
 
+    private var latestSearchText: String? = null
+
     private val debounceSearch: (String) -> Unit = debounce(
         delayMillis = 2000L,
         coroutineScope = viewModelScope,
         useLastParam = true
-    ) {
-        _isLoading.postValue(true)
-        viewModelScope.launch {
-            delay(LOADING_DELAY_MS)
-            _isLoading.postValue(false)
+    ) { query ->
+        if (query.isNotBlank()) {
+            _isLoading.postValue(true)
+            viewModelScope.launch {
+                delay(LOADING_DELAY_MS)
+                _isLoading.postValue(false)
+            }
         }
     }
 
     fun onSearchQueryChanged(query: String) {
-        if (query.isBlank()) {
-            _isLoading.value = false
-            return
+        if (latestSearchText != query) {
+            latestSearchText = query
+            if (query.isBlank()) {
+                _isLoading.value = false
+            } else {
+                debounceSearch(query)
+            }
         }
-        debounceSearch(query)
     }
 
     private val repository = VacancyRepository()

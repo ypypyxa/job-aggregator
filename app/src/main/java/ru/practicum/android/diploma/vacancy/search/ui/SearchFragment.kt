@@ -33,15 +33,16 @@ class SearchFragment : Fragment() {
 
         binding.editSearch.doOnTextChanged { text, _, _, _ ->
             val isTextEmpty = text.isNullOrEmpty()
-
-            binding.placeholderSearch.isVisible = isTextEmpty
             binding.buttonSearch.isVisible = isTextEmpty
             binding.buttonClearEditSearch.isVisible = !isTextEmpty
             viewModel.onSearchQueryChanged(text.toString())
+            if (isTextEmpty) {
+                binding.placeholderSearch.isVisible = true
+            }
         }
-
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             binding.progressBar.isVisible = isLoading
+            binding.placeholderSearch.isVisible = !isLoading && binding.editSearch.text.isNullOrEmpty()
         }
 
         binding.buttonClearEditSearch.setOnClickListener {
