@@ -1,7 +1,8 @@
-package ru.practicum.android.diploma.vacancy.search.data.network
+package ru.practicum.android.diploma.common.data.network
 
 import retrofit2.http.GET
 import retrofit2.http.Query
+import ru.practicum.android.diploma.common.data.network.response.VacanciesResponse
 
 interface HeadHunterApi {
 

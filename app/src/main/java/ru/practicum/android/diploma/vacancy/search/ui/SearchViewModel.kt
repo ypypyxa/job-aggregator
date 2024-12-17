@@ -6,9 +6,9 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.vacancy.search.domain.VacancyRepository
 
-class SearchViewModel : ViewModel() {
-
-    private val repository = VacancyRepository()
+class SearchViewModel(
+    private val repository: VacancyRepository
+) : ViewModel() {
 
     fun loadVacancies() {
         viewModelScope.launch {

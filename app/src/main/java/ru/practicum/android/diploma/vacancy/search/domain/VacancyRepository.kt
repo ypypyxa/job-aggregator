@@ -1,12 +1,11 @@
 package ru.practicum.android.diploma.vacancy.search.domain
 
-import ru.practicum.android.diploma.vacancy.search.data.network.HeadHunterApi
-import ru.practicum.android.diploma.vacancy.search.data.network.NetworkClient
-import ru.practicum.android.diploma.vacancy.search.data.network.VacanciesResponse
+import ru.practicum.android.diploma.common.data.network.HeadHunterApi
+import ru.practicum.android.diploma.common.data.network.response.VacanciesResponse
 
-class VacancyRepository {
+class VacancyRepository(private val api: HeadHunterApi) {
 
-    private val api = NetworkClient.retrofit.create(HeadHunterApi::class.java)
+
 
     suspend fun fetchVacancies(
         text: String,
