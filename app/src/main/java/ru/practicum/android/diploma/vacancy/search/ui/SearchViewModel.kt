@@ -5,31 +5,38 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.common.utils.debounce
 import ru.practicum.android.diploma.vacancy.search.domain.VacancyRepository
 
 class SearchViewModel : ViewModel() {
 
+    companion object {
+        private const val LOADING_DELAY_MS = 2000L
+    }
+
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> get() = _isLoading
-
-    fun onSearchQueryChanged(query: String) {
-        if (query.isBlank()) {
-            _isLoading.value = false
-            return
-        }
-
-        _isLoading.value = true
-        debounceSearch(query)
-    }
 
     private val debounceSearch: (String) -> Unit = debounce(
         delayMillis = 2000L,
         coroutineScope = viewModelScope,
         useLastParam = true
     ) {
-        _isLoading.postValue(false)
+        _isLoading.postValue(true)
+        viewModelScope.launch {
+            delay(LOADING_DELAY_MS)
+            _isLoading.postValue(false)
+        }
+    }
+
+    fun onSearchQueryChanged(query: String) {
+        if (query.isBlank()) {
+            _isLoading.value = false
+            return
+        }
+        debounceSearch(query)
     }
 
     private val repository = VacancyRepository()
