@@ -10,7 +10,9 @@ import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.common.utils.debounce
 import ru.practicum.android.diploma.vacancy.search.domain.VacancyRepository
 
-class SearchViewModel : ViewModel() {
+class SearchViewModel(
+    private val repository: VacancyRepository
+) : ViewModel() {
 
     companion object {
         private const val LOADING_DELAY_MS = 2000L
@@ -45,8 +47,6 @@ class SearchViewModel : ViewModel() {
             }
         }
     }
-
-    private val repository = VacancyRepository()
 
     fun loadVacancies() {
         viewModelScope.launch {
