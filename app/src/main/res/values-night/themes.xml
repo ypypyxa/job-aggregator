@@ -5,8 +5,8 @@
         <item name="textFillColor">@color/white_universal</item>
         <item name="colorSecondary">@color/gray</item>
 
-        <item name="android:statusBarColor">@color/night_day</item>
-        <item name="android:navigationBarColor">@color/night_day</item>
+        <item name="android:statusBarColor">@color/black_universal</item>
+        <item name="android:navigationBarColor">@color/black_universal</item>
         <item name="android:windowLightStatusBar">true</item>
     </style>
 </resources>
