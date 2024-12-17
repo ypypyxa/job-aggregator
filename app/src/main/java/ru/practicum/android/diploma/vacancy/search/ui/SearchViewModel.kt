@@ -28,22 +28,26 @@ class SearchViewModel(
         coroutineScope = viewModelScope,
         useLastParam = true
     ) { query ->
-        if (query.isNotBlank()) {
-            _isLoading.postValue(true)
-            viewModelScope.launch {
-                delay(LOADING_DELAY_MS)
-                _isLoading.postValue(false)
-            }
-        }
+        searchRequest(query)
     }
 
     fun onSearchQueryChanged(query: String) {
         if (latestSearchText != query) {
             latestSearchText = query
-            if (query.isBlank()) {
-                _isLoading.value = false
-            } else {
-                debounceSearch(query)
+            debounceSearch(query)
+        }
+    }
+
+    private fun searchRequest(query: String) {
+        if (query.isBlank()) {
+            _isLoading.value = false
+            return
+        }
+        _isLoading.postValue(true)
+        viewModelScope.launch {
+            delay(LOADING_DELAY_MS)
+            if (latestSearchText == query && query.isNotBlank()) {
+                _isLoading.postValue(false)
             }
         }
     }
