@@ -21,5 +21,3 @@ fun Context.isInternetAvailable(): Boolean {
             hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
     } ?: false
 }
-
-

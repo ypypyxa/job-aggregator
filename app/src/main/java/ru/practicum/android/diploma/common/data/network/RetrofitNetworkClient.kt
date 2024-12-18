@@ -60,7 +60,7 @@ class RetrofitNetworkClient(
         }
     }
 
-    //поиск вакансий
+    // поиск вакансий
     private suspend fun makeVacancySearchRequest(dto: SearchRequest): Response {
         return headHunterApi.getVacancies(
             text = dto.text,
@@ -75,15 +75,14 @@ class RetrofitNetworkClient(
         }
     }
 
-    //получение конкретной вакансии:
+    // получение конкретной вакансии:
     private suspend fun makeSingleVacancyRequest(dto: VacancyDetailRequest): Response {
         return VacancyDetailResponse(vacancy = headHunterApi.getVacancy(vacancyId = dto.vacancyId)).apply {
             resultCode = SUCCESS
         }
     }
 
-
-    //регионы
+    // регионы
     private suspend fun makeAreasRequest(dto: AreaRequest): Response {
         dto.id?.let {
             return AreaResponse(areas = listOf(headHunterApi.getAreaById(areaId = it))).apply {
@@ -95,14 +94,14 @@ class RetrofitNetworkClient(
         }
     }
 
-    //отрасль
+    // отрасль
     private suspend fun makeIndustriesRequest(dto: IndustryRequest): Response {
         return IndustryResponse(industries = headHunterApi.getIndustries()).apply {
             resultCode = SUCCESS
         }
     }
 
-    //распределяющий метод, который вызывает конкретные методы на основе типа DTO
+    // распределяющий метод, который вызывает конкретные методы на основе типа DTO
     private suspend fun doRequestInternal(dto: Any): Response {
         return when (dto) {
             is SearchRequest -> return makeVacancySearchRequest(dto)
@@ -117,12 +116,12 @@ class RetrofitNetworkClient(
         }
     }
 
-    //Обработка HttpException
+    // Обработка HttpException
     private fun getHttpExceptionResponse(): Response {
         return Response().apply { resultCode = CLIENT_ERROR }
     }
 
-    //Обработка RuntimeException
+    // Обработка RuntimeException
     private fun getRuntimeExceptionResponse(): Response {
         return Response().apply { resultCode = CLIENT_ERROR }
     }
