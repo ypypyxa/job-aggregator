@@ -9,4 +9,3 @@ data class ContactsDto(
     val phones: List<PhoneDto>? = null,
     val email: String? = null,
 ) : Parcelable
-

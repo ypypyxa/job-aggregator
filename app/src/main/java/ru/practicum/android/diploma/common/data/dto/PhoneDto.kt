@@ -17,4 +17,3 @@ data class PhoneDto(
     val country: String?,
     val number: String?,
 ) : Parcelable
-

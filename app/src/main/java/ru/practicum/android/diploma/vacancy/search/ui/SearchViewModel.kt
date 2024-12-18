@@ -56,7 +56,7 @@ class SearchViewModel(
         viewModelScope.launch {
             val response = repository.fetchVacancies(
                 text = "Android developer",
-                area = "1",
+                area = 1,
                 industry = null,
                 salary = null
             )
@@ -65,12 +65,16 @@ class SearchViewModel(
                 val logMessage = """
         Vacancy ID: ${vacancy.id}
         Name: ${vacancy.name}
-        Region ID: ${vacancy.area.id}
-        Region Name: ${vacancy.area.name}
+        Region ID: ${vacancy.area?.id ?: "N/A"}
+        Region Name: ${vacancy.area?.name ?: "N/A"}
         Salary: ${vacancy.salary?.from ?: "N/A"} - ${vacancy.salary?.to ?: "N/A"} ${vacancy.salary?.currency ?: "N/A"}
-        Employer ID: ${vacancy.employer.id}
-        Employer Name: ${vacancy.employer.name}
-        Phone: ${vacancy.contacts?.phone ?: "Телефон не указан"}
+        Employer ID: ${vacancy.employer?.id ?: "N/A"}
+        Employer Name: ${vacancy.employer?.name ?: "N/A"}
+        Phone: ${
+                    vacancy.contacts?.phones?.joinToString(", ") { phone ->
+                        "${phone.country ?: ""} ${phone.city ?: ""} ${phone.number ?: ""}"
+                    } ?: "Телефоны не указаны"
+                }
         Email: ${vacancy.contacts?.email ?: "Email не указан"}
                 """.trimIndent()
                 Log.d("SearchViewModel", logMessage)
