@@ -1,9 +1,12 @@
 package ru.practicum.android.diploma.di
 
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.practicum.android.diploma.common.data.network.HeadHunterApi
+import ru.practicum.android.diploma.common.data.network.NetworkClient
+import ru.practicum.android.diploma.common.data.network.RetrofitNetworkClient
 
 val dataModule = module {
     single<Retrofit> {
@@ -11,9 +14,11 @@ val dataModule = module {
             .baseUrl("https://api.hh.ru/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-
     }
 
     single { get<Retrofit>().create(HeadHunterApi::class.java) }
 
+    single<NetworkClient> {
+        RetrofitNetworkClient(get(), androidContext())
+    }
 }

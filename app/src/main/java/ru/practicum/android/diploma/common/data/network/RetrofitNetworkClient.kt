@@ -67,6 +67,7 @@ class RetrofitNetworkClient(
             page = dto.page,
             perPage = dto.perPage,
             area = dto.area,
+            searchField = dto.searchField,
             industry = dto.industry,
             salary = dto.salary,
             onlyWithSalary = dto.onlyWithSalary
