@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<!--    color_changes-->
+    <color name="day_night">#1A1B22</color>
+    <color name="night_day">#FDFDFD</color>
+</resources>

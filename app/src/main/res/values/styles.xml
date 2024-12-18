@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--    bottom_navigation_view-->
+    <style name="NavigationViewStyle">
+        <item name="android:background">@color/day_night</item>
+        <item name="itemIconTint">@drawable/bottomnav_main_menu_color</item>
+        <item name="itemTextColor">@drawable/bottomnav_main_menu_color</item>
+        <item name="itemTextAppearanceActive">@style/navigation_text</item>
+        <item name="itemTextAppearanceInactive">@style/navigation_text</item>
+        <item name="itemPaddingTop">@dimen/dimens_8</item>
+        <item name="itemPaddingBottom">@dimen/dimens_8</item>
+    </style>
+
+    <style name="navigation_text" parent="NavigationViewStyle">
+        <item name="fontFamily">@font/ys_display_regular</item>
+        <item name="android:textSize">@dimen/text_size_12</item>
+    </style>
+
+    <!--    кнопка назад -->
+    <style name="ImageViewBackStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:src">@drawable/ic_arrow_back</item>
+        <item name="android:padding">12dp</item>
+        <item name="tint">?attr/textFillColor</item>
+    </style>
+
+    <!--    кнопка лайк -->
+    <style name="ImageHeart">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:src">@drawable/ic_heart</item>
+        <item name="android:padding">12dp</item>
+        <item name="tint">?attr/textFillColor</item>
+    </style>
+
+    <!--    кнопка поделиться  -->
+    <style name="ImageShare">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:src">@drawable/ic_share</item>
+        <item name="android:padding">12dp</item>
+        <item name="tint">?attr/textFillColor</item>
+    </style>
+
+    <!--    кнопка фильтр  -->
+    <style name="ImageFilter">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:src">@drawable/filter</item>
+        <item name="android:padding">12dp</item>
+        <item name="tint">?attr/textFillColor</item>
+    </style>
+
+    <!--    кнопка в фильтрах  -->
+    <style name="buttonInFilter">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">59dp</item>
+        <item name="android:layout_marginHorizontal">17dp</item>
+        <item name="android:backgroundTint">@color/blue</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textSize">@dimen/text_size_16</item>
+
+    </style>
+
+    <style name="TextMedium22">
+    <item name="android:fontFamily">@font/ys_display_medium</item>
+    <item name="android:textSize">@dimen/text_size_22</item>
+    <item name="android:textColor">?attr/textFillColor</item>
+    </style>
+</resources>

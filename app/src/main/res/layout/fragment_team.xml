@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".team.ui.TeamFragment">
+
+    <TextView
+        android:id="@+id/settings_header"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dimens_16"
+        android:layout_marginTop="@dimen/dimens_20"
+        android:layout_marginEnd="@dimen/dimens_8"
+        android:fontFamily="@font/ys_display_medium"
+        android:text="@string/team_header"
+        android:textColor="@color/night_day"
+        android:textSize="@dimen/text_size_22"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/text_main"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dimens_16"
+        android:layout_marginTop="@dimen/dimens_36"
+        android:layout_marginEnd="@dimen/dimens_16"
+        android:fontFamily="@font/ys_display_bold"
+        android:text="@string/developed_by_text"
+        android:textColor="@color/night_day"
+        android:textSize="@dimen/text_size_32"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settings_header" />
+
+    <TextView
+        android:id="@+id/text_name1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/ys_display_medium"
+        android:text="@string/ali_lagkonov"
+        android:textColor="@color/night_day"
+        android:textSize="@dimen/text_size_16"
+        app:layout_constraintStart_toStartOf="@+id/text_main"
+        app:layout_constraintTop_toBottomOf="@+id/text_main" />
+
+    <TextView
+        android:id="@+id/text_name2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimens_16"
+        android:fontFamily="@font/ys_display_medium"
+        android:text="@string/anar_aliev"
+        android:textColor="@color/night_day"
+        android:textSize="@dimen/text_size_16"
+        app:layout_constraintStart_toStartOf="@+id/text_main"
+        app:layout_constraintTop_toBottomOf="@+id/text_name1" />
+
+    <TextView
+        android:id="@+id/text_name3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimens_16"
+        android:fontFamily="@font/ys_display_medium"
+        android:text="@string/anton_aniskin"
+        android:textColor="@color/night_day"
+        android:textSize="@dimen/text_size_16"
+        app:layout_constraintStart_toStartOf="@+id/text_main"
+        app:layout_constraintTop_toBottomOf="@+id/text_name2" />
+
+    <TextView
+        android:id="@+id/text_name4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimens_16"
+        android:fontFamily="@font/ys_display_medium"
+        android:text="@string/damir_garipov"
+        android:textColor="@color/night_day"
+        android:textSize="@dimen/text_size_16"
+        app:layout_constraintStart_toStartOf="@+id/text_main"
+        app:layout_constraintTop_toBottomOf="@+id/text_name3" />
+
+    <TextView
+        android:id="@+id/text_name5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimens_16"
+        android:fontFamily="@font/ys_display_medium"
+        android:text="@string/polina_domahina"
+        android:textColor="@color/night_day"
+        android:textSize="@dimen/text_size_16"
+        app:layout_constraintStart_toStartOf="@+id/text_main"
+        app:layout_constraintTop_toBottomOf="@+id/text_name4" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

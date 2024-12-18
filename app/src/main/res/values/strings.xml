@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">Practicum-Android-Diploma</string>
+    <!--    bottom_navigation_title-->
+    <string name="bottom_navigation_title_main">Главная</string>
+    <string name="bottom_navigation_title_favorite">Избранное</string>
+    <string name="bottom_navigation_title_team">Команда</string>
+    <string name="team_header">Команда</string>
+    <string name="developed_by_text">Над приложением работали</string>
+    <string name="anar_aliev">Анар Алиев</string>
+    <string name="anton_aniskin">Антон Анискин</string>
+    <string name="ali_lagkonov">Али Лагконов</string>
+    <string name="damir_garipov">Дамир Гарипов</string>
+    <string name="polina_domahina">Полина Домахина</string>
 </resources>

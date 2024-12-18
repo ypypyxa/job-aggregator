@@ -2,4 +2,15 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="grey">#AEAFB4</color>
+    <color name="light_grey">#E6E8EB</color>
+    <color name="white_universal">#FDFDFD</color>
+    <color name="black_universal">#1A1B22</color>
+    <color name="red">#F56B6C</color>
+    <color name="blue">#3772E7</color>
+    <color name="background_50">#801A1B22</color>
+
+    <!--    color_changes-->
+    <color name="day_night">#FDFDFD</color>
+    <color name="night_day">#1A1B22</color>
 </resources>

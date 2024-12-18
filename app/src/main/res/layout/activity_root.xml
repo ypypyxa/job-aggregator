@@ -4,16 +4,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.root.RootActivity">
+    tools:context="root.RootActivity">
 
-    <TextView
-        android:id="@+id/buildConfigReadExampleTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/container_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/root_navigation_graph"
+
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <View
+        android:id="@+id/border"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimens_2"
+        android:background="@color/grey"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
+        style="@style/NavigationViewStyle"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/dimens_56"
+        app:itemRippleColor="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        app:menu="@menu/bottom_navigation_menu" />
 </androidx.constraintlayout.widget.ConstraintLayout>

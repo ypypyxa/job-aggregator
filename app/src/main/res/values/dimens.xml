@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<!--    text_size-->
+    <item name="text_size_12" type="dimen">12sp</item>
+    <item name="text_size_16" type="dimen">16sp</item>
+    <item name="text_size_22" type="dimen">22sp</item>
+    <item name="text_size_32" type="dimen">32sp</item>
+<!--    dp-dimens-->
+    <item name="dimens_2" type="dimen">2dp</item>
+    <item name="dimens_3" type="dimen">3dp</item>
+    <item name="dimens_4" type="dimen">4dp</item>
+    <item name="dimens_8" type="dimen">8dp</item>
+    <item name="dimens_10" type="dimen">10dp</item>
+    <item name="dimens_16" type="dimen">16dp</item>
+    <item name="dimens_20" type="dimen">20dp</item>
+    <item name="dimens_24" type="dimen">24dp</item>
+    <item name="dimens_26" type="dimen">26dp</item>
+    <item name="dimens_35" type="dimen">35dp</item>
+    <item name="dimens_36" type="dimen">36dp</item>
+    <item name="dimens_48" type="dimen">48dp</item>
+    <item name="dimens_51" type="dimen">51dp</item>
+    <item name="dimens_52" type="dimen">52dp</item>
+    <item name="dimens_56" type="dimen">56dp</item>
+    <item name="dimens_57" type="dimen">57dp</item>
+    <item name="dimens_64" type="dimen">64dp</item>
+    <item name="dimens_72" type="dimen">72dp</item>
+    <item name="dimens_82" type="dimen">82dp</item>
+    <item name="dimens_268" type="dimen">268dp</item>
+</resources>
