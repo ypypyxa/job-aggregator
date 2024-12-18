@@ -9,7 +9,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.common.utils.debounce
 
-class SearchViewModel() : ViewModel() {
+class SearchViewModel : ViewModel() {
 
     companion object {
         private const val LOADING_DELAY_MS = 2000L

@@ -14,5 +14,5 @@ interface SearchRepository {
         industry: String?,
         salary: Int?,
         onlyWithSalary: Boolean
-    ) : Flow<Resource<List<VacancySearch>>>
+    ): Flow<Resource<List<VacancySearch>>>
 }

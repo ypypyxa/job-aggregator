@@ -41,9 +41,7 @@ class SearchRepositoryImpl(
                 emit(Resource.Error(response.resultCode, context.getString(R.string.search_no_internet)))
             }
             200 -> {
-                emit(Resource.Success(
-                    data = converter.convertVacanciesSearch(response as SearchResponse)
-                ))
+                emit(Resource.Success(converter.convertVacanciesSearch(response as SearchResponse)))
             }
             else -> {
                 emit(Resource.Error(response.resultCode, context.getString(R.string.server_error)))
