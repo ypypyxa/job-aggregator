@@ -9,4 +9,3 @@ class SnippetDto(
     val requirements: String?,
     val responsibility: String?,
 )
-

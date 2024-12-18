@@ -12,4 +12,3 @@ data class SalaryDto(
     val currency: CurrencyIds,
     val gross: Boolean
 )
-

@@ -7,8 +7,8 @@ import retrofit2.HttpException
 import ru.practicum.android.diploma.common.data.dto.Response
 import ru.practicum.android.diploma.common.data.network.requests.AreaRequest
 import ru.practicum.android.diploma.common.data.network.requests.IndustryRequest
-import ru.practicum.android.diploma.common.data.network.requests.VacancyDetailRequest
 import ru.practicum.android.diploma.common.data.network.requests.SearchRequest
+import ru.practicum.android.diploma.common.data.network.requests.VacancyDetailRequest
 import ru.practicum.android.diploma.common.data.network.response.AreaResponse
 import ru.practicum.android.diploma.common.data.network.response.IndustryResponse
 import ru.practicum.android.diploma.common.data.network.response.VacancyDetailResponse

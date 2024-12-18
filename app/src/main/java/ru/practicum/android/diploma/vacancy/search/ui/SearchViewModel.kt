@@ -76,7 +76,7 @@ class SearchViewModel(
                     } ?: "Телефоны не указаны"
                 }
         Email: ${vacancy.contacts?.email ?: "Email не указан"}
-            """.trimIndent()
+                """.trimIndent()
                 Log.d("SearchViewModel", logMessage)
             }
         }
