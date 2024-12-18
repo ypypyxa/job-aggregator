@@ -9,6 +9,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.databinding.FragmentSearchBinding
+import ru.practicum.android.diploma.vacancy.search.ui.adapter.VacancyAdapter
 
 class SearchFragment : Fragment() {
 
@@ -17,14 +18,10 @@ class SearchFragment : Fragment() {
 
     private val viewModel: SearchViewModel by viewModel()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+    private lateinit var vacancyAdapter: VacancyAdapter
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
         return binding.root
@@ -33,7 +30,21 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.loadVacancies()
+        setupRecyclerView()
+        observeViewModel()
+    }
+
+    private fun setupRecyclerView() {
+        vacancyAdapter = VacancyAdapter(emptyList()) { vacancy ->
+
+        }
+        binding.recyclerView.adapter = vacancyAdapter
+    }
+
+    private fun observeViewModel() {
+        viewModel.vacancies.observe(viewLifecycleOwner) { vacancies ->
+            vacancyAdapter.updateVacancies(vacancies)
+        }
 
         binding.editSearch.doOnTextChanged { text, _, _, _ ->
             val isTextEmpty = text.isNullOrEmpty()
