@@ -128,9 +128,9 @@ class RetrofitNetworkClient(
     }
 
     companion object {
-        private const val CLIENT_ERROR = 400
-        private const val SERVER_ERROR = 500
-        private const val NO_INTERNET_ERROR = -1
-        private const val SUCCESS = 200
+        const val CLIENT_ERROR = 400
+        const val SERVER_ERROR = 500
+        const val NO_INTERNET_ERROR = -1
+        const val SUCCESS = 200
     }
 }
