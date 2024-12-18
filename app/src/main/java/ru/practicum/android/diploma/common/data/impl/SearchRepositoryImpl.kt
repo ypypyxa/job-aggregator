@@ -19,27 +19,9 @@ class SearchRepositoryImpl(
     private val context: Context,
     private val converter: Converter
 ) : SearchRepository {
-    override fun fetchVacancies(
-        text: String?,
-        page: Int,
-        perPage: Int,
-        area: Int?,
-        searchField: String?,
-        industry: String?,
-        salary: Int?,
-        onlyWithSalary: Boolean
-    ): Flow<Resource<List<VacancySearch>>> = flow {
+    override fun fetchVacancies(params: Map<String, Any?>): Flow<Resource<List<VacancySearch>>> = flow {
         val response = networkClient.doRequest(
-            SearchRequest(
-                text,
-                page,
-                perPage,
-                area,
-                searchField,
-                industry,
-                salary,
-                onlyWithSalary
-            )
+            SearchRequest(params)
         )
         when (response.resultCode) {
             NO_INTERNET_ERROR -> {

@@ -8,8 +8,13 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.common.utils.debounce
+import ru.practicum.android.diploma.vacancy.search.domain.api.SearchInteractor
+import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearch
+import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearchParams
 
-class SearchViewModel : ViewModel() {
+class SearchViewModel(
+    private val searchInteractor: SearchInteractor
+) : ViewModel() {
 
     companion object {
         private const val LOADING_DELAY_MS = 2000L
@@ -50,6 +55,40 @@ class SearchViewModel : ViewModel() {
     }
 
     fun loadVacancies() {
-        viewModelScope.launch {}
+        viewModelScope.launch {
+            val params = VacancySearchParams(
+                text = "Android developer",
+                page = 0,
+                perPage = 20,
+                area = 1,
+                searchField = "name",
+                industry = null,
+                salary = null,
+                onlyWithSalary = false
+            )
+            searchInteractor.fetchVacancies(params.toQueryMap())
+                .collect { resource ->
+                    processResult(resource.first, resource.second)
+                }
+        }
+    }
+
+    private fun processResult(foundVacancies: List<VacancySearch>?, errorMessage: String?) {
+        val vacancies = mutableListOf<VacancySearch>()
+        if (foundVacancies != null) {
+            vacancies.addAll(foundVacancies)
+        }
+        when {
+            errorMessage != null -> {
+                Log.d("ErrorMessage", errorMessage)
+            }
+            vacancies.isEmpty() -> {
+                Log.d("ErrorMesagge", "Вакансий не найдено")
+            }
+            else -> {
+                Log.d("SearchResult", vacancies.toString())
+            }
+        }
     }
 }
+
