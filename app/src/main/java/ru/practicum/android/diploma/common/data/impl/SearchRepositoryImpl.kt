@@ -29,15 +29,17 @@ class SearchRepositoryImpl(
         salary: Int?,
         onlyWithSalary: Boolean
     ): Flow<Resource<List<VacancySearch>>> = flow {
-        val response = networkClient.doRequest(SearchRequest(
-            text = text,
-            page = page,
-            perPage = perPage,
-            area = area,
-            searchField = searchField,
-            industry =  industry,
-            salary = salary,
-            onlyWithSalary = onlyWithSalary)
+        val response = networkClient.doRequest(
+            SearchRequest(
+                text,
+                page,
+                perPage,
+                area,
+                searchField,
+                industry,
+                salary,
+                onlyWithSalary
+            )
         )
         when (response.resultCode) {
             NO_INTERNET_ERROR -> {
