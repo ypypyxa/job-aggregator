@@ -12,7 +12,8 @@ class SearchInteractorImpl(private val repository: SearchRepository) : SearchInt
         return repository.fetchVacancies(params).map { result ->
             when (result) {
                 is Resource.Success -> { Pair(result.data, null) }
-                is Resource.Error -> { Pair(null, result.message) }            }
+                is Resource.Error -> { Pair(null, result.message) }
+            }
         }
     }
 }
