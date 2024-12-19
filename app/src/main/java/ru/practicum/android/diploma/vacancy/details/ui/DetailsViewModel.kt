@@ -19,6 +19,7 @@ class DetailsViewModel(
                 }
         }
     }
+
     private fun processResult(vacancyDetails: VacancyDetails?, errorMessage: String?) {
         var vacancy = vacancyDetails
         when {
@@ -35,7 +36,7 @@ class DetailsViewModel(
     }
 
     companion object {
-        private const val TEST_ID = 114036543
+        private const val TEST_ID = 114_036_543
     }
 }
 
