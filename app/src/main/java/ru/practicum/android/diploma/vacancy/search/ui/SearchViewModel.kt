@@ -61,7 +61,7 @@ class SearchViewModel(
 
         _isLoading.postValue(true)
 
-        //собираем параметры запроса
+        // собираем параметры запроса
         val params = VacancySearchParams(
             text = latestSearchText,
             page = 0,
@@ -73,7 +73,7 @@ class SearchViewModel(
             onlyWithSalary = false
         )
 
-        //выполняем запрос
+        // выполняем запрос
         viewModelScope.launch {
             searchInteractor.fetchVacancies(params.toQueryMap())
                 .collect { resource ->
