@@ -8,10 +8,12 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.common.utils.debounce
-import ru.practicum.android.diploma.vacancy.search.domain.VacancyRepository
+import ru.practicum.android.diploma.vacancy.search.domain.api.SearchInteractor
+import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearch
+import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearchParams
 
 class SearchViewModel(
-    private val repository: VacancyRepository
+    private val searchInteractor: SearchInteractor
 ) : ViewModel() {
 
     companion object {
@@ -54,31 +56,39 @@ class SearchViewModel(
 
     fun loadVacancies() {
         viewModelScope.launch {
-            val response = repository.fetchVacancies(
+            val params = VacancySearchParams(
                 text = "Android developer",
+                page = 0,
+                perPage = 20,
                 area = 1,
+                searchField = "name",
                 industry = null,
-                salary = null
+                salary = null,
+                onlyWithSalary = false
             )
-            // Логируем результат
-            response.items.forEach { vacancy ->
-                val logMessage = """
-        Vacancy ID: ${vacancy.id}
-        Name: ${vacancy.name}
-        Region ID: ${vacancy.area?.id ?: "N/A"}
-        Region Name: ${vacancy.area?.name ?: "N/A"}
-        Salary: ${vacancy.salary?.from ?: "N/A"} - ${vacancy.salary?.to ?: "N/A"} ${vacancy.salary?.currency ?: "N/A"}
-        Employer ID: ${vacancy.employer?.id ?: "N/A"}
-        Employer Name: ${vacancy.employer?.name ?: "N/A"}
-        Phone: ${
-                    vacancy.contacts?.phones?.joinToString(", ") { phone ->
-                        "${phone.country ?: ""} ${phone.city ?: ""} ${phone.number ?: ""}"
-                    } ?: "Телефоны не указаны"
+            searchInteractor.fetchVacancies(params.toQueryMap())
+                .collect { resource ->
+                    processResult(resource.first, resource.second)
                 }
-        Email: ${vacancy.contacts?.email ?: "Email не указан"}
-                """.trimIndent()
-                Log.d("SearchViewModel", logMessage)
+        }
+    }
+
+    private fun processResult(foundVacancies: List<VacancySearch>?, errorMessage: String?) {
+        val vacancies = mutableListOf<VacancySearch>()
+        if (foundVacancies != null) {
+            vacancies.addAll(foundVacancies)
+        }
+        when {
+            errorMessage != null -> {
+                Log.d("ErrorMessage", errorMessage)
+            }
+            vacancies.isEmpty() -> {
+                Log.d("ErrorMesagge", "Вакансий не найдено")
+            }
+            else -> {
+                Log.d("SearchResult", vacancies.toString())
             }
         }
     }
 }
+
