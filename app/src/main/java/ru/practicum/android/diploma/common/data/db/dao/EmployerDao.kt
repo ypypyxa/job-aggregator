@@ -18,4 +18,3 @@ interface EmployerDao {
     @Query("SELECT * FROM employers WHERE id = :id")
     fun getEmployer(id: Int): Flow<EmployerEntity?>
 }
-

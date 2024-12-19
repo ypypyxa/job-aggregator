@@ -3,8 +3,6 @@ package ru.practicum.android.diploma.common.data.db.entity
 import androidx.room.Entity
 import androidx.room.ForeignKey
 
-
-
 @Entity(
     tableName = "vacancy_employer_reference",
     primaryKeys = ["vacancyId"],
