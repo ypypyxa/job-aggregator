@@ -111,8 +111,8 @@ interface VacancyEmployerReferenceDao : VacancyDao, EmployerDao {
     }
 
     private suspend fun removeEmployer(id: Int) {
-        getEmployer(id)?.let { employer ->
-            employer?.first()?.let { toDelete ->
+        getEmployer(id).let { employer ->
+            employer.first()?.let { toDelete ->
                 removeEmployer(toDelete)
             }
         }
