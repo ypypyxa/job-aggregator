@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:background="@color/day_night">
 
-
     <Toolbar
         android:id="@+id/tool_bar_favorite"
         style="@style/TextMedium22"
@@ -23,12 +22,11 @@
         android:layout_height="0dp"
         android:orientation="vertical"
         android:paddingHorizontal="@dimen/dimens_16"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tool_bar_favorite">
-
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
@@ -68,11 +66,9 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/dimens_16"
             android:gravity="center_horizontal"
-            android:textColor="@color/night_day"
-            android:text="@string/search_nothing_found" />
+            android:text="@string/search_nothing_found"
+            android:textColor="@color/night_day" />
     </LinearLayout>
-
-
 
     <LinearLayout
         android:id="@+id/ll_favorite_problem_layout2"
@@ -100,10 +96,9 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/dimens_16"
             android:gravity="center_horizontal"
-            android:textColor="@color/night_day"
-            android:text="@string/list_empty" />
+            android:text="@string/list_empty"
+            android:textColor="@color/night_day" />
     </LinearLayout>
-
 
     <ProgressBar
         android:id="@+id/progress_bar"
