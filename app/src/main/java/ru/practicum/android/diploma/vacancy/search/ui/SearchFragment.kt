@@ -1,7 +1,6 @@
 package ru.practicum.android.diploma.vacancy.search.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -47,18 +46,23 @@ class SearchFragment : Fragment() {
 
     private fun observeViewModel() {
         viewModel.vacancies.observe(viewLifecycleOwner) { vacancies ->
-            Log.d("SearchFragment", "Vacancies observed: ${vacancies.size}")
+            if (vacancies.isEmpty()) {
+                binding.placeholderSearch.isVisible = true
+                binding.recyclerView.isVisible = false
+            } else {
+                binding.placeholderSearch.isVisible = false
+                binding.recyclerView.isVisible = true
+            }
             vacancyAdapter.updateVacancies(vacancies)
-            binding.recyclerView.isVisible = vacancies.isNotEmpty()
-            binding.placeholderSearch.isVisible = vacancies.isEmpty()
         }
-
         binding.editSearch.doOnTextChanged { text, _, _, _ ->
             val isTextEmpty = text.isNullOrEmpty()
             if (isTextEmpty) {
                 viewModel.clearVacancies()
                 binding.placeholderSearch.isVisible = true
                 binding.recyclerView.isVisible = false
+                binding.buttonSearch.isVisible = false
+                binding.buttonClearEditSearch.isVisible = false
             } else {
                 binding.buttonSearch.isVisible = false
                 binding.buttonClearEditSearch.isVisible = true
@@ -75,6 +79,7 @@ class SearchFragment : Fragment() {
             binding.editSearch.text.clear()
         }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

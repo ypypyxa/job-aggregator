@@ -27,5 +27,13 @@ enum class CurrencyIds(val code: String, val symbol: String) {
     UZS("UZS", "лв"),
     GEL("GEL", "₾"),
     KGS("KGS", "лв"),
-    EUR("EUR", "€")
+    EUR("EUR", "€");
+
+    companion object {
+        fun getSymbol(currencyCode: String): String {
+            return values().find { it.code == currencyCode }?.symbol ?: ""
+        }
+    }
 }
+
+
