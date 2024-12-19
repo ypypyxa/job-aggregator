@@ -61,8 +61,8 @@ class RetrofitNetworkClient(
     }
 
     // поиск вакансий
-    private suspend fun makeVacancySearchRequest(dto: Map<String, Any?>): Response {
-        return headHunterApi.getVacancies(dto).apply {
+    private suspend fun makeVacancySearchRequest(dto: SearchRequest): Response {
+        return headHunterApi.getVacancies(dto.params).apply {
             resultCode = SUCCESS
         }
     }
@@ -96,7 +96,7 @@ class RetrofitNetworkClient(
     // распределяющий метод, который вызывает конкретные методы на основе типа DTO
     private suspend fun doRequestInternal(dto: Any): Response {
         return when (dto) {
-            is SearchRequest -> return makeVacancySearchRequest(dto.params)
+            is SearchRequest -> return makeVacancySearchRequest(dto)
 
             is AreaRequest -> makeAreasRequest(dto)
 
