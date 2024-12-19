@@ -1,14 +1,13 @@
 package ru.practicum.android.diploma.vacancy.search.ui.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.common.data.dto.CurrencyIds
+import ru.practicum.android.diploma.databinding.ItemVacancyBinding
+import ru.practicum.android.diploma.vacancy.search.domain.model.SalaryData
 import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearch
 import java.text.NumberFormat
 import java.util.Locale
@@ -19,8 +18,8 @@ class VacancyAdapter(
 ) : RecyclerView.Adapter<VacancyAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_vacancy, parent, false)
-        return ViewHolder(view, onVacancyClick)
+        val binding = ItemVacancyBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding, onVacancyClick)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -30,64 +29,66 @@ class VacancyAdapter(
     override fun getItemCount(): Int = vacancies.size
 
     class ViewHolder(
-        itemView: View,
+        private val binding: ItemVacancyBinding,
         private val onVacancyClick: (VacancySearch) -> Unit
-    ) : RecyclerView.ViewHolder(itemView) {
-
-        private val companyImage: ImageView = itemView.findViewById(R.id.item_vacancy_company_image)
-        private val vacancyName: TextView = itemView.findViewById(R.id.item_vacancy_name)
-        private val companyName: TextView = itemView.findViewById(R.id.item_vacancy_company_name)
-        private val salary: TextView = itemView.findViewById(R.id.item_vacancy_salary)
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(vacancy: VacancySearch) {
-            Glide.with(companyImage.context)
+            Glide.with(binding.itemVacancyCompanyImage.context)
                 .load(vacancy.logo)
                 .placeholder(R.drawable.placeholder)
-                .into(companyImage)
+                .into(binding.itemVacancyCompanyImage)
 
-            vacancyName.text = vacancy.name
-            companyName.text = vacancy.company ?: itemView.context.getString(R.string.company_not_specified)
+            binding.itemVacancyName.text = vacancy.name
+            binding.itemVacancyCompanyName.text = vacancy.company ?: itemView.context.getString(R.string.company_not_specified)
 
             val salaryString = vacancy.salary
-            if (!salaryString.isNullOrBlank() && salaryString.startsWith("SalaryDto")) {
-                try {
-                    val from = Regex("from=(\\d+)").find(salaryString)?.groupValues?.get(1)?.toIntOrNull()
-                    val to = Regex("to=(\\d+)").find(salaryString)?.groupValues?.get(1)?.toIntOrNull()
-                    val currencyCode = Regex("currency=([A-Z]+)").find(salaryString)?.groupValues?.get(1)
-                    val currencySymbol = currencyCode?.let { CurrencyIds.getSymbol(it) } ?: ""
-
-                    salary.text = when {
-                        from != null && to != null ->
-                            itemView.context.getString(
-                                R.string.salary_template_from_to,
-                                formatNumber(from),
-                                formatNumber(to),
-                                currencySymbol
-                            )
-                        from == null && to != null ->
-                            itemView.context.getString(
-                                R.string.salary_template_to,
-                                formatNumber(to),
-                                currencySymbol
-                            )
-                        from != null && to == null ->
-                            itemView.context.getString(
-                                R.string.salary_template_from,
-                                formatNumber(from),
-                                currencySymbol
-                            )
-                        else -> itemView.context.getString(R.string.message_salary_not_pointed)
-                    }
-                } catch (e: Exception) {
-                    salary.text = itemView.context.getString(R.string.message_salary_not_pointed)
-                }
-            } else {
-                salary.text = itemView.context.getString(R.string.message_salary_not_pointed)
-            }
+            val salaryData = if (!salaryString.isNullOrBlank()) parseSalaryData(salaryString) else null
+            binding.itemVacancySalary.text = salaryData?.let { formatSalary(it) }
+                ?: itemView.context.getString(R.string.message_salary_not_pointed)
 
             itemView.setOnClickListener { onVacancyClick(vacancy) }
         }
 
+        private fun parseSalaryData(salaryString: String): SalaryData? {
+            if (!salaryString.startsWith("SalaryDto")) return null
+
+            val from = Regex("from=(\\d+)").find(salaryString)?.groupValues?.get(1)?.toIntOrNull()
+            val to = Regex("to=(\\d+)").find(salaryString)?.groupValues?.get(1)?.toIntOrNull()
+            val currencyCode = Regex("currency=([A-Z]+)").find(salaryString)?.groupValues?.get(1)
+            val currencySymbol = currencyCode?.let { CurrencyIds.getSymbol(it) } ?: ""
+            if (from == null && to == null) return null
+
+            return SalaryData(from, to, currencySymbol)
+        }
+
+        private fun formatSalary(data: SalaryData): String {
+            return when {
+                data.from != null && data.to != null -> {
+                    itemView.context.getString(
+                        R.string.salary_template_from_to,
+                        formatNumber(data.from),
+                        formatNumber(data.to),
+                        data.currencySymbol
+                    )
+                }
+                data.from == null && data.to != null -> {
+                    itemView.context.getString(
+                        R.string.salary_template_to,
+                        formatNumber(data.to),
+                        data.currencySymbol
+                    )
+                }
+                data.from != null && data.to == null -> {
+                    itemView.context.getString(
+                        R.string.salary_template_from,
+                        formatNumber(data.from),
+                        data.currencySymbol
+                    )
+                }
+                else -> itemView.context.getString(R.string.message_salary_not_pointed)
+            }
+        }
         fun formatNumber(value: Int?): String {
             if (value == null) return ""
             val formatter = NumberFormat.getInstance(Locale("ru"))

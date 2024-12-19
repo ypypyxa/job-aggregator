@@ -1,6 +1,5 @@
 package ru.practicum.android.diploma.vacancy.search.ui
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,11 +12,13 @@ import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearch
 
 class SearchViewModel(
     private val repository: SearchRepository
-
 ) : ViewModel() {
 
     companion object {
         private const val LOADING_DELAY_MS = 2000L
+        private const val PER_PAGE = 20
+        private const val QUERY_PARAM = "query"
+        private const val PER_PAGE_PARAM = "perPage"
     }
 
     private val _isLoading = MutableLiveData(false)
@@ -26,13 +27,10 @@ class SearchViewModel(
     private val _vacancies = MutableLiveData<List<VacancySearch>>()
     val vacancies: LiveData<List<VacancySearch>> get() = _vacancies
 
-    private val _error = MutableLiveData<String?>()
-    val error: LiveData<String?> get() = _error
-
     private var latestSearchText: String? = null
 
     private val debounceSearch: (String) -> Unit = debounce(
-        delayMillis = 2000L,
+        delayMillis = LOADING_DELAY_MS,
         coroutineScope = viewModelScope,
         useLastParam = true
     ) { query ->
@@ -65,14 +63,13 @@ class SearchViewModel(
 
         _isLoading.postValue(true)
         viewModelScope.launch {
-            repository.fetchVacancies(mapOf("query" to query, "perPage" to 20)).collect { result ->
+            repository.fetchVacancies(mapOf(QUERY_PARAM to query, PER_PAGE_PARAM to PER_PAGE))
+                .collect { result ->
                 when (result) {
                     is Resource.Success -> {
                         _vacancies.value = result.data.orEmpty()
-                        _error.value = null
                     }
                     is Resource.Error -> {
-                        _error.value = result.message ?: "Unknown error"
                         _vacancies.value = emptyList()
                     }
                 }
@@ -80,5 +77,4 @@ class SearchViewModel(
             }
         }
     }
-
 }

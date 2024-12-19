@@ -18,7 +18,6 @@ class SearchFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: SearchViewModel by viewModel()
-
     private lateinit var vacancyAdapter: VacancyAdapter
 
     override fun onCreateView(
@@ -32,29 +31,25 @@ class SearchFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
+        setupListeners()
         observeViewModel()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun setupRecyclerView() {
         vacancyAdapter = VacancyAdapter(emptyList()) { vacancy ->
-            // Обработка нажатия на вакансию
+            // Обработка нажатия на вакансию при необходимости
         }
 
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = vacancyAdapter
     }
 
-    private fun observeViewModel() {
-        viewModel.vacancies.observe(viewLifecycleOwner) { vacancies ->
-            if (vacancies.isEmpty()) {
-                binding.placeholderSearch.isVisible = true
-                binding.recyclerView.isVisible = false
-            } else {
-                binding.placeholderSearch.isVisible = false
-                binding.recyclerView.isVisible = true
-            }
-            vacancyAdapter.updateVacancies(vacancies)
-        }
+    private fun setupListeners() {
         binding.editSearch.doOnTextChanged { text, _, _, _ ->
             val isTextEmpty = text.isNullOrEmpty()
             if (isTextEmpty) {
@@ -70,19 +65,23 @@ class SearchFragment : Fragment() {
             }
         }
 
-        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.progressBar.isVisible = isLoading
-            binding.placeholderSearch.isVisible = !isLoading && binding.editSearch.text.isNullOrEmpty()
-        }
-
         binding.buttonClearEditSearch.setOnClickListener {
             binding.editSearch.text.clear()
         }
     }
 
+    private fun observeViewModel() {
+        viewModel.vacancies.observe(viewLifecycleOwner) { vacancies ->
+            val hasVacancies = vacancies.isNotEmpty()
+            binding.placeholderSearch.isVisible = !hasVacancies && !viewModel.isLoading.value!!
+            binding.recyclerView.isVisible = hasVacancies
+            vacancyAdapter.updateVacancies(vacancies)
+        }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            binding.progressBar.isVisible = isLoading
+            binding.placeholderSearch.isVisible = !isLoading && binding.editSearch.text.isNullOrEmpty()
+        }
     }
 }
+
