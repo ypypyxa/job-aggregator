@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.vacancy.search.ui.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,11 +9,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import ru.practicum.android.diploma.R
-import ru.practicum.android.diploma.common.data.network.response.Vacancy
+import ru.practicum.android.diploma.common.data.dto.VacancyItemDto
 
 class VacancyAdapter(
-    private var vacancies: List<Vacancy>,
-    private val onVacancyClick: (Vacancy) -> Unit
+    private var vacancies: List<VacancyItemDto>,
+    private val onVacancyClick: (VacancyItemDto) -> Unit
 ) : RecyclerView.Adapter<VacancyAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -29,7 +30,7 @@ class VacancyAdapter(
 
     class ViewHolder(
         itemView: View,
-        private val onVacancyClick: (Vacancy) -> Unit
+        private val onVacancyClick: (VacancyItemDto) -> Unit
     ) : RecyclerView.ViewHolder(itemView) {
 
         private val companyImage: ImageView = itemView.findViewById(R.id.item_vacancy_company_image)
@@ -37,26 +38,18 @@ class VacancyAdapter(
         private val companyName: TextView = itemView.findViewById(R.id.item_vacancy_company_name)
         private val salary: TextView = itemView.findViewById(R.id.item_vacancy_salary)
 
-        fun bind(vacancy: Vacancy) {
+        fun bind(vacancy: VacancyItemDto) {
             Glide.with(companyImage.context)
-                .load(vacancy.employer.name)
+                .load(vacancy.employer?.logoUrls?.original)
                 .placeholder(R.drawable.placeholder)
                 .into(companyImage)
-
             vacancyName.text = vacancy.name
-            companyName.text = vacancy.employer.name
-
-            salary.text = vacancy.salary?.let {
-                val from = it.from?.toString() ?: "?"
-                val to = it.to?.toString() ?: "?"
-                "$from - $to ${it.currency}"
-            } ?: "Зарплата не указана"
-
+            companyName.text = vacancy.employer?.name ?: "Не указано"
             itemView.setOnClickListener { onVacancyClick(vacancy) }
         }
     }
 
-    fun updateVacancies(newVacancies: List<Vacancy>) {
+    fun updateVacancies(newVacancies: List<VacancyItemDto>) {
         vacancies = newVacancies
         notifyDataSetChanged()
     }
