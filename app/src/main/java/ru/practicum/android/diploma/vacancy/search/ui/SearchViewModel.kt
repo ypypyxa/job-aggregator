@@ -65,16 +65,16 @@ class SearchViewModel(
         viewModelScope.launch {
             repository.fetchVacancies(mapOf(QUERY_PARAM to query, PER_PAGE_PARAM to PER_PAGE))
                 .collect { result ->
-                when (result) {
-                    is Resource.Success -> {
-                        _vacancies.value = result.data.orEmpty()
+                    when (result) {
+                        is Resource.Success -> {
+                            _vacancies.value = result.data.orEmpty()
+                        }
+                        is Resource.Error -> {
+                            _vacancies.value = emptyList()
+                        }
                     }
-                    is Resource.Error -> {
-                        _vacancies.value = emptyList()
-                    }
+                    _isLoading.postValue(false)
                 }
-                _isLoading.postValue(false)
-            }
         }
     }
 }

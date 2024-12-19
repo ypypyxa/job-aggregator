@@ -40,7 +40,8 @@ class VacancyAdapter(
                 .into(binding.itemVacancyCompanyImage)
 
             binding.itemVacancyName.text = vacancy.name
-            binding.itemVacancyCompanyName.text = vacancy.company ?: itemView.context.getString(R.string.company_not_specified)
+            binding.itemVacancyCompanyName.text = vacancy.company
+                ?: itemView.context.getString(R.string.company_not_specified)
 
             val salaryString = vacancy.salary
             val salaryData = if (!salaryString.isNullOrBlank()) parseSalaryData(salaryString) else null
@@ -57,9 +58,12 @@ class VacancyAdapter(
             val to = Regex("to=(\\d+)").find(salaryString)?.groupValues?.get(1)?.toIntOrNull()
             val currencyCode = Regex("currency=([A-Z]+)").find(salaryString)?.groupValues?.get(1)
             val currencySymbol = currencyCode?.let { CurrencyIds.getSymbol(it) } ?: ""
-            if (from == null && to == null) return null
 
-            return SalaryData(from, to, currencySymbol)
+            return if (from != null || to != null) {
+                SalaryData(from, to, currencySymbol)
+            } else {
+                null
+            }
         }
 
         private fun formatSalary(data: SalaryData): String {
@@ -72,6 +76,7 @@ class VacancyAdapter(
                         data.currencySymbol
                     )
                 }
+
                 data.from == null && data.to != null -> {
                     itemView.context.getString(
                         R.string.salary_template_to,
@@ -79,6 +84,7 @@ class VacancyAdapter(
                         data.currencySymbol
                     )
                 }
+
                 data.from != null && data.to == null -> {
                     itemView.context.getString(
                         R.string.salary_template_from,
@@ -86,9 +92,11 @@ class VacancyAdapter(
                         data.currencySymbol
                     )
                 }
+
                 else -> itemView.context.getString(R.string.message_salary_not_pointed)
             }
         }
+
         fun formatNumber(value: Int?): String {
             if (value == null) return ""
             val formatter = NumberFormat.getInstance(Locale("ru"))
@@ -101,4 +109,3 @@ class VacancyAdapter(
         notifyDataSetChanged()
     }
 }
-

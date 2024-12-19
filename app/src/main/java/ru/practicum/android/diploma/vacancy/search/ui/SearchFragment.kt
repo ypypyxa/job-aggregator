@@ -18,10 +18,16 @@ class SearchFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: SearchViewModel by viewModel()
-    private lateinit var vacancyAdapter: VacancyAdapter
+    private val vacancyAdapter by lazy {
+        VacancyAdapter(emptyList()) { vacancy ->
+            // Обработка нажатия на вакансию при необходимости
+        }
+    }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
         return binding.root
@@ -41,10 +47,6 @@ class SearchFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        vacancyAdapter = VacancyAdapter(emptyList()) { vacancy ->
-            // Обработка нажатия на вакансию при необходимости
-        }
-
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = vacancyAdapter
     }
@@ -84,4 +86,3 @@ class SearchFragment : Fragment() {
         }
     }
 }
-

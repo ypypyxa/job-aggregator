@@ -35,5 +35,3 @@ enum class CurrencyIds(val code: String, val symbol: String) {
         }
     }
 }
-
-
