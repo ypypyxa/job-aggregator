@@ -1,24 +1,22 @@
 package ru.practicum.android.diploma.vacancy.search.ui
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import ru.practicum.android.diploma.common.utils.Resource
 import ru.practicum.android.diploma.common.utils.debounce
-import ru.practicum.android.diploma.vacancy.search.domain.api.SearchRepository
+import ru.practicum.android.diploma.vacancy.search.domain.api.SearchInteractor
 import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearch
+import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearchParams
 
 class SearchViewModel(
-    private val repository: SearchRepository
+    private val searchInteractor: SearchInteractor
 ) : ViewModel() {
 
     companion object {
         private const val LOADING_DELAY_MS = 2000L
-        private const val PER_PAGE = 20
-        private const val QUERY_PARAM = "query"
-        private const val PER_PAGE_PARAM = "perPage"
     }
 
     private val _isLoading = MutableLiveData(false)
@@ -62,19 +60,46 @@ class SearchViewModel(
         }
 
         _isLoading.postValue(true)
+
+        //собираем параметры запроса
+        val params = VacancySearchParams(
+            text = latestSearchText,
+            page = 0,
+            perPage = 20,
+            area = 1,
+            searchField = "name",
+            industry = null,
+            salary = null,
+            onlyWithSalary = false
+        )
+
+        //выполняем запрос
         viewModelScope.launch {
-            repository.fetchVacancies(mapOf(QUERY_PARAM to query, PER_PAGE_PARAM to PER_PAGE))
-                .collect { result ->
-                    when (result) {
-                        is Resource.Success -> {
-                            _vacancies.value = result.data.orEmpty()
-                        }
-                        is Resource.Error -> {
-                            _vacancies.value = emptyList()
-                        }
-                    }
-                    _isLoading.postValue(false)
+            searchInteractor.fetchVacancies(params.toQueryMap())
+                .collect { resource ->
+                    processResult(resource.first, resource.second)
                 }
+        }
+
+        _isLoading.postValue(false)
+    }
+
+    private fun processResult(foundVacancies: List<VacancySearch>?, errorMessage: String?) {
+        val vacancies = mutableListOf<VacancySearch>()
+        if (foundVacancies != null) {
+            vacancies.addAll(foundVacancies)
+        }
+        when {
+            errorMessage != null -> {
+                Log.d("ErrorMessage", errorMessage)
+            }
+            vacancies.isEmpty() -> {
+                Log.d("ErrorMessage", "Вакансий не найдено")
+            }
+            else -> {
+                _vacancies.value = vacancies
+                Log.d("SearchResult", vacancies.toString())
+            }
         }
     }
 }
