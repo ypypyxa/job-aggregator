@@ -11,7 +11,7 @@ import ru.practicum.android.diploma.common.data.network.requests.VacancyDetailRe
 import ru.practicum.android.diploma.common.data.network.response.VacancyDetailResponse
 import ru.practicum.android.diploma.common.utils.Converter
 import ru.practicum.android.diploma.common.utils.Resource
-import ru.practicum.android.diploma.vacancy.details.domain.VacancyDetails
+import ru.practicum.android.diploma.vacancy.details.domain.model.VacancyDetails
 import ru.practicum.android.diploma.vacancy.details.domain.api.DetailsRepository
 
 class DetailsRepositoryImpl(

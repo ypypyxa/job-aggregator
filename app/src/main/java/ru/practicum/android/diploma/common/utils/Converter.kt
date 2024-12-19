@@ -3,7 +3,7 @@ package ru.practicum.android.diploma.common.utils
 import com.google.gson.Gson
 import ru.practicum.android.diploma.common.data.network.response.SearchResponse
 import ru.practicum.android.diploma.common.data.network.response.VacancyDetailResponse
-import ru.practicum.android.diploma.vacancy.details.domain.VacancyDetails
+import ru.practicum.android.diploma.vacancy.details.domain.model.VacancyDetails
 import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearch
 
 class Converter {

@@ -3,7 +3,7 @@ package ru.practicum.android.diploma.vacancy.details.domain.Impl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import ru.practicum.android.diploma.common.utils.Resource
-import ru.practicum.android.diploma.vacancy.details.domain.VacancyDetails
+import ru.practicum.android.diploma.vacancy.details.domain.model.VacancyDetails
 import ru.practicum.android.diploma.vacancy.details.domain.api.DetailsInteractor
 import ru.practicum.android.diploma.vacancy.details.domain.api.DetailsRepository
 
