@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.vacancy.search.ui
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -30,7 +31,9 @@ class SearchViewModel(
     private var latestSearchText: String? = null
 
     private val debounceSearch: (String) -> Unit = debounce(
-        delayMillis = 2000L, coroutineScope = viewModelScope, useLastParam = true
+        delayMillis = 2000L,
+        coroutineScope = viewModelScope,
+        useLastParam = true
     ) { query ->
         searchRequest(query)
     }
