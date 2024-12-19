@@ -4,8 +4,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import ru.practicum.android.diploma.vacancy.details.domain.model.VacancyDetails
 import ru.practicum.android.diploma.vacancy.details.domain.api.DetailsInteractor
+import ru.practicum.android.diploma.vacancy.details.domain.model.VacancyDetails
 
 class DetailsViewModel(
     private val detailsInteractor: DetailsInteractor
@@ -13,7 +13,7 @@ class DetailsViewModel(
 
     fun loadVacancy() {
         viewModelScope.launch {
-            detailsInteractor.fetchDetails(114036543)
+            detailsInteractor.fetchDetails(TEST_ID)
                 .collect { resource ->
                     processResult(resource.first, resource.second)
                 }
@@ -32,6 +32,10 @@ class DetailsViewModel(
                 Log.d("VacancyResult", vacancy.toString())
             }
         }
+    }
+
+    companion object {
+        private const val TEST_ID = 114036543
     }
 }
 
