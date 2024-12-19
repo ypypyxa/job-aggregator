@@ -12,7 +12,7 @@ class Converter {
                 address = vacancy.area?.name,
                 company = vacancy.employer?.name,
                 salary = vacancy.salary?.toString(),
-                logo = ""
+                logo = vacancy.employer?.logoUrls?.original
             )
         }
     }
