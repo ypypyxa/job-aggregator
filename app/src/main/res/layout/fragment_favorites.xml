@@ -1,13 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".favorites.ui.FavoritesFragment">
+    android:background="@color/day_night">
 
-    <TextView
+    <Toolbar
+        android:id="@+id/tool_bar_favorite"
+        style="@style/TextMedium22"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="Фавориты" />
-</FrameLayout>
+        android:layout_height="wrap_content"
+        android:contentInsetStart="@dimen/dimens_16"
+        android:paddingVertical="@dimen/dimens_8"
+        android:title="@string/bottom_navigation_title_favorite"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/ll_item_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/dimens_16"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tool_bar_favorite">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/day_night"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:reverseLayout="false"
+            tools:itemCount="5"
+            tools:listitem="@layout/item_vacancy" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_favorite_problem_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tool_bar_favorite">
+
+        <ImageView
+            android:id="@+id/iv_favorite_state_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/placeholder_nothing_found" />
+
+        <TextView
+            android:id="@+id/tv_favorite_state_text"
+            style="@style/Text.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/dimens_16"
+            android:gravity="center_horizontal"
+            android:text="@string/search_nothing_found"
+            android:textColor="@color/night_day" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_favorite_problem_layout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tool_bar_favorite">
+
+        <ImageView
+            android:id="@+id/iv_favorite_state_image2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/placeholder_favorite_is_empty" />
+
+        <TextView
+            android:id="@+id/tv_favorite_state_text2"
+            style="@style/Text.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/dimens_16"
+            android:gravity="center_horizontal"
+            android:text="@string/list_empty"
+            android:textColor="@color/night_day" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="@dimen/dimens_48"
+        android:layout_height="@dimen/dimens_48"
+        android:indeterminateTint="@color/blue"
+        android:indeterminateTintMode="src_in"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tool_bar_favorite" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
