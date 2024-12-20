@@ -36,7 +36,6 @@ class DetailsViewModel(
             }
             else -> {
                 Log.d("VacancyResult", vacancy.toString())
-                // Передаём данные в LiveData
                 _vacancyDetails.value = vacancyDetails
             }
         }
