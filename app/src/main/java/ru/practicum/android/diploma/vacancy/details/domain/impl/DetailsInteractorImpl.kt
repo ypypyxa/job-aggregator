@@ -17,4 +17,3 @@ class DetailsInteractorImpl(private val repository: DetailsRepository) : Details
         }
     }
 }
-
