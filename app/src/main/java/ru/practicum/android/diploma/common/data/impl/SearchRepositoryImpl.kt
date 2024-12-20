@@ -12,6 +12,7 @@ import ru.practicum.android.diploma.common.data.network.response.SearchResponse
 import ru.practicum.android.diploma.common.utils.Converter
 import ru.practicum.android.diploma.common.utils.Resource
 import ru.practicum.android.diploma.vacancy.search.domain.api.SearchRepository
+import ru.practicum.android.diploma.vacancy.search.domain.model.PagedData
 import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearch
 
 class SearchRepositoryImpl(
@@ -19,7 +20,7 @@ class SearchRepositoryImpl(
     private val context: Context,
     private val converter: Converter
 ) : SearchRepository {
-    override fun fetchVacancies(params: Map<String, Any?>): Flow<Resource<List<VacancySearch>>> = flow {
+    override fun fetchVacancies(params: Map<String, Any?>): Flow<Resource<PagedData<VacancySearch>>> = flow {
         val response = networkClient.doRequest(
             SearchRequest(params)
         )
@@ -28,7 +29,14 @@ class SearchRepositoryImpl(
                 emit(Resource.Error(response.resultCode, context.getString(R.string.search_no_internet)))
             }
             SUCCESS -> {
-                emit(Resource.Success(converter.convertVacanciesSearch(response as SearchResponse)))
+                val searchResponse = response as SearchResponse
+                val pagedData = PagedData(
+                    items = converter.convertVacanciesSearch(searchResponse),
+                    currentPage = searchResponse.page,
+                    totalPages = searchResponse.pages,
+                    totalItems = searchResponse.found
+                )
+                emit(Resource.Success(pagedData))
             }
             else -> {
                 emit(Resource.Error(response.resultCode, context.getString(R.string.server_error)))

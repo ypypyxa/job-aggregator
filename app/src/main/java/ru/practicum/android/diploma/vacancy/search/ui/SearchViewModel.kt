@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.common.utils.debounce
 import ru.practicum.android.diploma.vacancy.search.domain.api.SearchInteractor
+import ru.practicum.android.diploma.vacancy.search.domain.model.PagedData
 import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearch
 import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearchParams
 
@@ -26,18 +27,20 @@ class SearchViewModel(
     val vacancies: LiveData<List<VacancySearch>> get() = _vacancies
 
     private var latestSearchText: String? = null
+    private var currentPage = 0
+    private var totalPages = 1
+    private val pageSize = 20
 
     private val debounceSearch: (String) -> Unit = debounce(
         delayMillis = LOADING_DELAY_MS,
         coroutineScope = viewModelScope,
         useLastParam = true
     ) { query ->
-        searchRequest(query)
+        resetSearch(query)
     }
 
     fun onSearchQueryChanged(query: String) {
         if (query.isBlank()) {
-            latestSearchText = null
             clearVacancies()
             return
         }
@@ -48,24 +51,29 @@ class SearchViewModel(
         }
     }
 
+    private fun resetSearch(query: String) {
+        currentPage = 0
+        totalPages = 1
+        latestSearchText = query
+        _vacancies.value = emptyList()
+        searchRequest(query)
+    }
+
     fun clearVacancies() {
         latestSearchText = null
         _vacancies.postValue(emptyList())
     }
 
-    private fun searchRequest(query: String) {
-        if (query.isBlank() || latestSearchText != query) {
-            _isLoading.value = false
-            return
-        }
+    fun searchRequest(query: String? = latestSearchText) {
+        if (_isLoading.value == true || query.isNullOrEmpty() || currentPage >= totalPages) return
 
         _isLoading.postValue(true)
 
         // собираем параметры запроса
         val params = VacancySearchParams(
-            text = latestSearchText,
-            page = 0,
-            perPage = 20,
+            text = query,
+            page = currentPage,
+            perPage = pageSize,
             area = 1,
             searchField = "name",
             industry = null,
@@ -84,22 +92,18 @@ class SearchViewModel(
         _isLoading.postValue(false)
     }
 
-    private fun processResult(foundVacancies: List<VacancySearch>?, errorMessage: String?) {
-        val vacancies = mutableListOf<VacancySearch>()
-        if (foundVacancies != null) {
-            vacancies.addAll(foundVacancies)
+    private fun processResult(pagedData: PagedData<VacancySearch>?, errorMessage: String?) {
+        if (pagedData != null) {
+            val currentVacancies = _vacancies.value.orEmpty().toMutableList()
+            currentVacancies.addAll(pagedData.items)
+
+            _vacancies.value = currentVacancies
+            currentPage = pagedData.currentPage + 1
+            totalPages = pagedData.totalPages
         }
-        when {
-            errorMessage != null -> {
-                Log.d("ErrorMessage", errorMessage)
-            }
-            vacancies.isEmpty() -> {
-                Log.d("ErrorMessage", "Вакансий не найдено")
-            }
-            else -> {
-                _vacancies.value = vacancies
-                Log.d("SearchResult", vacancies.toString())
-            }
+
+        if (errorMessage != null) {
+            Log.e("SearchViewModel", "Error: $errorMessage")
         }
     }
 }

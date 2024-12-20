@@ -39,4 +39,3 @@ class DetailsViewModel(
         private const val TEST_ID = 114_036_543
     }
 }
-
