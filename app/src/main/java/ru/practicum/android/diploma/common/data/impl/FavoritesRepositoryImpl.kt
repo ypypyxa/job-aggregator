@@ -32,10 +32,13 @@ class FavoritesRepositoryImpl(
 
     override suspend fun addFavoriteVacancy(vacancy: VacancyDetails) {
         withContext(Dispatchers.IO) {
-            database.vacancyEmployerReferenceDao().addVacancy(
-                vacancy = converter.mapToEntity(vacancy), // Преобразование в VacancyEntity
-                employer = converter.mapToEmployerEntity(vacancy) // Преобразование в EmployerEntity
-            )
+            val exists = database.vacancyDao().isVacancyExists(vacancy.vacancyId)
+            if (!exists) {
+                database.vacancyEmployerReferenceDao().addVacancy(
+                    vacancy = converter.mapToEntity(vacancy),
+                    employer = converter.mapToEmployerEntity(vacancy)
+                )
+            }
         }
     }
 

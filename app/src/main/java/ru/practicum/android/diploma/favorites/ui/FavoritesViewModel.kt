@@ -37,18 +37,6 @@ class FavoritesViewModel(
     }
 
     /**
-     * Проверить, является ли вакансия избранной.
-     *
-     * @param vacancyId Идентификатор вакансии.
-     */
-    fun checkIfFavorite(vacancyId: Int) {
-        viewModelScope.launch {
-            val isFavorite = favoritesInteractor.isVacancyFavorite(vacancyId)
-            _isFavorite.value = isFavorite
-        }
-    }
-
-    /**
      * Получить детальную информацию о вакансии.
      *
      * @param vacancyId Идентификатор вакансии.
@@ -62,32 +50,6 @@ class FavoritesViewModel(
     }
 
     /**
-     * Добавить вакансию в избранное.
-     *
-     * @param vacancy Детальная информация о вакансии.
-     */
-    fun addToFavorites(vacancy: VacancyDetails) {
-        viewModelScope.launch {
-            favoritesInteractor.addFavoriteVacancy(vacancy)
-            _isFavorite.value = true
-            refreshFavorites()
-        }
-    }
-
-    /**
-     * Удалить вакансию из избранного.
-     *
-     * @param vacancyId Идентификатор вакансии.
-     */
-    fun removeFromFavorites(vacancyId: Int) {
-        viewModelScope.launch {
-            favoritesInteractor.removeFavoriteVacancy(vacancyId)
-            _isFavorite.value = false
-            refreshFavorites()
-        }
-    }
-
-    /**
      * Обновить список избранных вакансий.
      */
     private fun refreshFavorites() {
@@ -97,6 +59,7 @@ class FavoritesViewModel(
             }
         }
     }
+
     companion object {
         private const val DEFAULT_PAGE = 0
         private const val DEFAULT_LIMIT = 20

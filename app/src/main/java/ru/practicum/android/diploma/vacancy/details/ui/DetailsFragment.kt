@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -14,7 +15,7 @@ import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentDetailsBinding
 import ru.practicum.android.diploma.vacancy.details.domain.model.VacancyDetails
 
-class DetailsFragment : Fragment() {
+class DetailsFragment() : Fragment() {
 
     companion object {
         private const val ARGS_VACANCY_ID = "vacancy_id"
@@ -56,12 +57,30 @@ class DetailsFragment : Fragment() {
         binding.ivArrowBack.setOnClickListener {
             findNavController().popBackStack()
         }
+        binding.ivLikeButton.setOnClickListener {
+            val vacancy = viewModel.vacancyDetails.value
+            vacancy?.let {
+                if (viewModel.isFavorite.value == true) {
+                    viewModel.removeFromFavorites(it.vacancyId)
+                } else {
+                    viewModel.addToFavorites(it)
+                }
+            }
+        }
     }
 
     private fun observeViewModel() {
         viewModel.vacancyDetails.observe(viewLifecycleOwner) { vacancyDetails ->
             updateUI(vacancyDetails)
         }
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.isFavorite.collect { isFavorite ->
+                val iconRes = if (isFavorite == true) R.drawable.ic_heart_active else R.drawable.ic_heart
+                binding.ivLikeButton.setImageResource(iconRes)
+            }
+        }
+
     }
 
     private fun updateUI(vacancyDetails: VacancyDetails?) {
