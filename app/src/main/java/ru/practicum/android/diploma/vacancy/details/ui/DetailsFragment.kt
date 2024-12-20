@@ -15,7 +15,7 @@ import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentDetailsBinding
 import ru.practicum.android.diploma.vacancy.details.domain.model.VacancyDetails
 
-class DetailsFragment() : Fragment() {
+class DetailsFragment : Fragment() {
 
     companion object {
         private const val ARGS_VACANCY_ID = "vacancy_id"
