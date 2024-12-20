@@ -15,32 +15,26 @@ class FavoritesRepositoryImpl(
     private val converter: FavoritesDBConverter
 ) : FavoritesRepository {
 
-    override suspend fun getFavoriteVacancies(page: Int, limit: Int): Flow<VacancySearch> {
-        val total = withContext(Dispatchers.IO) { database.vacancyDao().getVacanciesCount() }
-        val totalPages = (total.toDouble() / limit).toInt().coerceAtLeast(1)
-        return withContext(Dispatchers.IO) {
-            database.vacancyEmployerReferenceDao()
-                .getAllVacancies(page, limit)
-                .map { converter.map(it, page, total, totalPages) }
-        }
+    override suspend fun getFavoriteVacancies(page: Int, limit: Int): Flow<List<VacancySearch>> {
+        return database.vacancyEmployerReferenceDao()
+            .getAllVacancies(page, limit)
+            .map { dtoList -> converter.mapList(dtoList) } // Преобразование списка DTO в список VacancySearch
     }
 
     override suspend fun isVacancyFavorite(vacancyId: Int): Boolean =
         withContext(Dispatchers.IO) { database.vacancyDao().isVacancyExists(vacancyId) }
 
     override suspend fun getFavoriteVacancy(vacancyId: Int): Flow<VacancyDetails?> {
-        return withContext(Dispatchers.IO) {
-            database.vacancyEmployerReferenceDao()
-                .getVacancyWithEmployer(vacancyId)
-                .map { it?.let(converter::map) }
-        }
+        return database.vacancyEmployerReferenceDao()
+            .getVacancyWithEmployer(vacancyId)
+            .map { it?.let { dto -> converter.mapToDetails(dto) } } // Конвертация в VacancyDetails
     }
 
     override suspend fun addFavoriteVacancy(vacancy: VacancyDetails) {
         withContext(Dispatchers.IO) {
             database.vacancyEmployerReferenceDao().addVacancy(
-                vacancy = converter.mapToEntity(vacancy),
-                employer = converter.mapToEmployerEntity(vacancy)
+                vacancy = converter.mapToEntity(vacancy), // Преобразование в VacancyEntity
+                employer = converter.mapToEmployerEntity(vacancy) // Преобразование в EmployerEntity
             )
         }
     }

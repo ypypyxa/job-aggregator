@@ -13,7 +13,7 @@ interface FavoritesInteractor {
      * @param limit Количество вакансий на странице.
      * @return Поток [VacancySearch] с информацией о найденных вакансиях.
      */
-    suspend fun getFavoriteVacancies(page: Int, limit: Int): Flow<VacancySearch>
+    suspend fun getFavoriteVacancies(page: Int, limit: Int): Flow<List<VacancySearch>>
 
     /**
      * Проверить, является ли вакансия избранной.
@@ -27,14 +27,14 @@ interface FavoritesInteractor {
      * Получить детальную информацию об избранной вакансии.
      *
      * @param vacancyId Идентификатор вакансии.
-     * @return Поток [DetailedVacancyItem] с детальной информацией о вакансии.
+     * @return Поток DetailedVacancyItem с детальной информацией о вакансии.
      */
     suspend fun getFavoriteVacancy(vacancyId: Int): Flow<VacancyDetails?>
 
     /**
      * Добавить вакансию в список избранных.
      *
-     * @param vacancy Объект [DetailedVacancyItem] для добавления.
+     * @param vacancy Объект DetailedVacancyItem для добавления.
      */
     suspend fun addFavoriteVacancy(vacancy: VacancyDetails)
 
