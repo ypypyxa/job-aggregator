@@ -27,7 +27,18 @@ class SearchFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: SearchViewModel by viewModel()
-    private lateinit var onVacancyClickDebounce: (Int) -> Unit
+    private val onVacancyClickDebounce by lazy {
+        debounce<Int>(
+            CLICK_DEBOUNCE_DELAY,
+            viewLifecycleOwner.lifecycleScope,
+            false
+        ) { vacancyId ->
+            findNavController().navigate(
+                R.id.action_searchFragment_to_detailsFragment,
+                DetailsFragment.createArgs(vacancyId)
+            )
+        }
+    }
     private val vacancyAdapter by lazy {
         VacancyAdapter(emptyList()) { vacancy ->
             onVacancyClickDebounce(vacancy.id)
@@ -59,17 +70,6 @@ class SearchFragment : Fragment() {
     private fun setupRecyclerView() {
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = vacancyAdapter
-
-        onVacancyClickDebounce = debounce<Int>(
-            CLICK_DEBOUNCE_DELAY,
-            viewLifecycleOwner.lifecycleScope,
-            false
-        ) { vacancyId ->
-            findNavController().navigate(
-                R.id.action_searchFragment_to_detailsFragment,
-                DetailsFragment.createArgs(vacancyId)
-            )
-        }
     }
 
     private fun setupListeners() {
@@ -96,7 +96,7 @@ class SearchFragment : Fragment() {
     private fun observeViewModel() {
         viewModel.vacancies.observe(viewLifecycleOwner) { vacancies ->
             val hasVacancies = vacancies.isNotEmpty()
-            binding.placeholderSearch.isVisible = !hasVacancies && !viewModel.isLoading.value!!
+            binding.placeholderSearch.isVisible = !hasVacancies && !(viewModel.isLoading.value ?: false)
             binding.recyclerView.isVisible = hasVacancies
             vacancyAdapter.updateVacancies(vacancies)
         }
