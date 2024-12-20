@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
@@ -14,8 +15,10 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.common.utils.debounce
 import ru.practicum.android.diploma.databinding.FragmentSearchBinding
+import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearch
 import ru.practicum.android.diploma.vacancy.details.ui.DetailsFragment
 import ru.practicum.android.diploma.vacancy.search.ui.adapter.VacancyAdapter
+import ru.practicum.android.diploma.vacancy.search.ui.model.SearchFragmentState
 
 class SearchFragment : Fragment() {
 
@@ -77,9 +80,7 @@ class SearchFragment : Fragment() {
             val isTextEmpty = text.isNullOrEmpty()
             if (isTextEmpty) {
                 viewModel.clearVacancies()
-                binding.placeholderSearch.isVisible = true
-                binding.recyclerView.isVisible = false
-                binding.buttonSearch.isVisible = false
+                binding.buttonSearch.isVisible = true
                 binding.buttonClearEditSearch.isVisible = false
             } else {
                 binding.buttonSearch.isVisible = false
@@ -94,16 +95,68 @@ class SearchFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        viewModel.vacancies.observe(viewLifecycleOwner) { vacancies ->
-            val hasVacancies = vacancies.isNotEmpty()
-            binding.placeholderSearch.isVisible = !hasVacancies && !(viewModel.isLoading.value ?: false)
-            binding.recyclerView.isVisible = hasVacancies
-            vacancyAdapter.updateVacancies(vacancies)
+        viewModel.observeState().observe(viewLifecycleOwner) {
+            render(it)
         }
+        viewModel.observeShowToast().observe(viewLifecycleOwner) {
+            showToast(it)
+        }
+    }
 
-        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.progressBar.isVisible = isLoading
-            binding.placeholderSearch.isVisible = !isLoading && binding.editSearch.text.isNullOrEmpty()
+    private fun render(state: SearchFragmentState) {
+        when (state) {
+            is SearchFragmentState.Default -> showDefault()
+            is SearchFragmentState.Content -> showContent(state.vacancies)
+            is SearchFragmentState.Empty -> showEmpty()
+            is SearchFragmentState.ServerError -> showServerError()
+            is SearchFragmentState.InternetError -> showInternetError()
+            is SearchFragmentState.Loading -> showLoading()
         }
+    }
+
+    private fun showDefault() {
+        hideAll()
+        binding.recyclerView.visibility = View.GONE
+        binding.placeholderSearch.visibility = View.VISIBLE
+    }
+
+    private fun showContent(vacancies: List<VacancySearch>) {
+        hideAll()
+        vacancyAdapter.updateVacancies(vacancies)
+        binding.recyclerView.visibility = View.VISIBLE
+    }
+
+    private fun hideAll() {
+        binding.placeholderSearch.visibility = View.GONE
+        binding.placeholderSearchNoInternet.visibility = View.GONE
+        binding.placeholderNothingFound.visibility = View.GONE
+        binding.placeholderServerNotResponding.visibility = View.GONE
+        binding.recyclerView.visibility = View.GONE
+        binding.progressBar.visibility = View.GONE
+    }
+
+    private fun showEmpty() {
+        hideAll()
+        binding.placeholderNothingFound.visibility = View.VISIBLE
+    }
+
+    private fun showServerError() {
+        hideAll()
+        binding.placeholderServerNotResponding.visibility = View.VISIBLE
+    }
+
+    private fun showInternetError() {
+        hideAll()
+        binding.placeholderSearchNoInternet.visibility = View.VISIBLE
+    }
+
+    private fun showLoading() {
+        hideAll()
+        binding.progressBar.visibility = View.VISIBLE
+    }
+
+    private fun showToast(additionalMessage: String) {
+        Toast.makeText(requireContext(), additionalMessage, Toast.LENGTH_LONG)
+            .show()
     }
 }
