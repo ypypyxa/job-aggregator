@@ -92,9 +92,13 @@ class FavoritesViewModel(
      */
     private fun refreshFavorites() {
         viewModelScope.launch {
-            favoritesInteractor.getFavoriteVacancies(0, 20).collect { vacancies ->
+            favoritesInteractor.getFavoriteVacancies(DEFAULT_PAGE, DEFAULT_LIMIT).collect { vacancies ->
                 _favoriteVacancies.value = vacancies
             }
         }
+    }
+    companion object {
+        private const val DEFAULT_PAGE = 0
+        private const val DEFAULT_LIMIT = 20
     }
 }

@@ -9,7 +9,7 @@ import ru.practicum.android.diploma.vacancy.search.ui.SearchViewModel
 
 val viewModelModule = module {
     viewModel { SearchViewModel(get()) }
-    viewModel { FavoritesViewModel() }
+    viewModel { FavoritesViewModel(get()) }
     viewModel { FilterViewModel() }
     viewModel { DetailsViewModel(get()) }
 }

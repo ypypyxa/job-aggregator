@@ -109,8 +109,9 @@ class FavoritesDBConverterImpl(
         } catch (e: IOException) {
             Log.e(TAG, "$IO_ERROR: $json", e)
             null
-        } catch (e: Throwable) {
-            Log.e(TAG, "$UNKNOWN_ERROR: $json", e)
+        } catch (e: IllegalStateException) {
+            // Gson может выбросить это исключение в случае неожиданного состояния
+            Log.e(TAG, "Unexpected JSON structure or state: $json", e)
             null
         }
     }
