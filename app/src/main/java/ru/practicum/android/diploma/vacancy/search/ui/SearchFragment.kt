@@ -8,22 +8,43 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.common.utils.debounce
 import ru.practicum.android.diploma.databinding.FragmentSearchBinding
 import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearch
+import ru.practicum.android.diploma.vacancy.details.ui.DetailsFragment
 import ru.practicum.android.diploma.vacancy.search.ui.adapter.VacancyAdapter
 import ru.practicum.android.diploma.vacancy.search.ui.model.SearchFragmentState
 
 class SearchFragment : Fragment() {
 
+    companion object {
+        private const val CLICK_DEBOUNCE_DELAY = 500L
+    }
+
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
 
     private val viewModel: SearchViewModel by viewModel()
+    private val onVacancyClickDebounce by lazy {
+        debounce<Int>(
+            CLICK_DEBOUNCE_DELAY,
+            viewLifecycleOwner.lifecycleScope,
+            false
+        ) { vacancyId ->
+            findNavController().navigate(
+                R.id.action_searchFragment_to_detailsFragment,
+                DetailsFragment.createArgs(vacancyId)
+            )
+        }
+    }
     private val vacancyAdapter by lazy {
         VacancyAdapter(emptyList()) { vacancy ->
-            // Обработка нажатия на вакансию при необходимости
+            onVacancyClickDebounce(vacancy.id)
         }
     }
 
