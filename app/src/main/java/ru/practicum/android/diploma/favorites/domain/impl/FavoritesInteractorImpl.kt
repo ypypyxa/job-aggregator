@@ -10,7 +10,7 @@ class FavoritesInteractorImpl(
     private val repository: FavoritesRepository
 ) : FavoritesInteractor {
 
-    override suspend fun getFavoriteVacancies(page: Int, limit: Int): Flow<VacancySearch> {
+    override suspend fun getFavoriteVacancies(page: Int, limit: Int): Flow<List<VacancySearch>> {
         return repository.getFavoriteVacancies(page, limit)
     }
 
