@@ -20,9 +20,6 @@
         android:name="ru.practicum.android.diploma.vacancy.details.ui.DetailsFragment"
         android:label="fragment_details"
         tools:layout="@layout/fragment_details">
-    <argument
-        android:name="vacancyId"
-        app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"

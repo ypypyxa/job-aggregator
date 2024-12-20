@@ -11,9 +11,9 @@ class DetailsViewModel(
     private val detailsInteractor: DetailsInteractor
 ) : ViewModel() {
 
-    fun loadVacancy() {
+    fun loadVacancy(vacancyId: Int) {
         viewModelScope.launch {
-            detailsInteractor.fetchDetails(TEST_ID)
+            detailsInteractor.fetchDetails(vacancyId)
                 .collect { resource ->
                     processResult(resource.first, resource.second)
                 }
@@ -33,10 +33,6 @@ class DetailsViewModel(
                 Log.d("VacancyResult", vacancy.toString())
             }
         }
-    }
-
-    companion object {
-        private const val TEST_ID = 114_036_543
     }
 }
 

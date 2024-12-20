@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:layout_marginHorizontal="@dimen/dimens_16"
     android:background="@color/day_night"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".vacancy.details.ui.DetailsFragment" >
 
     <LinearLayout
         android:id="@+id/ll_header"
