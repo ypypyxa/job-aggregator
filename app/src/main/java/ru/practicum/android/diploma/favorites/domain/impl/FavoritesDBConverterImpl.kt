@@ -1,15 +1,17 @@
 package ru.practicum.android.diploma.favorites.domain.impl
 
+import android.util.Log
 import com.google.gson.Gson
+import com.google.gson.JsonParseException
+import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import ru.practicum.android.diploma.common.data.db.entity.EmployerEntity
 import ru.practicum.android.diploma.common.data.db.entity.VacancyEntity
-import ru.practicum.android.diploma.common.data.dto.ContactsDto
-import ru.practicum.android.diploma.common.data.dto.PhoneDto
 import ru.practicum.android.diploma.common.data.dto.VacancyWithEmployerDTO
 import ru.practicum.android.diploma.favorites.domain.api.FavoritesDBConverter
 import ru.practicum.android.diploma.vacancy.details.domain.model.VacancyDetails
 import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearch
+import java.io.IOException
 
 class FavoritesDBConverterImpl(
     private val gsonService: Gson
@@ -32,7 +34,6 @@ class FavoritesDBConverterImpl(
 
     override fun map(from: VacancyWithEmployerDTO): VacancyDetails {
         val logoMap = parseJson<Map<String, String>>(from.logosJSON)
-        val phones = parseJson<ContactsDto>(from.phonesJSON)
 
         return VacancyDetails(
             vacancyId = from.vacancyId,
@@ -89,17 +90,24 @@ class FavoritesDBConverterImpl(
         }
     }
 
-    private fun phoneDtoToPhone(from: PhoneDto): Pair<String, String> {
-        return Pair(
-            from.comment ?: "",
-            listOfNotNull(from.country, from.city, from.number).joinToString(" ")
-        )
-    }
-
     private inline fun <reified T> parseJson(json: String?): T? {
         return try {
             json?.let { gsonService.fromJson(it, object : TypeToken<T>() {}.type) }
+        } catch (e: JsonSyntaxException) {
+            // Обработка ошибки синтаксиса JSON (если структура JSON не соответствует ожидаемой)
+            Log.e("FavoritesDBConverter", "Ошибка синтаксиса JSON", e)
+            null
+        } catch (e: JsonParseException) {
+            // Обработка ошибки парсинга JSON
+            Log.e("FavoritesDBConverter", "Ошибка парсинга JSON", e)
+            null
+        } catch (e: IOException) {
+            // Обработка ошибки ввода-вывода, если произошла ошибка чтения JSON
+            Log.e("FavoritesDBConverter", "Ошибка ввода-вывода при чтении JSON", e)
+            null
         } catch (e: Exception) {
+            // Логирование для других, неучтенных ошибок
+            Log.e("FavoritesDBConverter", "Неизвестная ошибка при парсинге JSON", e)
             null
         }
     }

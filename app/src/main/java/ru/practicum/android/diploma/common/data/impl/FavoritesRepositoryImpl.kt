@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.favorites.data
+package ru.practicum.android.diploma.common.data.impl
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
