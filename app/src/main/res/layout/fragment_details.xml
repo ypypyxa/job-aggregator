@@ -91,6 +91,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_0dp"
+                android:layout_marginTop="@dimen/dimens_4"
                 android:textColor="@color/night_day"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_vacancy_name"
@@ -99,8 +100,8 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/card_view"
                 android:layout_width="0dp"
-                android:layout_height="80dp"
-                android:layout_gravity="center"
+                android:layout_height="wrap_content"
+                android:minHeight="80dp"
                 android:layout_marginTop="@dimen/dimens_24"
                 android:backgroundTint="@color/light_gray"
                 app:cardCornerRadius="12dp"
@@ -108,42 +109,55 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_salary">
 
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/iv_employer_logo"
-                    android:layout_width="@dimen/dimens_48"
-                    android:layout_height="@dimen/dimens_48"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/dimens_16"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/placeholder"
-                    app:layout_constraintBottom_toBottomOf="@id/card_view"
-                    app:layout_constraintStart_toStartOf="@id/card_view"
-                    app:layout_constraintTop_toTopOf="@id/card_view" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-                <TextView
-                    android:id="@+id/tv_employer_text"
-                    style="@style/Text.Medium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/dimens_72"
-                    android:layout_marginTop="@dimen/text_size_16"
-                    android:maxLines="1"
-                    android:textColor="?attr/colorTertiary"
-                    app:layout_constraintStart_toEndOf="@id/card_view"
-                    app:layout_constraintTop_toBottomOf="@id/card_view"
-                    tools:text="[Название компании]" />
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/iv_employer_logo"
+                        android:layout_width="@dimen/dimens_48"
+                        android:layout_height="@dimen/dimens_48"
+                        android:layout_marginStart="@dimen/dimens_16"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/placeholder"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
 
-                <TextView
-                    android:id="@+id/tv_city_text"
-                    style="@style/Text.Medium16"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/dimens_72"
-                    android:layout_marginTop="@dimen/_42dp"
-                    android:textColor="?attr/colorTertiary"
-                    app:layout_constraintStart_toEndOf="@id/card_view"
-                    app:layout_constraintTop_toBottomOf="@id/card_view"
-                    tools:text="[Город]" />
+                    <TextView
+                        android:id="@+id/tv_employer_text"
+                        style="@style/Text.Medium"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dimens_16"
+                        android:layout_marginTop="@dimen/dimens_4"
+                        android:layout_marginEnd="@dimen/dimens_16"
+                        android:ellipsize="none"
+                        android:lineSpacingExtra="4dp"
+                        android:textColor="@color/black_universal"
+                        app:layout_constraintStart_toEndOf="@id/iv_employer_logo"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                          app:layout_constraintBottom_toTopOf="@id/tv_city_text"
+                        tools:text="[Название компании с очень длинным текстом, который переносится на следующую строку]" />
+
+                    <TextView
+                        android:id="@+id/tv_city_text"
+                        style="@style/Text.Medium16"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dimens_16"
+                        android:layout_marginTop="@dimen/dimens_8"
+                        android:layout_marginEnd="@dimen/dimens_16"
+                        android:ellipsize="none"
+                        android:lineSpacingExtra="4dp"
+                        android:textColor="@color/black_universal"
+                        app:layout_constraintStart_toEndOf="@id/iv_employer_logo"
+                        app:layout_constraintTop_toBottomOf="@id/tv_employer_text"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        tools:text="[Город]" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
             <TextView
@@ -188,7 +202,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dimens_8"
                 android:layout_marginTop="@dimen/dimens_24"
-                android:textColor="@color/night_day"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_schedule" />
         </androidx.constraintlayout.widget.ConstraintLayout>

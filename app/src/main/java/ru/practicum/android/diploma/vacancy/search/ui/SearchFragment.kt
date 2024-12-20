@@ -30,21 +30,12 @@ class SearchFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: SearchViewModel by viewModel()
-    private val onVacancyClickDebounce by lazy {
-        debounce<Int>(
-            CLICK_DEBOUNCE_DELAY,
-            viewLifecycleOwner.lifecycleScope,
-            false
-        ) { vacancyId ->
-            findNavController().navigate(
-                R.id.action_searchFragment_to_detailsFragment,
-                DetailsFragment.createArgs(vacancyId)
-            )
-        }
-    }
+
+    private var onVacancyClickDebounce: ((Int) -> Unit)? = null
+
     private val vacancyAdapter by lazy {
         VacancyAdapter(emptyList()) { vacancy ->
-            onVacancyClickDebounce(vacancy.id)
+            onVacancyClickDebounce?.invoke(vacancy.id)
         }
     }
 
@@ -59,6 +50,18 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        onVacancyClickDebounce = debounce(
+            CLICK_DEBOUNCE_DELAY,
+            viewLifecycleOwner.lifecycleScope,
+            false
+        ) { vacancyId ->
+            findNavController().navigate(
+                R.id.action_searchFragment_to_detailsFragment,
+                DetailsFragment.createArgs(vacancyId)
+            )
+
+        }
+        super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
         setupListeners()
@@ -68,6 +71,7 @@ class SearchFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        onVacancyClickDebounce = null
     }
 
     private fun setupRecyclerView() {
