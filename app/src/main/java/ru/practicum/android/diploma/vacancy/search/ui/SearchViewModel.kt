@@ -16,16 +16,18 @@ class SearchViewModel(
 ) : ViewModel() {
 
     companion object {
-        private const val LOADING_DELAY_MS = 2000L
+        const val LOADING_DELAY_MS = 2000L
+        const val TAG = "SearchViewModel"
     }
 
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> get() = _isLoading
 
-    private val _vacancies = MutableLiveData<List<VacancySearch>>()
-    val vacancies: LiveData<List<VacancySearch>> get() = _vacancies
+    private val _vacancies = MutableLiveData<VacanciesState>()
+    val vacancies: LiveData<VacanciesState> get() = _vacancies
 
     private var latestSearchText: String? = null
+    private var currentPage: Int = 0
 
     private val debounceSearch: (String) -> Unit = debounce(
         delayMillis = LOADING_DELAY_MS,
@@ -36,6 +38,7 @@ class SearchViewModel(
     }
 
     fun onSearchQueryChanged(query: String) {
+        currentPage = 0
         if (query.isBlank()) {
             latestSearchText = null
             clearVacancies()
@@ -50,7 +53,7 @@ class SearchViewModel(
 
     fun clearVacancies() {
         latestSearchText = null
-        _vacancies.postValue(emptyList())
+        _vacancies.postValue(VacanciesState.Content(emptyList()))
     }
 
     private fun searchRequest(query: String) {
@@ -91,15 +94,38 @@ class SearchViewModel(
         }
         when {
             errorMessage != null -> {
-                Log.d("ErrorMessage", errorMessage)
+                renderState(VacanciesState.Error(errorMessage))
             }
             vacancies.isEmpty() -> {
-                Log.d("ErrorMessage", "Вакансий не найдено")
+                renderState(VacanciesState.Empty("No vacancies"))
             }
             else -> {
-                _vacancies.value = vacancies
-                Log.d("SearchResult", vacancies.toString())
+                renderState(VacanciesState.Content(vacancies))
             }
         }
+    }
+
+    fun onLastItemReached() {
+        currentPage++
+        viewModelScope.launch {
+            val params = VacancySearchParams(
+                text = "Android developer",
+                page = currentPage,
+                perPage = 20,
+                area = 1,
+                searchField = "name",
+                industry = null,
+                salary = null,
+                onlyWithSalary = false
+            )
+            searchInteractor.fetchVacancies(params.toQueryMap())
+                .collect { resource ->
+                    processResult(resource.first, resource.second)
+                }
+        }
+    }
+
+    private fun renderState(state: VacanciesState) {
+        Log.d(TAG, state.toString())
     }
 }
