@@ -109,8 +109,8 @@ class FavoritesDBConverterImpl(
         } catch (e: IOException) {
             Log.e(TAG, "$IO_ERROR: $json", e)
             null
-        } catch (e: Throwable) {
-            Log.e(TAG, "$UNKNOWN_ERROR: $json", e)
+        } catch (e: IllegalStateException) {
+            Log.e(TAG, "Unexpected JSON structure or state: $json", e)
             null
         }
     }
