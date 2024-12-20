@@ -67,11 +67,29 @@ class DetailsFragment : Fragment() {
                 // График работы
                 binding.tvSchedule.text = it.schedule
                 // Веб текст вывод
-                binding.wvDescription.loadData(
-                    it.jobDescription ?: "",
-                    "text/html; charset=UTF-8",
-                    "UTF-8"
-                )
+                binding.wvDescription.settings.javaScriptEnabled = true
+                val isNightMode =
+                    resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK == android.content.res.Configuration.UI_MODE_NIGHT_YES
+                val textColor = if (isNightMode) "#FDFDFD" else "#1A1B22"
+                val backgroundColor = if (isNightMode) "#1A1B22" else "#FDFDFD"
+                val jobDescriptionHtml = """
+    <html>
+    <head>
+        <style>
+            body {
+                color: $textColor;
+                background-color: $backgroundColor;
+                margin: 0;
+                padding: 0;
+            }
+        </style>
+    </head>
+    <body>
+        ${vacancyDetails.jobDescription ?: ""}
+    </body>
+    </html>
+""".trimIndent()
+                binding.wvDescription.loadDataWithBaseURL(null, jobDescriptionHtml, "text/html", "UTF-8", null)
 
             }
         }
@@ -80,22 +98,27 @@ class DetailsFragment : Fragment() {
             findNavController().popBackStack()
         }
     }
+
     private fun formatSalary(salaryFrom: Int?, salaryTo: Int?, currency: String?): String {
         return when {
             salaryFrom != null && salaryTo != null -> {
                 "ЗП от $salaryFrom до $salaryTo ${currency ?: ""}"
             }
+
             salaryFrom != null -> {
                 "ЗП от $salaryFrom ${currency ?: ""}"
             }
+
             salaryTo != null -> {
                 "ЗП до $salaryTo ${currency ?: ""}"
             }
+
             else -> {
                 "Зарплата не указана"
             }
         }
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
