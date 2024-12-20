@@ -94,25 +94,26 @@ class FavoritesDBConverterImpl(
         return try {
             json?.let { gsonService.fromJson(it, object : TypeToken<T>() {}.type) }
         } catch (e: JsonSyntaxException) {
-            // Обработка ошибки синтаксиса JSON (если структура JSON не соответствует ожидаемой)
-            Log.e("FavoritesDBConverter", "Ошибка синтаксиса JSON", e)
+            Log.e(TAG, "$JSON_SYNTAX_ERROR: $json", e)
             null
         } catch (e: JsonParseException) {
-            // Обработка ошибки парсинга JSON
-            Log.e("FavoritesDBConverter", "Ошибка парсинга JSON", e)
+            Log.e(TAG, "$JSON_PARSE_ERROR: $json", e)
             null
         } catch (e: IOException) {
-            // Обработка ошибки ввода-вывода, если произошла ошибка чтения JSON
-            Log.e("FavoritesDBConverter", "Ошибка ввода-вывода при чтении JSON", e)
+            Log.e(TAG, "$IO_ERROR: $json", e)
             null
-        } catch (e: Exception) {
-            // Логирование для других, неучтенных ошибок
-            Log.e("FavoritesDBConverter", "Неизвестная ошибка при парсинге JSON", e)
+        } catch (e: Throwable) {
+            Log.e(TAG, "$UNKNOWN_ERROR: $json", e)
             null
         }
     }
 
     companion object {
         private const val LOGO_SIZE = "240"
+        private const val TAG = "FavoritesDBConverter"
+        private const val JSON_SYNTAX_ERROR = "Ошибка синтаксиса JSON"
+        private const val JSON_PARSE_ERROR = "Ошибка парсинга JSON"
+        private const val IO_ERROR = "Ошибка ввода-вывода при чтении JSON"
+        private const val UNKNOWN_ERROR = "Неизвестная ошибка при парсинге JSON"
     }
 }
