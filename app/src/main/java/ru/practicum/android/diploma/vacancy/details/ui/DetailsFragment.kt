@@ -5,12 +5,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.common.utils.isInternetAvailable
 import ru.practicum.android.diploma.databinding.FragmentDetailsBinding
 import ru.practicum.android.diploma.vacancy.details.domain.model.VacancyDetails
 
@@ -18,9 +19,7 @@ class DetailsFragment : Fragment() {
 
     companion object {
         private const val ARGS_VACANCY_ID = "vacancy_id"
-        private const val NULL_ID = 0
 
-        fun createArgs(vacancyId: Int): Bundle = bundleOf(ARGS_VACANCY_ID to vacancyId)
     }
 
     private var _binding: FragmentDetailsBinding? = null
@@ -40,13 +39,19 @@ class DetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val vacancyId = requireArguments().getInt(ARGS_VACANCY_ID) ?: NULL_ID
-        Log.d("VacancyID", "$vacancyId")
+        val args = DetailsFragmentArgs.fromBundle(requireArguments())
+        val vacancyId = args.vacancyId
+        Log.d(ARGS_VACANCY_ID, "$vacancyId")
 
         setupViews()
         observeViewModel()
         viewModel.loadVacancy(vacancyId)
 
+        if (requireContext().isInternetAvailable()) {
+            viewModel.loadVacancy(vacancyId)
+        } else {
+            viewModel.loadVacancyDetailsOffline(vacancyId)
+        }
     }
 
     private fun setupViews() {
@@ -56,12 +61,30 @@ class DetailsFragment : Fragment() {
         binding.ivArrowBack.setOnClickListener {
             findNavController().popBackStack()
         }
+        binding.ivLikeButton.setOnClickListener {
+            val vacancy = viewModel.vacancyDetails.value
+            vacancy?.let {
+                if (viewModel.isFavorite.value == true) {
+                    viewModel.removeFromFavorites(it.vacancyId)
+                } else {
+                    viewModel.addToFavorites(it)
+                }
+            }
+        }
     }
 
     private fun observeViewModel() {
         viewModel.vacancyDetails.observe(viewLifecycleOwner) { vacancyDetails ->
             updateUI(vacancyDetails)
         }
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.isFavorite.collect { isFavorite ->
+                val iconRes = if (isFavorite == true) R.drawable.ic_heart_active else R.drawable.ic_heart
+                binding.ivLikeButton.setImageResource(iconRes)
+            }
+        }
+
     }
 
     private fun updateUI(vacancyDetails: VacancyDetails?) {

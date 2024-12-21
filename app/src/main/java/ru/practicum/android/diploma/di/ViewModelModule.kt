@@ -12,5 +12,5 @@ val viewModelModule = module {
     viewModel { SearchViewModel(get(), androidContext()) }
     viewModel { FavoritesViewModel(get()) }
     viewModel { FilterViewModel() }
-    viewModel { DetailsViewModel(get()) }
+    viewModel { DetailsViewModel(get(), get()) }
 }
