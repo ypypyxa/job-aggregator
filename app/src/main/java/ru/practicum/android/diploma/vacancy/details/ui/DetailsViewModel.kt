@@ -1,7 +1,6 @@
 package ru.practicum.android.diploma.vacancy.details.ui
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -21,7 +20,7 @@ class DetailsViewModel(
     private val detailsInteractor: DetailsInteractor,
     private val favoritesInteractor: FavoritesInteractor,
     private val context: Context,
-    private var vacancyId: Int
+    private val vacancyId: Int
 ) : ViewModel() {
 
     private val stateLiveData = MutableLiveData<DetailsFragmentState>()
