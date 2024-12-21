@@ -74,6 +74,7 @@ class DetailsViewModel(
         viewModelScope.launch {
             favoritesInteractor.getFavoriteVacancy(vacancyId).collect { details ->
                 _vacancyDetails.value = details
+                _isFavorite.value = details != null
             }
         }
     }
