@@ -1,24 +1,67 @@
 package ru.practicum.android.diploma.vacancy.details.ui
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.common.utils.SingleLiveEvent
+import ru.practicum.android.diploma.common.utils.isInternetAvailable
 import ru.practicum.android.diploma.favorites.domain.api.FavoritesInteractor
 import ru.practicum.android.diploma.vacancy.details.domain.api.DetailsInteractor
 import ru.practicum.android.diploma.vacancy.details.domain.model.VacancyDetails
+import ru.practicum.android.diploma.vacancy.details.ui.model.DetailsFragmentState
 
 class DetailsViewModel(
     private val detailsInteractor: DetailsInteractor,
-    private val favoritesInteractor: FavoritesInteractor
+    private val favoritesInteractor: FavoritesInteractor,
+    private val context: Context,
+    private var vacancyId: Int
 ) : ViewModel() {
 
-    private val _vacancyDetails = MutableLiveData<VacancyDetails?>()
-    val vacancyDetails: LiveData<VacancyDetails?> get() = _vacancyDetails
+//    private val _vacancyDetails = MutableLiveData<VacancyDetails?>()
+//    val vacancyDetails: LiveData<VacancyDetails?> get() = _vacancyDetails
+
+    private val stateLiveData = MutableLiveData<DetailsFragmentState>()
+    fun observeState(): LiveData<DetailsFragmentState> = mediatorStateLiveData
+    private val mediatorStateLiveData = MediatorLiveData<DetailsFragmentState>().also { liveData ->
+        liveData.addSource(stateLiveData) { detailsState ->
+            liveData.value = when (detailsState) {
+                is DetailsFragmentState.Loading -> detailsState
+                is DetailsFragmentState.ServerError -> detailsState
+                is DetailsFragmentState.Content -> DetailsFragmentState.Content(detailsState.vacancy)
+                is DetailsFragmentState.OfflineContent -> DetailsFragmentState.OfflineContent(detailsState.vacancy)
+                else -> DetailsFragmentState.Empty
+            }
+        }
+    }
+
+    init {
+        stateLiveData.postValue(DetailsFragmentState.Loading)
+
+        if (context.isInternetAvailable()) {
+            stateLiveData.postValue(DetailsFragmentState.Content(vacancy))
+            loadVacancy(vacancyId)
+        } else {
+            loadVacancyDetailsOffline(vacancyId)
+        }
+
+        viewModelScope.launch {
+            moviesInteractor
+                .getMovieCast(movieId)
+                .collect { pair ->
+                    processResult(pair.first, pair.second)
+                }
+        }
+    }
+
+    private val showToast = SingleLiveEvent<String>()
+    fun observeShowToast(): LiveData<String> = showToast
 
     private val _isFavorite = MutableStateFlow<Boolean?>(null)
     val isFavorite: StateFlow<Boolean?> = _isFavorite
@@ -40,14 +83,13 @@ class DetailsViewModel(
         var vacancy = vacancyDetails
         when {
             errorMessage != null -> {
-                Log.d("ErrorMessage", errorMessage)
+                renderState(DetailsFragmentState.ServerError)
             }
             vacancyDetails == null -> {
-                Log.d("ErrorMesagge", "Вакансий не найдено")
+                renderState(DetailsFragmentState.Empty)
             }
             else -> {
-                Log.d("VacancyResult", vacancy.toString())
-                _vacancyDetails.value = vacancyDetails
+                renderState(DetailsFragmentState.Content(vacancyDetails))
             }
         }
     }
@@ -73,9 +115,13 @@ class DetailsViewModel(
     fun loadVacancyDetailsOffline(vacancyId: Int) {
         viewModelScope.launch {
             favoritesInteractor.getFavoriteVacancy(vacancyId).collect { details ->
-                _vacancyDetails.value = details
+                renderState(DetailsFragmentState.OfflineContent(details))
                 _isFavorite.value = details != null
             }
         }
+    }
+
+    private fun renderState(state: DetailsFragmentState) {
+        stateLiveData.postValue(state)
     }
 }

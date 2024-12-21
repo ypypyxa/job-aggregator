@@ -11,21 +11,22 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
-import ru.practicum.android.diploma.common.utils.isInternetAvailable
 import ru.practicum.android.diploma.databinding.FragmentDetailsBinding
 import ru.practicum.android.diploma.vacancy.details.domain.model.VacancyDetails
+import ru.practicum.android.diploma.vacancy.details.ui.model.DetailsFragmentState
 
 class DetailsFragment : Fragment() {
 
     companion object {
         private const val ARGS_VACANCY_ID = "vacancy_id"
-
     }
 
     private var _binding: FragmentDetailsBinding? = null
     private val binding get() = _binding!!
 
     private val viewModel: DetailsViewModel by viewModel()
+
+    private var vacancy : VacancyDetails? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,26 +44,16 @@ class DetailsFragment : Fragment() {
         val vacancyId = args.vacancyId
         Log.d(ARGS_VACANCY_ID, "$vacancyId")
 
-        setupViews()
+        setupListeners()
         observeViewModel()
-        viewModel.loadVacancy(vacancyId)
 
-        if (requireContext().isInternetAvailable()) {
-            viewModel.loadVacancy(vacancyId)
-        } else {
-            viewModel.loadVacancyDetailsOffline(vacancyId)
-        }
     }
 
-    private fun setupViews() {
-        binding.tvStateError.visibility = View.GONE
-        binding.progressBar.visibility = View.GONE
-
+    private fun setupListeners() {
         binding.ivArrowBack.setOnClickListener {
             findNavController().popBackStack()
         }
         binding.ivLikeButton.setOnClickListener {
-            val vacancy = viewModel.vacancyDetails.value
             vacancy?.let {
                 if (viewModel.isFavorite.value == true) {
                     viewModel.removeFromFavorites(it.vacancyId)
@@ -74,8 +65,19 @@ class DetailsFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        viewModel.vacancyDetails.observe(viewLifecycleOwner) { vacancyDetails ->
+/*        viewModel.vacancyDetails.observe(viewLifecycleOwner) { vacancyDetails ->
             updateUI(vacancyDetails)
+        }
+*/
+
+        viewModel.observeState().observe(viewLifecycleOwner) {
+            when (it) {
+                is DetailsFragmentState.Loading -> showLoading()
+                is DetailsFragmentState.Empty -> showEmpty()
+                is DetailsFragmentState.ServerError -> showServerError()
+                is DetailsFragmentState.Content -> updateUI(it.vacancy)
+                is DetailsFragmentState.OfflineContent -> showOfflineContent(it.vacancy)
+            }
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
