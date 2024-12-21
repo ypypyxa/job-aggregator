@@ -15,4 +15,6 @@ sealed interface SearchFragmentState {
     object InternetError : SearchFragmentState
 
     data class Content(val vacancies: List<VacancySearch>) : SearchFragmentState
+
+    object UpdateList : SearchFragmentState
 }

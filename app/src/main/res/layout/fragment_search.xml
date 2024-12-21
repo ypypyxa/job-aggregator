@@ -212,4 +212,17 @@
         app:layout_constraintTop_toBottomOf="@id/container_search"
         tools:text="@string/search_state_nothing_found" />
 
+    <ProgressBar
+        android:id="@+id/progress_bar_pagination"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_gravity="center"
+        android:padding="8dp"
+        android:indeterminateTint="@color/blue"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

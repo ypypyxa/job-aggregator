@@ -27,10 +27,10 @@ class SearchViewModel(
     }
 
     private var latestSearchText: String? = null
-    private var currentPage = 0
+    private var currentPage: Int = 0
     private var totalPages = 1
     private val pageSize = 20
-    private var currentPage: Int = 0
+
 
     private val debounceSearch: (String) -> Unit = debounce(
         delayMillis = LOADING_DELAY_MS,
@@ -51,6 +51,7 @@ class SearchViewModel(
                 is SearchFragmentState.ServerError -> searchState
                 is SearchFragmentState.InternetError -> searchState
                 is SearchFragmentState.Loading -> searchState
+                is SearchFragmentState.UpdateList -> searchState
             }
         }
     }
@@ -104,10 +105,10 @@ class SearchViewModel(
         }
     }
 
-    private fun processResult(foundVacancies: List<VacancySearch>?, errorMessage: String?) {
+    private fun processResult(result: PagedData<VacancySearch>?, errorMessage: String?) {
         val vacancies = mutableListOf<VacancySearch>()
-        if (foundVacancies != null) {
-            vacancies.addAll(foundVacancies)
+        if (result?.items != null) {
+            vacancies.addAll(result.items)
         }
         when {
             errorMessage != null -> {
@@ -123,6 +124,7 @@ class SearchViewModel(
                 renderState(SearchFragmentState.Empty)
             }
             else -> {
+
                 renderState(SearchFragmentState.Content(vacancies))
             }
         }
@@ -131,4 +133,33 @@ class SearchViewModel(
     private fun renderState(state: SearchFragmentState) {
         stateLiveData.postValue(state)
     }
+
+    fun loadNextPage() {
+        if (currentPage >= totalPages) {
+            return
+        }
+
+        currentPage++
+
+        renderState(SearchFragmentState.UpdateList)
+
+        val params = VacancySearchParams(
+            text = latestSearchText,
+            page = currentPage,
+            perPage = pageSize,
+            area = 1,
+            searchField = "name",
+            industry = null,
+            salary = null,
+            onlyWithSalary = false
+        )
+
+        viewModelScope.launch {
+            searchInteractor.fetchVacancies(params.toQueryMap())
+                .collect { resource ->
+                    processResult(resource.first, resource.second)
+                }
+        }
+    }
+
 }

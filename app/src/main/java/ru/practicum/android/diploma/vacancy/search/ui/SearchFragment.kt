@@ -19,6 +19,7 @@ import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearch
 import ru.practicum.android.diploma.vacancy.search.ui.adapter.VacancyAdapter
 import ru.practicum.android.diploma.vacancy.search.ui.model.SearchFragmentState
 
+
 class SearchFragment : Fragment() {
 
     companion object {
@@ -75,7 +76,7 @@ class SearchFragment : Fragment() {
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = vacancyAdapter
 
-        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        /* binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 val layoutManager = recyclerView.layoutManager as LinearLayoutManager
@@ -83,11 +84,26 @@ class SearchFragment : Fragment() {
                 val totalItemCount = layoutManager.itemCount
                 val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
 
-                if (!viewModel.isLoading.value!! &&
+                if (!isLoading() &&
                     visibleItemCount + firstVisibleItemPosition >= totalItemCount &&
                     firstVisibleItemPosition >= 0
                 ) {
-                    viewModel.searchRequest()
+                    viewModel.loadNextPage()
+                }
+            }
+        })
+        }*/
+
+        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                if (dy > 0) {
+                    val pos = (binding.recyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+                    val itemsCount = vacancyAdapter.itemCount
+                    if (pos >= itemsCount - 1) {
+                        viewModel.loadNextPage()
+                    }
                 }
             }
         })
@@ -129,6 +145,7 @@ class SearchFragment : Fragment() {
             is SearchFragmentState.ServerError -> showServerError()
             is SearchFragmentState.InternetError -> showInternetError()
             is SearchFragmentState.Loading -> showLoading()
+            is SearchFragmentState.UpdateList -> showUpdateList()
         }
     }
 
@@ -177,4 +194,9 @@ class SearchFragment : Fragment() {
         Toast.makeText(requireContext(), additionalMessage, Toast.LENGTH_LONG)
             .show()
     }
+
+    private fun showUpdateList() {
+        binding.progressBarPagination.visibility = View.VISIBLE
+    }
+
 }
