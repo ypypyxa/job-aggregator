@@ -25,7 +25,7 @@ class DetailsFragment : Fragment() {
     private var _binding: FragmentDetailsBinding? = null
     private val binding get() = _binding!!
 
-    private val vacancy: VacancyDetails? = null
+    private var vacancy: VacancyDetails? = null
     private var vacancyId: Int? = 0
 
     private val viewModel: DetailsViewModel by viewModel() {
@@ -47,6 +47,7 @@ class DetailsFragment : Fragment() {
         val args: DetailsFragmentArgs by navArgs()
         vacancyId = args.vacancyId
 
+        hideAll()
         setupListeners()
         observeViewModel()
     }
@@ -133,6 +134,7 @@ class DetailsFragment : Fragment() {
             binding.wvDescription.loadDataWithBaseURL(null, jobDescriptionHtml, "text/html", "UTF-8", null)
             hideAll()
             binding.clBody.show()
+            vacancy = vacancyDetails
         }
     }
 
