@@ -27,7 +27,7 @@ class FavoritesFragment : Fragment() {
 
     private val viewModel: FavoritesViewModel by viewModel()
 
-    private lateinit var vacancyAdapter: VacancyAdapter
+    private var vacancyAdapter : VacancyAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -95,7 +95,7 @@ class FavoritesFragment : Fragment() {
             binding.llItemList.isVisible = true
             binding.llFavoriteProblemLayout.isVisible = false
             binding.llFavoriteProblemLayout2.isVisible = false
-            vacancyAdapter.updateVacancies(vacancies)
+            vacancyAdapter?.updateVacancies(vacancies)
         }
     }
 
