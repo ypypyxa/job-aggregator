@@ -24,9 +24,6 @@ class DetailsViewModel(
     private var vacancyId: Int
 ) : ViewModel() {
 
-//    private val _vacancyDetails = MutableLiveData<VacancyDetails?>()
-//    val vacancyDetails: LiveData<VacancyDetails?> get() = _vacancyDetails
-
     private val stateLiveData = MutableLiveData<DetailsFragmentState>()
     fun observeState(): LiveData<DetailsFragmentState> = mediatorStateLiveData
     private val mediatorStateLiveData = MediatorLiveData<DetailsFragmentState>().also { liveData ->
@@ -45,18 +42,9 @@ class DetailsViewModel(
         stateLiveData.postValue(DetailsFragmentState.Loading)
 
         if (context.isInternetAvailable()) {
-            stateLiveData.postValue(DetailsFragmentState.Content(vacancy))
             loadVacancy(vacancyId)
         } else {
             loadVacancyDetailsOffline(vacancyId)
-        }
-
-        viewModelScope.launch {
-            moviesInteractor
-                .getMovieCast(movieId)
-                .collect { pair ->
-                    processResult(pair.first, pair.second)
-                }
         }
     }
 
