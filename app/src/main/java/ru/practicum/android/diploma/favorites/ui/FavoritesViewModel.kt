@@ -54,7 +54,7 @@ class FavoritesViewModel(
     }
     fun loadFavoriteVacanciesOffline() {
         viewModelScope.launch {
-            favoritesInteractor.getFavoriteVacancies(0, 20).collect { vacancies ->
+            favoritesInteractor.getFavoriteVacancies(DEFAULT_PAGE, DEFAULT_LIMIT).collect { vacancies ->
                 _favoriteVacancies.value = vacancies
 
                 // Устанавливаем hasLoadedBefore, если в локальной базе есть вакансии
