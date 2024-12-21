@@ -17,6 +17,10 @@ import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearch
 import ru.practicum.android.diploma.vacancy.search.ui.adapter.VacancyAdapter
 
 class FavoritesFragment : Fragment() {
+    companion object {
+        private const val INITIAL_PAGE = 0
+        private const val PAGE_SIZE = 20
+    }
 
     private var _binding: FragmentFavoritesBinding? = null
     private val binding get() = _binding!!
@@ -38,10 +42,10 @@ class FavoritesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         observeViewModel()
-        viewModel.loadFavoriteVacancies(0, 20)
+        viewModel.loadFavoriteVacancies(INITIAL_PAGE, PAGE_SIZE)
 
         if (requireContext().isInternetAvailable()) {
-            viewModel.loadFavoriteVacancies(0, 20)
+            viewModel.loadFavoriteVacancies(INITIAL_PAGE, PAGE_SIZE)
         } else {
             viewModel.loadFavoriteVacanciesOffline()
         }
