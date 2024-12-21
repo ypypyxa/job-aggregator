@@ -11,11 +11,16 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.practicum.android.diploma.common.utils.isInternetAvailable
 import ru.practicum.android.diploma.databinding.FragmentFavoritesBinding
 import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearch
 import ru.practicum.android.diploma.vacancy.search.ui.adapter.VacancyAdapter
 
 class FavoritesFragment : Fragment() {
+    companion object {
+        private const val INITIAL_PAGE = 0
+        private const val PAGE_SIZE = 20
+    }
 
     private var _binding: FragmentFavoritesBinding? = null
     private val binding get() = _binding!!
@@ -38,6 +43,16 @@ class FavoritesFragment : Fragment() {
         setupRecyclerView()
         observeViewModel()
         viewModel.loadFavoriteVacancies(INITIAL_PAGE, PAGE_SIZE)
+
+        if (requireContext().isInternetAvailable()) {
+            viewModel.loadFavoriteVacancies(INITIAL_PAGE, PAGE_SIZE)
+        } else {
+            viewModel.loadFavoriteVacanciesOffline()
+        }
+    }
+    override fun onResume() {
+        super.onResume()
+        viewModel.refreshFavorites() // Обновляем список вакансий при возврате на экран
     }
 
     private fun setupRecyclerView() {
@@ -61,13 +76,14 @@ class FavoritesFragment : Fragment() {
     }
 
     private fun handleState(vacancies: List<VacancySearch>) {
+        if (_binding == null) return
         binding.progressBar.isVisible = false
 
         if (vacancies.isEmpty()) {
             binding.llItemList.isVisible = false
             binding.recyclerView.isVisible = false
 
-            if (viewModel.isOfflineMode) {
+            if (viewModel.hasLoadedBefore) {
                 binding.llFavoriteProblemLayout.isVisible = true
                 binding.llFavoriteProblemLayout2.isVisible = false
             } else {
@@ -87,9 +103,4 @@ class FavoritesFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-    companion object {
-        private const val INITIAL_PAGE = 0
-        private const val PAGE_SIZE = 20
-    }
-
 }

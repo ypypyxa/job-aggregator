@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.favorites.domain.api.FavoritesInteractor
-import ru.practicum.android.diploma.vacancy.details.domain.model.VacancyDetails
 import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearch
 
 class FavoritesViewModel(
@@ -16,10 +15,8 @@ class FavoritesViewModel(
     private val _favoriteVacancies = MutableStateFlow<List<VacancySearch>>(emptyList())
     val favoriteVacancies: StateFlow<List<VacancySearch>> = _favoriteVacancies
 
-    private val _vacancyDetails = MutableStateFlow<VacancyDetails?>(null)
-    val vacancyDetails: StateFlow<VacancyDetails?> = _vacancyDetails
-
-    var isOfflineMode = false
+    private var isOfflineMode = false
+    var hasLoadedBefore = false
 
     /**
      * Загрузить список избранных вакансий.
@@ -32,19 +29,10 @@ class FavoritesViewModel(
             favoritesInteractor.getFavoriteVacancies(page, limit).collect { vacancies ->
                 _favoriteVacancies.value = vacancies
                 isOfflineMode = vacancies.isEmpty()
-            }
-        }
-    }
 
-    /**
-     * Получить детальную информацию о вакансии.
-     *
-     * @param vacancyId Идентификатор вакансии.
-     */
-    fun loadVacancyDetails(vacancyId: Int) {
-        viewModelScope.launch {
-            favoritesInteractor.getFavoriteVacancy(vacancyId).collect { details ->
-                _vacancyDetails.value = details
+                if (vacancies.isNotEmpty()) {
+                    hasLoadedBefore = true
+                }
             }
         }
     }
@@ -52,10 +40,28 @@ class FavoritesViewModel(
     /**
      * Обновить список избранных вакансий.
      */
-    private fun refreshFavorites() {
+    fun refreshFavorites() {
         viewModelScope.launch {
             favoritesInteractor.getFavoriteVacancies(DEFAULT_PAGE, DEFAULT_LIMIT).collect { vacancies ->
                 _favoriteVacancies.value = vacancies
+
+                if (vacancies.isEmpty()) {
+                    isOfflineMode = true
+                    hasLoadedBefore = false
+                }
+            }
+        }
+    }
+    fun loadFavoriteVacanciesOffline() {
+        viewModelScope.launch {
+            favoritesInteractor.getFavoriteVacancies(DEFAULT_PAGE, DEFAULT_LIMIT).collect { vacancies ->
+                _favoriteVacancies.value = vacancies
+
+                // Устанавливаем hasLoadedBefore, если в локальной базе есть вакансии
+                if (vacancies.isNotEmpty()) {
+                    hasLoadedBefore = true
+                }
+                isOfflineMode = vacancies.isEmpty()
             }
         }
     }

@@ -32,7 +32,8 @@
 
         <argument
             android:name="vacancyId"
-            app:argType="integer" />
+            app:argType="integer"
+            android:defaultValue="0"/>
 
         <action
             android:id="@+id/action_detailsFragment_to_favoritesFragment"
