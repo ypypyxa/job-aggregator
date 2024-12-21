@@ -27,7 +27,7 @@ class FavoritesFragment : Fragment() {
 
     private val viewModel: FavoritesViewModel by viewModel()
 
-    private var vacancyAdapter : VacancyAdapter? = null
+    private var vacancyAdapter: VacancyAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
