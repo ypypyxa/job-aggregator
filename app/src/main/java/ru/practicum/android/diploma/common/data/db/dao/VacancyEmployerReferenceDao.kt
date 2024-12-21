@@ -3,6 +3,7 @@ package ru.practicum.android.diploma.common.data.db.dao
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
@@ -14,7 +15,7 @@ import ru.practicum.android.diploma.common.data.dto.VacancyWithEmployerDTO
 
 @Dao
 interface VacancyEmployerReferenceDao : VacancyDao, EmployerDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addReference(data: VacancyEmployerReference)
 
     @Delete
