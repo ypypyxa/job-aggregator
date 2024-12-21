@@ -9,7 +9,16 @@
         android:id="@+id/favoritesFragment"
         android:name="ru.practicum.android.diploma.favorites.ui.FavoritesFragment"
         android:label="fragment_favorites"
-        tools:layout="@layout/fragment_favorites" />
+        tools:layout="@layout/fragment_favorites">
+        <action
+            android:id="@+id/action_favoritesFragment_to_detailsFragment2"
+            app:destination="@id/detailsFragment">
+            <argument
+                android:name="vacancyId"
+                app:argType="integer" />
+        </action>
+    </fragment>
+
     <fragment
         android:id="@+id/teamFragment"
         android:name="ru.practicum.android.diploma.team.ui.TeamFragment"
@@ -20,14 +29,24 @@
         android:name="ru.practicum.android.diploma.vacancy.details.ui.DetailsFragment"
         android:label="fragment_details"
         tools:layout="@layout/fragment_details">
+
+        <argument
+            android:name="vacancyId"
+            app:argType="integer"
+            android:defaultValue="0"/>
+
+        <action
+            android:id="@+id/action_detailsFragment_to_favoritesFragment"
+            app:destination="@id/favoritesFragment" />
+
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
         android:name="ru.practicum.android.diploma.vacancy.search.ui.SearchFragment"
         android:label="fragment_vacancy"
         tools:layout="@layout/fragment_search">
-    <action
-        android:id="@+id/action_searchFragment_to_detailsFragment"
-        app:destination="@id/detailsFragment" />
+        <action
+            android:id="@+id/action_searchFragment_to_detailsFragment"
+            app:destination="@id/detailsFragment" />
     </fragment>
 </navigation>
