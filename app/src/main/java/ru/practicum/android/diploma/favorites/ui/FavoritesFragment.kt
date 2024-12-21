@@ -11,18 +11,23 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.practicum.android.diploma.common.utils.isInternetAvailable
 import ru.practicum.android.diploma.databinding.FragmentFavoritesBinding
 import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearch
 import ru.practicum.android.diploma.vacancy.search.ui.adapter.VacancyAdapter
 
 class FavoritesFragment : Fragment() {
+    companion object {
+        private const val INITIAL_PAGE = 0
+        private const val PAGE_SIZE = 20
+    }
 
     private var _binding: FragmentFavoritesBinding? = null
     private val binding get() = _binding!!
 
     private val viewModel: FavoritesViewModel by viewModel()
 
-    private var vacancyAdapter: VacancyAdapter? = null
+    private lateinit var vacancyAdapter: VacancyAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,7 +42,6 @@ class FavoritesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         observeViewModel()
-        viewModel.loadFavoriteVacancies(INITIAL_PAGE, PAGE_SIZE)
         viewModel.loadFavoriteVacancies(INITIAL_PAGE, PAGE_SIZE)
 
         if (requireContext().isInternetAvailable()) {
@@ -99,9 +103,4 @@ class FavoritesFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-    companion object {
-        private const val INITIAL_PAGE = 0
-        private const val PAGE_SIZE = 20
-    }
-
 }
