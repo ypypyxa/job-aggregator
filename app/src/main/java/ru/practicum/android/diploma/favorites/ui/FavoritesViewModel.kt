@@ -15,7 +15,7 @@ class FavoritesViewModel(
     private val _favoriteVacancies = MutableStateFlow<List<VacancySearch>>(emptyList())
     val favoriteVacancies: StateFlow<List<VacancySearch>> = _favoriteVacancies
 
-    var isOfflineMode = false
+    private var isOfflineMode = false
     var hasLoadedBefore = false
 
     /**
@@ -49,6 +49,19 @@ class FavoritesViewModel(
                     isOfflineMode = true
                     hasLoadedBefore = false
                 }
+            }
+        }
+    }
+    fun loadFavoriteVacanciesOffline() {
+        viewModelScope.launch {
+            favoritesInteractor.getFavoriteVacancies(DEFAULT_PAGE, DEFAULT_LIMIT).collect { vacancies ->
+                _favoriteVacancies.value = vacancies
+
+                // Устанавливаем hasLoadedBefore, если в локальной базе есть вакансии
+                if (vacancies.isNotEmpty()) {
+                    hasLoadedBefore = true
+                }
+                isOfflineMode = vacancies.isEmpty()
             }
         }
     }

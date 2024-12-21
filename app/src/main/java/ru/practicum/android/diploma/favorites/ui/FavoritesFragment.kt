@@ -38,6 +38,13 @@ class FavoritesFragment : Fragment() {
         setupRecyclerView()
         observeViewModel()
         viewModel.loadFavoriteVacancies(INITIAL_PAGE, PAGE_SIZE)
+        viewModel.loadFavoriteVacancies(INITIAL_PAGE, PAGE_SIZE)
+
+        if (requireContext().isInternetAvailable()) {
+            viewModel.loadFavoriteVacancies(INITIAL_PAGE, PAGE_SIZE)
+        } else {
+            viewModel.loadFavoriteVacanciesOffline()
+        }
     }
     override fun onResume() {
         super.onResume()
@@ -84,7 +91,7 @@ class FavoritesFragment : Fragment() {
             binding.llItemList.isVisible = true
             binding.llFavoriteProblemLayout.isVisible = false
             binding.llFavoriteProblemLayout2.isVisible = false
-            vacancyAdapter?.updateVacancies(vacancies)
+            vacancyAdapter.updateVacancies(vacancies)
         }
     }
 
