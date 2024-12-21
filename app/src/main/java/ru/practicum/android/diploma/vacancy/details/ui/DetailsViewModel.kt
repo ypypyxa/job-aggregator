@@ -70,4 +70,11 @@ class DetailsViewModel(
             _isFavorite.value = isFavorite
         }
     }
+    fun loadVacancyDetailsOffline(vacancyId: Int) {
+        viewModelScope.launch {
+            favoritesInteractor.getFavoriteVacancy(vacancyId).collect { details ->
+                _vacancyDetails.value = details
+            }
+        }
+    }
 }

@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.practicum.android.diploma.common.utils.isInternetAvailable
 import ru.practicum.android.diploma.databinding.FragmentFavoritesBinding
 import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearch
 import ru.practicum.android.diploma.vacancy.search.ui.adapter.VacancyAdapter
@@ -38,6 +39,12 @@ class FavoritesFragment : Fragment() {
         setupRecyclerView()
         observeViewModel()
         viewModel.loadFavoriteVacancies(0, 20)
+
+        if (requireContext().isInternetAvailable()) {
+            viewModel.loadFavoriteVacancies(0, 20)
+        } else {
+            viewModel.loadFavoriteVacanciesOffline()
+        }
     }
     override fun onResume() {
         super.onResume()

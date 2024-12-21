@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.common.utils.isInternetAvailable
 import ru.practicum.android.diploma.databinding.FragmentDetailsBinding
 import ru.practicum.android.diploma.vacancy.details.domain.model.VacancyDetails
 
@@ -46,6 +47,11 @@ class DetailsFragment : Fragment() {
         observeViewModel()
         viewModel.loadVacancy(vacancyId)
 
+        if (requireContext().isInternetAvailable()) {
+            viewModel.loadVacancy(vacancyId)
+        } else {
+            viewModel.loadVacancyDetailsOffline(vacancyId)
+        }
     }
 
     private fun setupViews() {
