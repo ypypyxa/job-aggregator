@@ -16,11 +16,10 @@ class FavoritesViewModel(
     private val _favoriteVacancies = MutableStateFlow<List<VacancySearch>>(emptyList())
     val favoriteVacancies: StateFlow<List<VacancySearch>> = _favoriteVacancies
 
-    private val _isFavorite = MutableStateFlow<Boolean?>(null)
-    val isFavorite: StateFlow<Boolean?> = _isFavorite
-
     private val _vacancyDetails = MutableStateFlow<VacancyDetails?>(null)
     val vacancyDetails: StateFlow<VacancyDetails?> = _vacancyDetails
+
+    var isOfflineMode = false
 
     /**
      * Загрузить список избранных вакансий.
@@ -31,7 +30,8 @@ class FavoritesViewModel(
     fun loadFavoriteVacancies(page: Int, limit: Int) {
         viewModelScope.launch {
             favoritesInteractor.getFavoriteVacancies(page, limit).collect { vacancies ->
-                _favoriteVacancies.value = vacancies // Исправление: метод возвращает `List<VacancySearch>`
+                _favoriteVacancies.value = vacancies
+                isOfflineMode = vacancies.isEmpty()
             }
         }
     }
