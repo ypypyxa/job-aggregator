@@ -39,6 +39,10 @@ class FavoritesFragment : Fragment() {
         observeViewModel()
         viewModel.loadFavoriteVacancies(0, 20)
     }
+    override fun onResume() {
+        super.onResume()
+        viewModel.refreshFavorites() // Обновляем список вакансий при возврате на экран
+    }
 
     private fun setupRecyclerView() {
         vacancyAdapter = VacancyAdapter(emptyList()) { vacancy ->
@@ -61,13 +65,14 @@ class FavoritesFragment : Fragment() {
     }
 
     private fun handleState(vacancies: List<VacancySearch>) {
+        if (_binding == null) return
         binding.progressBar.isVisible = false
 
         if (vacancies.isEmpty()) {
             binding.llItemList.isVisible = false
             binding.recyclerView.isVisible = false
 
-            if (viewModel.isOfflineMode) {
+            if (viewModel.hasLoadedBefore) {
                 binding.llFavoriteProblemLayout.isVisible = true
                 binding.llFavoriteProblemLayout2.isVisible = false
             } else {
