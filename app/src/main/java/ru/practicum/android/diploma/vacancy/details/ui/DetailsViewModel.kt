@@ -75,6 +75,7 @@ class DetailsViewModel(
                     context.getString(R.string.vacancy_not_found) -> renderState(DetailsFragmentState.Empty)
                     context.getString(R.string.server_error) -> renderState(DetailsFragmentState.ServerError)
                 }
+                showToast.postValue(errorMessage!!)
             }
             vacancyDetails == null -> {
                 renderState(DetailsFragmentState.Empty)
