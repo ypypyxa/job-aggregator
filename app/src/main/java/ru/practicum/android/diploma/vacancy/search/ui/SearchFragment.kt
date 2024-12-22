@@ -58,7 +58,6 @@ class SearchFragment : Fragment() {
 
         }
         super.onViewCreated(view, savedInstanceState)
-
         setupRecyclerView()
         setupListeners()
         observeViewModel()
@@ -91,6 +90,10 @@ class SearchFragment : Fragment() {
 
         binding.buttonClearEditSearch.setOnClickListener {
             binding.editSearch.text.clear()
+        }
+        binding.buttonFilter.setOnClickListener {
+            val action = SearchFragmentDirections.actionSearchFragmentToFilterFragment()
+            findNavController().navigate(action)
         }
     }
 
@@ -159,4 +162,5 @@ class SearchFragment : Fragment() {
         Toast.makeText(requireContext(), additionalMessage, Toast.LENGTH_LONG)
             .show()
     }
+
 }
