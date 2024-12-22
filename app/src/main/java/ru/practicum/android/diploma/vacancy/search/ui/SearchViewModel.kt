@@ -24,13 +24,13 @@ class SearchViewModel(
     companion object {
         const val LOADING_DELAY_MS = 2000L
         const val TAG = "SearchViewModel"
+        const val PAGE_SIZE = 20
     }
 
     private var latestSearchText: String? = null
-    private var currentPage: Int = 0
+    var currentPage: Int = 0
     private var totalPages = 1
-    private val pageSize = 20
-
+    private val pageSize = PAGE_SIZE
 
     private val debounceSearch: (String) -> Unit = debounce(
         delayMillis = LOADING_DELAY_MS,
@@ -106,26 +106,38 @@ class SearchViewModel(
     }
 
     private fun processResult(result: PagedData<VacancySearch>?, errorMessage: String?) {
-        val vacancies = mutableListOf<VacancySearch>()
-        if (result?.items != null) {
-            vacancies.addAll(result.items)
-        }
+        val newVacancies = result?.items ?: emptyList()
+
         when {
             errorMessage != null -> {
                 when (errorMessage) {
                     context.getString(R.string.search_no_internet) ->
                         renderState(SearchFragmentState.InternetError)
+
                     else ->
                         renderState(SearchFragmentState.ServerError)
                 }
                 showToast.postValue(errorMessage!!)
+                _isLoading = false
             }
-            vacancies.isEmpty() -> {
-                renderState(SearchFragmentState.Empty)
-            }
-            else -> {
 
-                renderState(SearchFragmentState.Content(vacancies))
+            newVacancies.isEmpty() && currentPage == 1 -> {
+                renderState(SearchFragmentState.Empty)
+                _isLoading = false
+            }
+
+            else -> {
+                val currentState = stateLiveData.value
+                val updatedVacancies = when (currentState) {
+                    is SearchFragmentState.Content -> currentState.vacancies + newVacancies
+                    else -> newVacancies
+                }
+                result?.let {
+                    totalPages = it.totalPages
+                }
+
+                renderState(SearchFragmentState.Content(updatedVacancies))
+                _isLoading = false
             }
         }
     }
@@ -135,12 +147,12 @@ class SearchViewModel(
     }
 
     fun loadNextPage() {
-        if (currentPage >= totalPages) {
+        if (currentPage >= totalPages || _isLoading) {
             return
         }
 
+        _isLoading = true
         currentPage++
-
         renderState(SearchFragmentState.UpdateList)
 
         val params = VacancySearchParams(
@@ -158,8 +170,12 @@ class SearchViewModel(
             searchInteractor.fetchVacancies(params.toQueryMap())
                 .collect { resource ->
                     processResult(resource.first, resource.second)
+
                 }
         }
     }
+
+    private var _isLoading = false
+    val isLoading: Boolean get() = _isLoading
 
 }

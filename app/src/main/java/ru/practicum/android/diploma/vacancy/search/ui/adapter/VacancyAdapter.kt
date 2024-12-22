@@ -108,4 +108,10 @@ class VacancyAdapter(
         vacancies = newVacancies
         notifyDataSetChanged()
     }
+
+    fun addVacancies(newVacancies: List<VacancySearch>) {
+        val startPosition = vacancies.size
+        vacancies = vacancies + newVacancies
+        notifyItemRangeInserted(startPosition, newVacancies.size)
+    }
 }

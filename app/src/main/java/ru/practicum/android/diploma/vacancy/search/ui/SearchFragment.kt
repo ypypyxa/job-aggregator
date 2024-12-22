@@ -19,9 +19,7 @@ import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearch
 import ru.practicum.android.diploma.vacancy.search.ui.adapter.VacancyAdapter
 import ru.practicum.android.diploma.vacancy.search.ui.model.SearchFragmentState
 
-
 class SearchFragment : Fragment() {
-
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 500L
     }
@@ -76,32 +74,18 @@ class SearchFragment : Fragment() {
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = vacancyAdapter
 
-        /* binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-                val visibleItemCount = layoutManager.childCount
-                val totalItemCount = layoutManager.itemCount
-                val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
-
-                if (!isLoading() &&
-                    visibleItemCount + firstVisibleItemPosition >= totalItemCount &&
-                    firstVisibleItemPosition >= 0
-                ) {
-                    viewModel.loadNextPage()
-                }
-            }
-        })
-        }*/
-
         binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-
                 if (dy > 0) {
-                    val pos = (binding.recyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
-                    val itemsCount = vacancyAdapter.itemCount
-                    if (pos >= itemsCount - 1) {
+                    val layoutManager = binding.recyclerView.layoutManager as LinearLayoutManager
+                    val visibleItemCount = layoutManager.childCount
+                    val totalItemCount = layoutManager.itemCount
+                    val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+
+                    if (!viewModel.isLoading &&
+                        visibleItemCount + firstVisibleItemPosition >= totalItemCount - 1
+                    ) {
                         viewModel.loadNextPage()
                     }
                 }
@@ -157,8 +141,15 @@ class SearchFragment : Fragment() {
 
     private fun showContent(vacancies: List<VacancySearch>) {
         hideAll()
-        vacancyAdapter.updateVacancies(vacancies)
         binding.recyclerView.visibility = View.VISIBLE
+
+        if (viewModel.currentPage == 0) {
+            vacancyAdapter.updateVacancies(vacancies)
+        } else {
+            vacancyAdapter.addVacancies(vacancies)
+        }
+
+        binding.progressBarPagination.visibility = View.GONE
     }
 
     private fun hideAll() {
