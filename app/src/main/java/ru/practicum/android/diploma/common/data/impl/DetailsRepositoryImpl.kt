@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.common.data.network.NetworkClient
+import ru.practicum.android.diploma.common.data.network.RetrofitNetworkClient.Companion.NOT_FOUND
 import ru.practicum.android.diploma.common.data.network.RetrofitNetworkClient.Companion.NO_INTERNET_ERROR
 import ru.practicum.android.diploma.common.data.network.RetrofitNetworkClient.Companion.SUCCESS
 import ru.practicum.android.diploma.common.data.network.requests.VacancyDetailRequest
@@ -26,6 +27,9 @@ class DetailsRepositoryImpl(
         when (response.resultCode) {
             NO_INTERNET_ERROR -> {
                 emit(Resource.Error(response.resultCode, context.getString(R.string.search_no_internet)))
+            }
+            NOT_FOUND -> {
+                emit(Resource.Error(response.resultCode, context.getString(R.string.vacancy_not_found)))
             }
             SUCCESS -> {
                 emit(Resource.Success(converter.convertToVacancyDetails(response as VacancyDetailResponse)))

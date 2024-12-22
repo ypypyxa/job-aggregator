@@ -6,20 +6,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".team.ui.TeamFragment">
 
-    <TextView
+    <Toolbar
         android:id="@+id/settings_header"
-        android:layout_width="0dp"
+        style="@style/TextMedium22"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/dimens_16"
-        android:layout_marginTop="@dimen/dimens_20"
-        android:layout_marginEnd="@dimen/dimens_8"
-        android:fontFamily="@font/ys_display_medium"
-        android:text="@string/team_header"
-        android:textColor="@color/night_day"
-        android:textSize="@dimen/text_size_22"
+        android:contentInsetStart="@dimen/dimens_16"
+        android:title="@string/team_header"
+        app:layout_constraintTop_toTopOf="parent"
+        android:titleTextColor="@color/night_day"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/text_main"

@@ -1,31 +1,35 @@
 package ru.practicum.android.diploma.vacancy.details.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import ru.practicum.android.diploma.R
-import ru.practicum.android.diploma.common.utils.isInternetAvailable
+import ru.practicum.android.diploma.common.utils.gone
+import ru.practicum.android.diploma.common.utils.show
 import ru.practicum.android.diploma.databinding.FragmentDetailsBinding
 import ru.practicum.android.diploma.vacancy.details.domain.model.VacancyDetails
+import ru.practicum.android.diploma.vacancy.details.ui.model.DetailsFragmentState
 
 class DetailsFragment : Fragment() {
-
-    companion object {
-        private const val ARGS_VACANCY_ID = "vacancy_id"
-
-    }
 
     private var _binding: FragmentDetailsBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: DetailsViewModel by viewModel()
+    private var vacancy: VacancyDetails? = null
+    private var vacancyId: Int? = 0
+
+    private val viewModel: DetailsViewModel by viewModel() {
+        parametersOf(vacancyId)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,30 +43,19 @@ class DetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val args = DetailsFragmentArgs.fromBundle(requireArguments())
-        val vacancyId = args.vacancyId
-        Log.d(ARGS_VACANCY_ID, "$vacancyId")
+        val args: DetailsFragmentArgs by navArgs()
+        vacancyId = args.vacancyId
 
-        setupViews()
+        hideAll()
+        setupListeners()
         observeViewModel()
-        viewModel.loadVacancy(vacancyId)
-
-        if (requireContext().isInternetAvailable()) {
-            viewModel.loadVacancy(vacancyId)
-        } else {
-            viewModel.loadVacancyDetailsOffline(vacancyId)
-        }
     }
 
-    private fun setupViews() {
-        binding.tvStateError.visibility = View.GONE
-        binding.progressBar.visibility = View.GONE
-
+    private fun setupListeners() {
         binding.ivArrowBack.setOnClickListener {
             findNavController().popBackStack()
         }
         binding.ivLikeButton.setOnClickListener {
-            val vacancy = viewModel.vacancyDetails.value
             vacancy?.let {
                 if (viewModel.isFavorite.value == true) {
                     viewModel.removeFromFavorites(it.vacancyId)
@@ -74,8 +67,17 @@ class DetailsFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        viewModel.vacancyDetails.observe(viewLifecycleOwner) { vacancyDetails ->
-            updateUI(vacancyDetails)
+        viewModel.observeState().observe(viewLifecycleOwner) {
+            when (it) {
+                is DetailsFragmentState.Loading -> showLoading()
+                is DetailsFragmentState.Empty -> showEmpty()
+                is DetailsFragmentState.ServerError -> showServerError()
+                is DetailsFragmentState.Content -> updateUI(it.vacancy)
+                is DetailsFragmentState.OfflineContent -> updateUI(it.vacancy)
+            }
+        }
+        viewModel.observeShowToast().observe(viewLifecycleOwner) {
+            showToast(it)
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
@@ -131,8 +133,32 @@ class DetailsFragment : Fragment() {
     </html>
             """.trimIndent()
             binding.wvDescription.loadDataWithBaseURL(null, jobDescriptionHtml, "text/html", "UTF-8", null)
-
+            hideAll()
+            binding.clBody.show()
+            vacancy = vacancyDetails
         }
+    }
+
+    private fun showLoading() {
+        hideAll()
+        binding.progressBar.show()
+    }
+
+    private fun showEmpty() {
+        hideAll()
+        binding.tvVacancyError.show()
+    }
+
+    private fun showServerError() {
+        hideAll()
+        binding.tvStateError.show()
+    }
+
+    private fun hideAll() {
+        binding.progressBar.gone()
+        binding.tvStateError.gone()
+        binding.tvVacancyError.gone()
+        binding.clBody.gone()
     }
 
     private fun formatSalary(salaryFrom: Int?, salaryTo: Int?, currency: String?): String {
@@ -147,5 +173,10 @@ class DetailsFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun showToast(additionalMessage: String) {
+        Toast.makeText(requireContext(), additionalMessage, Toast.LENGTH_LONG)
+            .show()
     }
 }
