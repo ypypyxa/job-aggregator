@@ -13,8 +13,8 @@
         android:layout_height="wrap_content"
         android:contentInsetStart="@dimen/dimens_16"
         android:title="@string/search_vacancies"
-        android:paddingVertical="@dimen/dimens_8"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        android:titleTextColor="@color/night_day" >
 
         <ImageButton
             style="@style/ImageFilter"

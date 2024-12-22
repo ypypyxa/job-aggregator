@@ -110,7 +110,7 @@ class RetrofitNetworkClient(
 
     // Обработка HttpException
     private fun getHttpExceptionResponse(): Response {
-        return Response().apply { resultCode = CLIENT_ERROR }
+        return Response().apply { resultCode = NOT_FOUND }
     }
 
     // Обработка RuntimeException
@@ -123,5 +123,6 @@ class RetrofitNetworkClient(
         const val SERVER_ERROR = 500
         const val NO_INTERNET_ERROR = -1
         const val SUCCESS = 200
+        const val NOT_FOUND = 404
     }
 }

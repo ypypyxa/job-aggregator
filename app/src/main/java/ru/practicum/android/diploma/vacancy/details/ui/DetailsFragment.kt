@@ -142,7 +142,7 @@ class DetailsFragment : Fragment() {
 
     private fun showEmpty() {
         hideAll()
-        binding.tvStateError.show()
+        binding.tvVacancyError.show()
     }
 
     private fun showServerError() {
@@ -153,6 +153,7 @@ class DetailsFragment : Fragment() {
     private fun hideAll() {
         binding.progressBar.gone()
         binding.tvStateError.gone()
+        binding.tvVacancyError.gone()
         binding.clBody.gone()
     }
 

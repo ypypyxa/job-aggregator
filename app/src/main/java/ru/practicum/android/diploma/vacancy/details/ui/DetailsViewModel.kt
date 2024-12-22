@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.common.utils.SingleLiveEvent
 import ru.practicum.android.diploma.common.utils.isInternetAvailable
 import ru.practicum.android.diploma.favorites.domain.api.FavoritesInteractor
@@ -70,7 +71,10 @@ class DetailsViewModel(
         var vacancy = vacancyDetails
         when {
             errorMessage != null -> {
-                renderState(DetailsFragmentState.ServerError)
+                when (errorMessage) {
+                    context.getString(R.string.vacancy_not_found) -> renderState(DetailsFragmentState.Empty)
+                    context.getString(R.string.server_error) -> renderState(DetailsFragmentState.ServerError)
+                }
             }
             vacancyDetails == null -> {
                 renderState(DetailsFragmentState.Empty)

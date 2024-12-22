@@ -5,8 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/day_night"
-    >
+    android:background="@color/day_night" >
 
     <Toolbar
         android:id="@+id/tool_bar_favorite"
@@ -16,7 +15,8 @@
         android:contentInsetStart="@dimen/dimens_16"
         android:paddingVertical="@dimen/dimens_8"
         android:title="@string/bottom_navigation_title_favorite"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:titleTextColor="@color/night_day" />
 
     <LinearLayout
         android:id="@+id/ll_item_list"
