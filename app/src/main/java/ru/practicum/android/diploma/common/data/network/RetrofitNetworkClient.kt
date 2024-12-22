@@ -110,11 +110,13 @@ class RetrofitNetworkClient(
 
     // Обработка HttpException
     private fun getHttpExceptionResponse(code: Int): Response {
+        val response: Response?
         when (code) {
-            CLIENT_ERROR -> return Response().apply { resultCode = CLIENT_ERROR }
-            NOT_FOUND -> return Response().apply { resultCode = NOT_FOUND }
-            else -> return Response().apply { resultCode = code }
+            CLIENT_ERROR -> response = Response().apply { resultCode = CLIENT_ERROR }
+            NOT_FOUND -> response = Response().apply { resultCode = NOT_FOUND }
+            else -> response = Response().apply { resultCode = code }
         }
+        return response
     }
 
     // Обработка RuntimeException
