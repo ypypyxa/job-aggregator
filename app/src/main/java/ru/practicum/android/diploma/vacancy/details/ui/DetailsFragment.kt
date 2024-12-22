@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.vacancy.details.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -26,6 +27,7 @@ class DetailsFragment : Fragment() {
 
     private var vacancy: VacancyDetails? = null
     private var vacancyId: Int? = 0
+    private var vacancyUrl: String? = ""
 
     private val viewModel: DetailsViewModel by viewModel() {
         parametersOf(vacancyId)
@@ -63,6 +65,17 @@ class DetailsFragment : Fragment() {
                     viewModel.addToFavorites(it)
                 }
             }
+        }
+
+        binding.ivShareButton.setOnClickListener {
+            val intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, vacancyUrl)
+                type = "text/plain"
+            }
+            val share = Intent.createChooser(intent, null)
+            share.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context?.startActivity(share)
         }
     }
 
@@ -136,6 +149,7 @@ class DetailsFragment : Fragment() {
             hideAll()
             binding.clBody.show()
             vacancy = vacancyDetails
+            vacancyUrl = vacancyDetails.vacancyUrl
         }
     }
 

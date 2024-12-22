@@ -1,6 +1,7 @@
 package ru.practicum.android.diploma.common.utils
 
 import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 import ru.practicum.android.diploma.common.data.network.response.SearchResponse
 import ru.practicum.android.diploma.common.data.network.response.VacancyDetailResponse
 import ru.practicum.android.diploma.vacancy.details.domain.model.VacancyDetails
@@ -41,7 +42,8 @@ class Converter {
             employerId = response.vacancy.employer?.id ?: 0,
             logosJSON = response.vacancy.employer?.logoUrls?.let { gson.toJson(it) },
             employerName = response.vacancy.employer?.name ?: "Unknown",
-            employerLogoUri = response.vacancy.employer?.logoUrls?.original
+            employerLogoUri = response.vacancy.employer?.logoUrls?.original,
+            vacancyUrl = response.vacancy.alternateUrl
         )
     }
 }

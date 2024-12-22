@@ -19,4 +19,5 @@ data class VacancyDetails(
     val logosJSON: String?,
     val employerName: String,
     val employerLogoUri: String?,
+    val vacancyUrl: String?
 )
