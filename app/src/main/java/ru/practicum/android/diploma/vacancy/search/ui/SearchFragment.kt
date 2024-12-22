@@ -147,8 +147,6 @@ class SearchFragment : Fragment() {
         } else {
             vacancyAdapter.addVacancies(vacancies)
         }
-
-        binding.progressBarPagination.visibility = View.GONE
     }
 
     private fun hideAll() {
@@ -158,6 +156,7 @@ class SearchFragment : Fragment() {
         binding.placeholderServerNotResponding.visibility = View.GONE
         binding.recyclerView.visibility = View.GONE
         binding.progressBar.visibility = View.GONE
+        binding.progressBarPagination.visibility = View.GONE
     }
 
     private fun showEmpty() {

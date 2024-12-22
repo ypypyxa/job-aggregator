@@ -68,7 +68,6 @@ class SearchViewModel(
 
         if (latestSearchText != query) {
             latestSearchText = query
-            renderState(SearchFragmentState.Loading)
             debounceSearch(query)
         }
     }
@@ -122,7 +121,7 @@ class SearchViewModel(
                 _isLoading = false
             }
 
-            newVacancies.isEmpty() && currentPage == 1 -> {
+            newVacancies.isEmpty() && currentPage == 0 -> {
                 renderState(SearchFragmentState.Empty)
                 _isLoading = false
             }
@@ -130,7 +129,7 @@ class SearchViewModel(
             else -> {
                 val currentState = stateLiveData.value
                 val updatedVacancies = when {
-                    currentPage == 1 -> newVacancies // Для нового поиска полностью заменяем список
+                    currentPage == 0 -> newVacancies // Для нового поиска полностью заменяем список
                     currentState is SearchFragmentState.Content -> currentState.vacancies + newVacancies
                     else -> newVacancies
                 }
@@ -159,7 +158,7 @@ class SearchViewModel(
 
         val params = VacancySearchParams(
             text = latestSearchText,
-            page = currentPage,
+            page = currentPage + 1,
             perPage = pageSize,
             area = 1,
             searchField = "name",
@@ -172,7 +171,6 @@ class SearchViewModel(
             searchInteractor.fetchVacancies(params.toQueryMap())
                 .collect { resource ->
                     processResult(resource.first, resource.second)
-
                 }
         }
     }
