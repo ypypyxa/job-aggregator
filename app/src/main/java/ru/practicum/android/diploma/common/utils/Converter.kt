@@ -1,7 +1,6 @@
 package ru.practicum.android.diploma.common.utils
 
 import com.google.gson.Gson
-import com.google.gson.annotations.SerializedName
 import ru.practicum.android.diploma.common.data.network.response.SearchResponse
 import ru.practicum.android.diploma.common.data.network.response.VacancyDetailResponse
 import ru.practicum.android.diploma.vacancy.details.domain.model.VacancyDetails
