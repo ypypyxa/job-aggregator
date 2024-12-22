@@ -49,7 +49,7 @@ class RetrofitNetworkClient(
                 Response().apply { resultCode = NO_INTERNET_ERROR }
             } catch (e: HttpException) {
                 e.printStackTrace()
-                getHttpExceptionResponse()
+                getHttpExceptionResponse(e.code())
             } catch (e: RuntimeException) {
                 e.printStackTrace()
                 getRuntimeExceptionResponse()
@@ -109,8 +109,12 @@ class RetrofitNetworkClient(
     }
 
     // Обработка HttpException
-    private fun getHttpExceptionResponse(): Response {
-        return Response().apply { resultCode = NOT_FOUND }
+    private fun getHttpExceptionResponse(code: Int): Response {
+        when (code) {
+            CLIENT_ERROR -> return Response().apply { resultCode = CLIENT_ERROR }
+            NOT_FOUND -> return Response().apply { resultCode = NOT_FOUND }
+            else -> return Response().apply { resultCode = code }
+        }
     }
 
     // Обработка RuntimeException
@@ -124,5 +128,6 @@ class RetrofitNetworkClient(
         const val NO_INTERNET_ERROR = -1
         const val SUCCESS = 200
         const val NOT_FOUND = 404
+
     }
 }
