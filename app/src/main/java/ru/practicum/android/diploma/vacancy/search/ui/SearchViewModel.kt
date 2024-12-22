@@ -68,6 +68,7 @@ class SearchViewModel(
 
         if (latestSearchText != query) {
             latestSearchText = query
+            renderState(SearchFragmentState.Loading)
             debounceSearch(query)
         }
     }
@@ -128,8 +129,9 @@ class SearchViewModel(
 
             else -> {
                 val currentState = stateLiveData.value
-                val updatedVacancies = when (currentState) {
-                    is SearchFragmentState.Content -> currentState.vacancies + newVacancies
+                val updatedVacancies = when {
+                    currentPage == 1 -> newVacancies // Для нового поиска полностью заменяем список
+                    currentState is SearchFragmentState.Content -> currentState.vacancies + newVacancies
                     else -> newVacancies
                 }
                 result?.let {

@@ -142,8 +142,7 @@ class SearchFragment : Fragment() {
     private fun showContent(vacancies: List<VacancySearch>) {
         hideAll()
         binding.recyclerView.visibility = View.VISIBLE
-
-        if (viewModel.currentPage == 0) {
+        if (viewModel.currentPage <= 0) {
             vacancyAdapter.updateVacancies(vacancies)
         } else {
             vacancyAdapter.addVacancies(vacancies)
