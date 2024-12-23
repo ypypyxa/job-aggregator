@@ -20,6 +20,7 @@ import ru.practicum.android.diploma.vacancy.search.ui.adapter.VacancyAdapter
 import ru.practicum.android.diploma.vacancy.search.ui.model.SearchFragmentState
 
 class SearchFragment : Fragment() {
+
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 500L
     }
@@ -109,6 +110,10 @@ class SearchFragment : Fragment() {
 
         binding.buttonClearEditSearch.setOnClickListener {
             binding.editSearch.text.clear()
+        }
+        binding.buttonFilter.setOnClickListener {
+            val action = SearchFragmentDirections.actionSearchFragmentToFilterFragment()
+            findNavController().navigate(action)
         }
     }
 
