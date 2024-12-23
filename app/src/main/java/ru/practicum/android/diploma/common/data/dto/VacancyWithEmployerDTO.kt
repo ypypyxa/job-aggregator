@@ -41,5 +41,6 @@ data class VacancyWithEmployerDTO(
     val employerId: Int,
     val logosJSON: String?,
     val employerName: String,
-    val employerLogoUri: String?
+    val employerLogoUri: String?,
+    val vacancyUrl: String?
 )
