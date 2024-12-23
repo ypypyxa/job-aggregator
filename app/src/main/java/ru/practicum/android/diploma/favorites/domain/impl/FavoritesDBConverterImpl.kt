@@ -92,7 +92,8 @@ class FavoritesDBConverterImpl(
             employerId = from.employerId,
             logosJSON = from.logosJSON,
             employerName = from.employerName,
-            employerLogoUri = logoMap?.get(LOGO_SIZE)
+            employerLogoUri = logoMap?.get(LOGO_SIZE),
+            vacancyUrl = from.vacancyUrl
         )
     }
 
