@@ -30,9 +30,11 @@
     <string name="company_not_specified">Не указано</string>
     <string name="choose_industry">Выбор отрасли</string>
     <string name="enter_industry">Введите отрасль</string>
-    <string name="choose">Выбрать</string>
     <string name="choose_button">Выбрать</string>
     <string name="region">Регион</string>
     <string name="choose_workspace">Выбор места работы</string>
     <string name="country">Страна</string>
+    <string name="choose_country">Выбор страны</string>
+    <string name="enter_region">Введите регион</string>
+    <string name="choose_region">Выбор региона</string>
 </resources>
