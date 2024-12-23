@@ -28,6 +28,9 @@
     <string name="salary_template_to">до %1$s %2$s</string>
     <string name="message_salary_not_pointed">Зарплата не указана</string>
     <string name="company_not_specified">Не указано</string>
+    <string name="choose_industry">Выбор отрасли</string>
+    <string name="enter_industry">Введите отрасль</string>
+    <string name="choose">Выбрать</string>
     <string name="choose_button">Выбрать</string>
     <string name="region">Регион</string>
     <string name="choose_workspace">Выбор места работы</string>
