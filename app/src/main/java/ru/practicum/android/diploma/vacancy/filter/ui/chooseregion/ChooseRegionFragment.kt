@@ -1,11 +1,11 @@
 package ru.practicum.android.diploma.vacancy.filter.ui.chooseregion
 
-import androidx.fragment.app.viewModels
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import ru.practicum.android.diploma.R
 
 class ChooseRegionFragment : Fragment() {
