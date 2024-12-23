@@ -44,7 +44,7 @@
             android:backgroundTint="@color/white_universal"
             android:paddingRight="@dimen/minus16"
             android:textColorHint="@color/gray"
-            app:endIconDrawable="@drawable/ic_arrow_foward"
+            app:endIconDrawable="@drawable/ic_arrow_forward"
             app:endIconMode="custom"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -67,7 +67,7 @@
             android:backgroundTint="@color/white_universal"
             android:paddingRight="@dimen/minus16"
             android:textColorHint="@color/gray"
-            app:endIconDrawable="@drawable/ic_arrow_foward"
+            app:endIconDrawable="@drawable/ic_arrow_forward"
             app:endIconMode="custom">
 
             <com.google.android.material.textfield.TextInputEditText

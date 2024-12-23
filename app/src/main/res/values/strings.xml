@@ -43,4 +43,9 @@
     <string name="region">Регион</string>
     <string name="choose_workspace">Выбор места работы</string>
     <string name="country">Страна</string>
+    <string name="vacancy_not_found">Вакансия не найдена</string>
+
+
+
+
 </resources>
