@@ -103,7 +103,7 @@
                 android:layout_height="wrap_content"
                 android:minHeight="80dp"
                 android:layout_marginTop="@dimen/dimens_24"
-                android:backgroundTint="@color/light_gray"
+                android:backgroundTint="@color/light_grey"
                 app:cardCornerRadius="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
