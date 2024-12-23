@@ -50,6 +50,7 @@ dependencies {
     // UI layer libraries
     implementation(libs.ui.material)
     implementation(libs.ui.constraintLayout)
+    implementation(libs.legacy.support.v4)
 
     // region Unit tests
     testImplementation(libs.unitTests.junit)
