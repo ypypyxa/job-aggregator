@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.practicum.android.diploma.R
@@ -24,6 +25,8 @@ class DetailsFragment : Fragment() {
 
     private var _binding: FragmentDetailsBinding? = null
     private val binding get() = _binding!!
+
+    private val corner by lazy { requireContext().resources.getDimension(R.dimen.dimens_12).toInt() }
 
     private var vacancy: VacancyDetails? = null
     private var vacancyId: Int? = 0
@@ -119,7 +122,9 @@ class DetailsFragment : Fragment() {
             Glide
                 .with(binding.ivEmployerLogo.context)
                 .load(it.employerLogoUri)
+                .fitCenter()
                 .placeholder(R.drawable.placeholder)
+                .transform(RoundedCorners(corner))
                 .into(binding.ivEmployerLogo)
             binding.tvSchedule.text = it.schedule
         }
