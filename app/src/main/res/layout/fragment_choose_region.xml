@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".vacancy.filter.ui.chooseindustry.ChooseIndustryFragment">
+    tools:context=".vacancy.filter.ui.choosecountry.ChooseCountryFragment">
 
     <ImageView
-        android:id="@+id/choose_industry_back"
+        android:id="@+id/choose_region_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dimens_20"
@@ -17,16 +18,16 @@
         app:srcCompat="@drawable/ic_arrow_back" />
 
     <TextView
-        android:id="@+id/choose_industry_header"
+        android:id="@+id/choose_region_header"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dimens_20"
         android:layout_marginTop="@dimen/dimens_20"
         android:fontFamily="@font/ys_display_medium"
-        android:text="@string/choose_industry"
+        android:text="@string/choose_region"
         android:textColor="@color/night_day"
         android:textSize="@dimen/text_size_22"
-        app:layout_constraintStart_toEndOf="@+id/choose_industry_back"
+        app:layout_constraintStart_toEndOf="@+id/choose_region_back"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
@@ -34,10 +35,10 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dimens_56"
         android:layout_marginHorizontal="@dimen/dimens_16"
-        android:layout_marginTop="@dimen/dimens_24"
+        android:layout_marginTop="@dimen/dimens_20"
         android:background="@drawable/background_search_rounded"
         android:fontFamily="@font/ys_display_regular"
-        android:hint="@string/enter_industry"
+        android:hint="@string/enter_region"
         android:imeOptions="actionDone"
         android:padding="@dimen/dimens_16"
         android:singleLine="true"
@@ -45,7 +46,7 @@
         android:textColorHint="@color/search_edit_hint_color"
         android:textCursorDrawable="@drawable/custom_color_blue"
         android:textSize="@dimen/text_size_16"
-        app:layout_constraintTop_toBottomOf="@+id/choose_industry_header" />
+        app:layout_constraintTop_toBottomOf="@+id/choose_region_header" />
 
     <ImageView
         android:id="@+id/search_region"
@@ -71,31 +72,69 @@
         app:layout_constraintTop_toTopOf="@id/choose_region_enter_field_edittext" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/choose_industry_list_recycle_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/dimens_8"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/choose_region_enter_field_edittext"
-        tools:itemCount="15"
-        tools:listitem="@layout/item_industry" />
-
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/choose_button"
+        android:id="@+id/region_list_recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/dimens_16"
-        android:layout_marginBottom="@dimen/dimens_24"
-        android:fontFamily="@font/ys_display_medium"
-        android:paddingVertical="@dimen/dimens_20"
-        android:text="@string/choose_button"
-        android:textAllCaps="false"
-        android:textColor="@color/white_universal"
-        android:textSize="@dimen/text_size_16"
+        android:layout_marginTop="@dimen/dimens_16"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@id/choose_region_enter_field_edittext"
+        tools:listitem="@layout/item_region" />
+
+    <LinearLayout
+        android:id="@+id/no_region"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/choose_industry_list_recycle_view"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/no_region_image"
+            android:layout_width="328dp"
+            android:layout_height="328dp"
+            android:src="@drawable/placeholder_nothing_found" />
+
+        <TextView
+            android:id="@+id/no_region_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/dimens_16"
+            android:fontFamily="@font/ys_display_medium"
+            android:textColor="@color/night_day"
+            android:textSize="@dimen/text_size_22" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/no_get_region_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/no_get_region_list_image"
+            android:layout_width="328dp"
+            android:layout_height="328dp"
+            android:src="@drawable/placeholder_areas_cant_receive_list" />
+
+        <TextView
+            android:id="@+id/no_get_region_list_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/dimens_16"
+            android:fontFamily="@font/ys_display_medium"
+            android:textColor="@color/night_day"
+            android:textSize="@dimen/text_size_22" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
 
