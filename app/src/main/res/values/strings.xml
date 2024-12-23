@@ -21,6 +21,7 @@
     <string name="similar_vacancies">Похожие вакансии</string>
     <string name="required_expirience">Требуемый опыт</string>
     <string name="list_empty">Список пуст</string>
+    <string name="vacancy_not_found">Вакансия не найдена или\nудалена</string>
 
     <string name="salary_template_from_to">от %1$s до %2$s %3$s</string>
     <string name="salary_template_from">от %1$s %2$s</string>
@@ -43,9 +44,7 @@
     <string name="region">Регион</string>
     <string name="choose_workspace">Выбор места работы</string>
     <string name="country">Страна</string>
-    <string name="vacancy_not_found">Вакансия не найдена</string>
-
-
-
-
+    <string name="choose_country">Выбор страны</string>
+    <string name="enter_region">Введите регион</string>
+    <string name="choose_region">Выбор региона</string>
 </resources>
