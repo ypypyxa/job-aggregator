@@ -33,4 +33,5 @@ data class VacancyItemDto(
     val employer: EmployerDto?,
     val contacts: ContactsDto?,
     @SerializedName("key_skills") val keySkills: List<IdNameDto>?,
+    @SerializedName("alternate_url") val alternateUrl: String,
 )

@@ -11,6 +11,7 @@ import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.common.utils.SingleLiveEvent
 import ru.practicum.android.diploma.common.utils.debounce
 import ru.practicum.android.diploma.vacancy.search.domain.api.SearchInteractor
+import ru.practicum.android.diploma.vacancy.search.domain.model.PagedData
 import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearch
 import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearchParams
 import ru.practicum.android.diploma.vacancy.search.ui.model.SearchFragmentState
@@ -23,10 +24,13 @@ class SearchViewModel(
     companion object {
         const val LOADING_DELAY_MS = 2000L
         const val TAG = "SearchViewModel"
+        const val PAGE_SIZE = 20
     }
 
     private var latestSearchText: String? = null
-    private var currentPage: Int = 0
+    var currentPage: Int = 0
+    private var totalPages = 1
+    private val pageSize = PAGE_SIZE
 
     private val debounceSearch: (String) -> Unit = debounce(
         delayMillis = LOADING_DELAY_MS,
@@ -47,6 +51,7 @@ class SearchViewModel(
                 is SearchFragmentState.ServerError -> searchState
                 is SearchFragmentState.InternetError -> searchState
                 is SearchFragmentState.Loading -> searchState
+                is SearchFragmentState.UpdateList -> searchState
             }
         }
     }
@@ -100,26 +105,40 @@ class SearchViewModel(
         }
     }
 
-    private fun processResult(foundVacancies: List<VacancySearch>?, errorMessage: String?) {
-        val vacancies = mutableListOf<VacancySearch>()
-        if (foundVacancies != null) {
-            vacancies.addAll(foundVacancies)
-        }
+    private fun processResult(result: PagedData<VacancySearch>?, errorMessage: String?) {
+        val newVacancies = result?.items ?: emptyList()
+
         when {
             errorMessage != null -> {
                 when (errorMessage) {
                     context.getString(R.string.search_no_internet) ->
                         renderState(SearchFragmentState.InternetError)
+
                     else ->
                         renderState(SearchFragmentState.ServerError)
                 }
                 showToast.postValue(errorMessage!!)
+                _isLoading = false
             }
-            vacancies.isEmpty() -> {
+
+            newVacancies.isEmpty() && currentPage == 0 -> {
                 renderState(SearchFragmentState.Empty)
+                _isLoading = false
             }
+
             else -> {
-                renderState(SearchFragmentState.Content(vacancies))
+                val currentState = stateLiveData.value
+                val updatedVacancies = when {
+                    currentPage == 0 -> newVacancies // Для нового поиска полностью заменяем список
+                    currentState is SearchFragmentState.Content -> currentState.vacancies + newVacancies
+                    else -> newVacancies
+                }
+                result?.let {
+                    totalPages = it.totalPages
+                }
+
+                renderState(SearchFragmentState.Content(updatedVacancies))
+                _isLoading = false
             }
         }
     }
@@ -127,4 +146,36 @@ class SearchViewModel(
     private fun renderState(state: SearchFragmentState) {
         stateLiveData.postValue(state)
     }
+
+    fun loadNextPage() {
+        if (currentPage >= totalPages || _isLoading) {
+            return
+        }
+
+        _isLoading = true
+        currentPage++
+        renderState(SearchFragmentState.UpdateList)
+
+        val params = VacancySearchParams(
+            text = latestSearchText,
+            page = currentPage + 1,
+            perPage = pageSize,
+            area = 1,
+            searchField = "name",
+            industry = null,
+            salary = null,
+            onlyWithSalary = false
+        )
+
+        viewModelScope.launch {
+            searchInteractor.fetchVacancies(params.toQueryMap())
+                .collect { resource ->
+                    processResult(resource.first, resource.second)
+                }
+        }
+    }
+
+    private var _isLoading = false
+    val isLoading: Boolean get() = _isLoading
+
 }

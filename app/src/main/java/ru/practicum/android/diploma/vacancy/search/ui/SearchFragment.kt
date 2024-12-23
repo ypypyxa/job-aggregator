@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.common.utils.debounce
 import ru.practicum.android.diploma.databinding.FragmentSearchBinding
@@ -58,6 +59,7 @@ class SearchFragment : Fragment() {
 
         }
         super.onViewCreated(view, savedInstanceState)
+
         setupRecyclerView()
         setupListeners()
         observeViewModel()
@@ -72,6 +74,24 @@ class SearchFragment : Fragment() {
     private fun setupRecyclerView() {
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = vacancyAdapter
+
+        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy > 0) {
+                    val layoutManager = binding.recyclerView.layoutManager as LinearLayoutManager
+                    val visibleItemCount = layoutManager.childCount
+                    val totalItemCount = layoutManager.itemCount
+                    val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+
+                    if (!viewModel.isLoading &&
+                        visibleItemCount + firstVisibleItemPosition >= totalItemCount - 1
+                    ) {
+                        viewModel.loadNextPage()
+                    }
+                }
+            }
+        })
     }
 
     private fun setupListeners() {
@@ -114,6 +134,7 @@ class SearchFragment : Fragment() {
             is SearchFragmentState.ServerError -> showServerError()
             is SearchFragmentState.InternetError -> showInternetError()
             is SearchFragmentState.Loading -> showLoading()
+            is SearchFragmentState.UpdateList -> showUpdateList()
         }
     }
 
@@ -125,8 +146,12 @@ class SearchFragment : Fragment() {
 
     private fun showContent(vacancies: List<VacancySearch>) {
         hideAll()
-        vacancyAdapter.updateVacancies(vacancies)
         binding.recyclerView.visibility = View.VISIBLE
+        if (viewModel.currentPage <= 0) {
+            vacancyAdapter.updateVacancies(vacancies)
+        } else {
+            vacancyAdapter.addVacancies(vacancies)
+        }
     }
 
     private fun hideAll() {
@@ -136,6 +161,7 @@ class SearchFragment : Fragment() {
         binding.placeholderServerNotResponding.visibility = View.GONE
         binding.recyclerView.visibility = View.GONE
         binding.progressBar.visibility = View.GONE
+        binding.progressBarPagination.visibility = View.GONE
     }
 
     private fun showEmpty() {
@@ -161,6 +187,10 @@ class SearchFragment : Fragment() {
     private fun showToast(additionalMessage: String) {
         Toast.makeText(requireContext(), additionalMessage, Toast.LENGTH_LONG)
             .show()
+    }
+
+    private fun showUpdateList() {
+        binding.progressBarPagination.visibility = View.VISIBLE
     }
 
 }
