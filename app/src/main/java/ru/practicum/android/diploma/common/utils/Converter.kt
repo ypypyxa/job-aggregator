@@ -41,7 +41,8 @@ class Converter {
             employerId = response.vacancy.employer?.id ?: 0,
             logosJSON = response.vacancy.employer?.logoUrls?.let { gson.toJson(it) },
             employerName = response.vacancy.employer?.name ?: "Unknown",
-            employerLogoUri = response.vacancy.employer?.logoUrls?.original
+            employerLogoUri = response.vacancy.employer?.logoUrls?.original,
+            vacancyUrl = response.vacancy.alternateUrl
         )
     }
 }
