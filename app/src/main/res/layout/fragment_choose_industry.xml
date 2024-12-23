@@ -1,13 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".vacancy.filter.ui.chooseindustry.ChooseIndustryFragment">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Hello" />
+    <ImageView
+        android:id="@+id/choose_industry_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dimens_20"
+        android:layout_marginTop="@dimen/dimens_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_arrow_back" />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/choose_industry_header"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dimens_20"
+        android:layout_marginTop="@dimen/dimens_20"
+        android:fontFamily="@font/ys_display_medium"
+        android:text="@string/choose_industry"
+        android:textColor="@color/night_day"
+        android:textSize="@dimen/text_size_22"
+        app:layout_constraintStart_toEndOf="@+id/choose_industry_back"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/choose_industry_enter_field_edittext"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimens_56"
+        android:layout_marginHorizontal="@dimen/dimens_16"
+        android:layout_marginTop="@dimen/dimens_24"
+        android:background="@drawable/background_search_rounded"
+        android:fontFamily="@font/ys_display_regular"
+        android:hint="@string/enter_industry"
+        android:imeOptions="actionDone"
+        android:padding="@dimen/dimens_16"
+        android:singleLine="true"
+        android:textColor="@color/black_universal"
+        android:textColorHint="@color/search_edit_hint_color"
+        android:textCursorDrawable="@drawable/custom_color_blue"
+        android:textSize="@dimen/text_size_16"
+        app:layout_constraintTop_toBottomOf="@+id/choose_industry_header" />
+
+    <ImageView
+        android:id="@+id/search_industry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/dimens_16"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_search"
+        app:layout_constraintBottom_toBottomOf="@id/choose_industry_enter_field_edittext"
+        app:layout_constraintEnd_toEndOf="@id/choose_industry_enter_field_edittext"
+        app:layout_constraintTop_toTopOf="@id/choose_industry_enter_field_edittext" />
+
+    <ImageView
+        android:id="@+id/clear_industry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/dimens_16"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_clear"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/choose_industry_enter_field_edittext"
+        app:layout_constraintEnd_toEndOf="@id/choose_industry_enter_field_edittext"
+        app:layout_constraintTop_toTopOf="@id/choose_industry_enter_field_edittext" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/choose_industry_list_recycle_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/dimens_8"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/choose_industry_enter_field_edittext"
+        tools:itemCount="15"
+        tools:listitem="@layout/industry_area_card" />
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/choose_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/dimens_16"
+        android:layout_marginBottom="@dimen/dimens_24"
+        android:fontFamily="@font/ys_display_medium"
+        android:paddingVertical="@dimen/dimens_20"
+        android:text="@string/choose"
+        android:textAllCaps="false"
+        android:textColor="@color/white_universal"
+        android:textSize="@dimen/text_size_16"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/choose_industry_list_recycle_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+
