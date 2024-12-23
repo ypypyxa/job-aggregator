@@ -162,4 +162,16 @@
         <item name="hintEnabled">false</item>
     </style>
 
+    <style name="TextInputEditText.FilterInput">
+        <item name="boxBackgroundColor">@android:color/transparent</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:inputType">textFilter</item>
+    </style>
+
+    <style name="TextInputLayout.FilterItem">
+        <item name="boxBackgroundColor">@color/day_night</item>
+    </style>
+
+
 </resources>
