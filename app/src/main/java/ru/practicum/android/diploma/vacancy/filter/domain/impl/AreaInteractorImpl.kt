@@ -9,8 +9,8 @@ import ru.practicum.android.diploma.vacancy.filter.domain.model.Area
 
 class AreaInteractorImpl(private val repository: AreaRepository) : AreaInteractor {
 
-    override fun fetchCountries(): Flow<Pair<List<Area>?, String?>> {
-        return repository.fetchCountries().map { result ->
+    override fun fetchArea(): Flow<Pair<List<Area>?, String?>> {
+        return repository.fetchArea().map { result ->
             when (result) {
                 is Resource.Success -> Pair(result.data, null)
                 is Resource.Error -> Pair(null, result.message)
@@ -18,26 +18,8 @@ class AreaInteractorImpl(private val repository: AreaRepository) : AreaInteracto
         }
     }
 
-    override fun fetchRegions(countryId: String): Flow<Pair<List<Area>?, String?>> {
-        return repository.fetchRegions(countryId).map { result ->
-            when (result) {
-                is Resource.Success -> Pair(result.data, null)
-                is Resource.Error -> Pair(null, result.message)
-            }
-        }
-    }
-
-    override fun fetchCountryById(countryId: String): Flow<Pair<Area?, String?>> {
-        return repository.fetchCountryById(countryId).map { result ->
-            when (result) {
-                is Resource.Success -> Pair(result.data, null)
-                is Resource.Error -> Pair(null, result.message)
-            }
-        }
-    }
-
-    override fun fetchRegionById(regionId: String): Flow<Pair<Area?, String?>> {
-        return repository.fetchRegionById(regionId).map { result ->
+    override fun fetchAreaById(areaId: String): Flow<Pair<List<Area>?, String?>> {
+        return repository.fetchAreaById(areaId).map { result ->
             when (result) {
                 is Resource.Success -> Pair(result.data, null)
                 is Resource.Error -> Pair(null, result.message)

@@ -12,10 +12,10 @@ data class AreasDto(
 ) {
     fun toDomain(parentName: String? = null): Area {
         return Area(
-            regionId = id,
-            regionName = name,
-            countryId = parentId,
-            countryName = parentName,
+            id = id,
+            name = name,
+            parentId = parentId,
+            parentName = parentName,
             areas = areas?.map { it.toDomain(name) } ?: emptyList()
         )
     }

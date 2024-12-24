@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 
 class ChooseCountryFragment : Fragment() {
@@ -14,12 +14,7 @@ class ChooseCountryFragment : Fragment() {
         fun newInstance() = ChooseCountryFragment()
     }
 
-    private val viewModel: ChooseCountryViewModel by viewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
+    private val viewModel: ChooseCountryViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,5 +22,12 @@ class ChooseCountryFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         return inflater.inflate(R.layout.fragment_choose_country, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.loadVacancy()
+        viewModel.loadVacancyById("1620")
     }
 }

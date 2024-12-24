@@ -1,9 +1,9 @@
 package ru.practicum.android.diploma.vacancy.filter.domain.model
 
 data class Area(
-    val regionId : String,
-    val regionName : String,
-    val countryId : String?,
-    val countryName : String?,
+    val id : String,
+    val name : String,
+    val parentId : String?,
+    val parentName : String?,
     val areas : List<Area>
 )

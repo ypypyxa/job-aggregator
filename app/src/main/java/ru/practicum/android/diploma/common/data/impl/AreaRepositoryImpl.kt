@@ -18,7 +18,7 @@ class AreaRepositoryImpl(
     private val context: Context
 ) : AreaRepository {
 
-    override fun fetchCountries(): Flow<Resource<List<Area>>> = flow {
+    override fun fetchArea(): Flow<Resource<List<Area>>> = flow {
         val response = networkClient.doRequest(AreaRequest())
         when (response.resultCode) {
             NO_INTERNET_ERROR -> {
@@ -34,8 +34,8 @@ class AreaRepositoryImpl(
         }
     }
 
-    override fun fetchRegions(countryId: String): Flow<Resource<List<Area>>> = flow {
-        val response = networkClient.doRequest(AreaRequest(countryId.toInt()))
+    override fun fetchAreaById(areaId: String): Flow<Resource<List<Area>>> = flow {
+        val response = networkClient.doRequest(AreaRequest(areaId.toInt()))
         when (response.resultCode) {
             NO_INTERNET_ERROR -> {
                 emit(Resource.error(NO_INTERNET_ERROR, context.getString(R.string.search_no_internet)))
@@ -43,38 +43,6 @@ class AreaRepositoryImpl(
             SUCCESS -> {
                 val regions = (response as AreaResponse).areas.firstOrNull()?.areas?.map { it.toDomain() } ?: emptyList()
                 emit(Resource.success(regions))
-            }
-            else -> {
-                emit(Resource.error(response.resultCode, context.getString(R.string.server_error)))
-            }
-        }
-    }
-
-    override fun fetchCountryById(countryId: String): Flow<Resource<Area>> = flow {
-        val response = networkClient.doRequest(AreaRequest(countryId.toInt()))
-        when (response.resultCode) {
-            NO_INTERNET_ERROR -> {
-                emit(Resource.error(NO_INTERNET_ERROR, context.getString(R.string.search_no_internet)))
-            }
-            SUCCESS -> {
-                val country = (response as AreaResponse).areas.firstOrNull()?.toDomain()
-                country?.let { emit(Resource.success(it)) }
-            }
-            else -> {
-                emit(Resource.error(response.resultCode, context.getString(R.string.server_error)))
-            }
-        }
-    }
-
-    override fun fetchRegionById(regionId: String): Flow<Resource<Area>> = flow {
-        val response = networkClient.doRequest(AreaRequest(regionId.toInt()))
-        when (response.resultCode) {
-            NO_INTERNET_ERROR -> {
-                emit(Resource.error(NO_INTERNET_ERROR, context.getString(R.string.search_no_internet)))
-            }
-            SUCCESS -> {
-                val region = (response as AreaResponse).areas.firstOrNull()?.toDomain()
-                region?.let { emit(Resource.success(it)) }
             }
             else -> {
                 emit(Resource.error(response.resultCode, context.getString(R.string.server_error)))
