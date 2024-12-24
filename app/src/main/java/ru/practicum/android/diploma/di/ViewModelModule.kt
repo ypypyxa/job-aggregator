@@ -7,6 +7,7 @@ import ru.practicum.android.diploma.favorites.ui.FavoritesViewModel
 import ru.practicum.android.diploma.vacancy.details.ui.DetailsViewModel
 import ru.practicum.android.diploma.vacancy.filter.ui.FilterViewModel
 import ru.practicum.android.diploma.vacancy.filter.ui.choosecountry.ChooseCountryViewModel
+import ru.practicum.android.diploma.vacancy.filter.ui.chooseindustry.ChooseIndustryViewModel
 import ru.practicum.android.diploma.vacancy.search.ui.SearchViewModel
 
 val viewModelModule = module {
@@ -17,4 +18,6 @@ val viewModelModule = module {
         DetailsViewModel(get(), get(), androidContext(), vacancyId)
     }
     viewModel { ChooseCountryViewModel(get(), androidContext()) }
+
+    viewModel { ChooseIndustryViewModel(get()) }
 }

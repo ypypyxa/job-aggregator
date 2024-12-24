@@ -56,5 +56,23 @@
         android:id="@+id/filterFragment"
         android:name="ru.practicum.android.diploma.vacancy.filter.ui.FilterFragment"
         android:label="fragment_filter"
-        tools:layout="@layout/fragment_filter" />
+        tools:layout="@layout/fragment_filter" >
+        <action
+            android:id="@+id/action_filterFragment_to_chooseIndustryFragment"
+            app:destination="@id/chooseIndustryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/chooseCountryFragment"
+        android:name="ru.practicum.android.diploma.vacancy.filter.ui.choosecountry.ChooseCountryFragment"
+        android:label="fragment_choose_region"
+        tools:layout="@layout/fragment_choose_region" />
+    <fragment
+        android:id="@+id/chooseIndustryFragment"
+        android:name="ru.practicum.android.diploma.vacancy.filter.ui.chooseindustry.ChooseIndustryFragment"
+        android:label="fragment_choose_industry"
+        tools:layout="@layout/fragment_choose_industry" >
+        <action
+            android:id="@+id/action_chooseIndustryFragment_to_filterFragment"
+            app:destination="@id/filterFragment" />
+    </fragment>
 </navigation>
