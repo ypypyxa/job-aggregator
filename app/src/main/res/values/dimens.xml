@@ -29,4 +29,7 @@
     <item name="dimens_268" type="dimen">268dp</item>
     <dimen name="_0dp">0dp</dimen>
     <dimen name="_42dp">42dp</dimen>
+    <dimen name="button_height">60dp</dimen>
+    <dimen name="minus16">-16dp</dimen>
+
 </resources>

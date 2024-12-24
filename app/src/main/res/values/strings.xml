@@ -28,6 +28,15 @@
     <string name="salary_template_to">до %1$s %2$s</string>
     <string name="message_salary_not_pointed">Зарплата не указана</string>
     <string name="company_not_specified">Не указано</string>
+    <string name="filter_toolbar">Настройки фильтрации</string>
+    <string name="workplace">Место работы</string>
+    <string name="industry">Отрасль</string>
+    <string name="expected_salary">Ожидаемая зарплата</string>
+    <string name="enter_amount">Введите сумму</string>
+    <string name="dont_show_empty_amount">Не показывать без зарплаты</string>
+    <string name="apply">Применить</string>
+    <string name="reset">Сбросить</string>
+
     <string name="choose_industry">Выбор отрасли</string>
     <string name="enter_industry">Введите отрасль</string>
     <string name="choose">Выбрать</string>
@@ -35,4 +44,7 @@
     <string name="region">Регион</string>
     <string name="choose_workspace">Выбор места работы</string>
     <string name="country">Страна</string>
+    <string name="choose_country">Выбор страны</string>
+    <string name="enter_region">Введите регион</string>
+    <string name="choose_region">Выбор региона</string>
 </resources>
