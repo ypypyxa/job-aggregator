@@ -31,13 +31,16 @@ class SearchViewModel(
     var currentPage: Int = 0
     private var totalPages = 1
     private val pageSize = PAGE_SIZE
+    private var totalVacancies = 0
 
     private val debounceSearch: (String) -> Unit = debounce(
         delayMillis = LOADING_DELAY_MS,
         coroutineScope = viewModelScope,
         useLastParam = true
     ) { query ->
-        searchRequest(query)
+        if (latestSearchText != query) {
+            searchRequest(query)
+        }
     }
 
     private val stateLiveData = MutableLiveData<SearchFragmentState>()
@@ -46,7 +49,7 @@ class SearchViewModel(
         liveData.addSource(stateLiveData) { searchState ->
             liveData.value = when (searchState) {
                 is SearchFragmentState.Default -> searchState
-                is SearchFragmentState.Content -> SearchFragmentState.Content(searchState.vacancies)
+                is SearchFragmentState.Content -> SearchFragmentState.Content(searchState.vacancies, searchState.vacanciesCount)
                 is SearchFragmentState.Empty -> searchState
                 is SearchFragmentState.ServerError -> searchState
                 is SearchFragmentState.InternetError -> searchState
@@ -65,10 +68,12 @@ class SearchViewModel(
             clearVacancies()
             return
         }
+        debounceSearch(query)
+    }
 
-        if (latestSearchText != query) {
-            latestSearchText = query
-            debounceSearch(query)
+    fun onSearchButtonPress(query: String) {
+        if (latestSearchText == null) {
+            searchRequest(query)
         }
     }
 
@@ -78,9 +83,7 @@ class SearchViewModel(
     }
 
     private fun searchRequest(query: String) {
-        if (query.isBlank() || latestSearchText != query) {
-            return
-        }
+        latestSearchText = query
 
         renderState(SearchFragmentState.Loading)
 
@@ -107,16 +110,15 @@ class SearchViewModel(
 
     private fun processResult(result: PagedData<VacancySearch>?, errorMessage: String?) {
         val newVacancies = result?.items ?: emptyList()
-
         when {
             errorMessage != null -> {
                 when (errorMessage) {
                     context.getString(R.string.search_no_internet) ->
                         renderState(SearchFragmentState.InternetError)
-
                     else ->
                         renderState(SearchFragmentState.ServerError)
                 }
+                latestSearchText = null
                 showToast.postValue(errorMessage!!)
                 _isLoading = false
             }
@@ -135,9 +137,10 @@ class SearchViewModel(
                 }
                 result?.let {
                     totalPages = it.totalPages
+                    totalVacancies = it.totalItems
                 }
 
-                renderState(SearchFragmentState.Content(updatedVacancies))
+                renderState(SearchFragmentState.Content(updatedVacancies, totalVacancies))
                 _isLoading = false
             }
         }
