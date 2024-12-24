@@ -13,7 +13,6 @@ class ChooseCountryViewModel(
     private val context: Context
 ) : ViewModel() {
 
-
     fun loadVacancy() {
         viewModelScope.launch {
             areaInteractor.fetchArea()
@@ -38,14 +37,18 @@ class ChooseCountryViewModel(
         var area = areaResult
         when {
             errorMessage != null -> {
-                Log.d("ChooseArea", "$errorMessage")
+                Log.d(CHOOSE_AREA, "$errorMessage")
             }
             area == null -> {
-                Log.d("ChooseArea", "Такого места не существует")
+                Log.d(CHOOSE_AREA, "Такого места не существует")
             }
             else -> {
-                Log.d("ChooseArea", "$area")
+                Log.d(CHOOSE_AREA, "$area")
             }
         }
+    }
+
+    companion object {
+        private const val CHOOSE_AREA = "ChooseArea"
     }
 }

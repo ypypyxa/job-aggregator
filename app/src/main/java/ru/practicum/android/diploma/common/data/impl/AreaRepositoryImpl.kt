@@ -41,7 +41,9 @@ class AreaRepositoryImpl(
                 emit(Resource.error(NO_INTERNET_ERROR, context.getString(R.string.search_no_internet)))
             }
             SUCCESS -> {
-                val regions = (response as AreaResponse).areas.firstOrNull()?.areas?.map { it.toDomain() } ?: emptyList()
+                val regions = (response as AreaResponse).areas.firstOrNull()?.areas?.map {
+                    it.toDomain()
+                } ?: emptyList()
                 emit(Resource.success(regions))
             }
             else -> {
