@@ -21,6 +21,8 @@ class IndustryFilterRepositoryImpl(
         private const val NETWORK_ERROR = "Network error: "
         private const val HTTP_ERROR = "HTTP error: "
         private const val UNEXPECTED_ERROR = "Unexpected error: "
+        private const val ARGUMENT_ERROR = "Argument error: "
+        private const val NULL_POINTER_ERROR = "Null pointer error: "
     }
 
     private val industryCache = mutableListOf<IndustriesDto>()
@@ -42,7 +44,13 @@ class IndustryFilterRepositoryImpl(
         } catch (e: HttpException) {
             Log.e(LOG_TAG, "$HTTP_ERROR${e.code()} - ${e.message()}")
             throw e
-        } catch (e: RuntimeException) {
+        } catch (e: IllegalArgumentException) {
+            Log.e(LOG_TAG, "$ARGUMENT_ERROR${e.message}")
+            throw e
+        } catch (e: NullPointerException) {
+            Log.e(LOG_TAG, "$NULL_POINTER_ERROR${e.message}")
+            throw e
+        } catch (e: Exception) {
             Log.e(LOG_TAG, "$UNEXPECTED_ERROR${e.localizedMessage}")
             throw e
         }
