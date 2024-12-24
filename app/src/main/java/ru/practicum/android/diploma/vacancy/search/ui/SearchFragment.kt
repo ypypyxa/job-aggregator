@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
@@ -15,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.common.utils.debounce
-import ru.practicum.android.diploma.common.utils.setVacancyCountText
 import ru.practicum.android.diploma.databinding.FragmentSearchBinding
 import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearch
 import ru.practicum.android.diploma.vacancy.search.ui.adapter.VacancyAdapter
@@ -25,6 +25,10 @@ class SearchFragment : Fragment() {
 
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 500L
+        const val UNIT = 10
+        const val HUNDRED = 100
+        val RANGE_EXCEPTION = 12..14
+        val RANGE_FEW = 2..4
     }
 
     private var _binding: FragmentSearchBinding? = null
@@ -209,4 +213,17 @@ class SearchFragment : Fragment() {
         binding.progressBarPagination.visibility = View.VISIBLE
     }
 
+    private fun TextView.setVacancyCountText(count: Int) {
+        val text = when {
+            count % UNIT == 1 && count % HUNDRED !in RANGE_EXCEPTION ->
+                context.getString(R.string.vacancy_found_one, count)
+
+            count % UNIT in RANGE_FEW && count % HUNDRED !in RANGE_EXCEPTION ->
+                context.getString(R.string.vacancy_found_few, count)
+
+            else ->
+                context.getString(R.string.vacancy_found_many, count)
+        }
+        this.text = text
+    }
 }
