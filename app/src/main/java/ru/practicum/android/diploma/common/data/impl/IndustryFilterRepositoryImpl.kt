@@ -1,6 +1,5 @@
 package ru.practicum.android.diploma.common.data.impl
 
-import android.media.session.PlaybackState.STATE_ERROR
 import android.util.Log
 import retrofit2.HttpException
 import ru.practicum.android.diploma.common.data.dto.IndustriesDto
@@ -21,7 +20,6 @@ class IndustryFilterRepositoryImpl(
         private const val LOG_TAG = "IndustryFilterRepository"
         private const val NETWORK_ERROR = "Network error: "
         private const val HTTP_ERROR = "HTTP error: "
-        private const val UNEXPECTED_ERROR = "Unexpected error: "
         private const val CAST_ERROR = "Class cast error: "
         private const val STATE_ERROR = "Illegal state error: "
     }
@@ -52,9 +50,6 @@ class IndustryFilterRepositoryImpl(
             throw e
         } catch (e: IllegalStateException) {
             Log.e(LOG_TAG, "$STATE_ERROR${e.message}")
-            throw e
-        } catch (e: Exception) {
-            Log.e(LOG_TAG, "$UNEXPECTED_ERROR${e.localizedMessage}")
             throw e
         }
     }
