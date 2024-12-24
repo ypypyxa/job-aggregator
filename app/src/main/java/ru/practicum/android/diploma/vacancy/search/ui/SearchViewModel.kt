@@ -49,7 +49,10 @@ class SearchViewModel(
         liveData.addSource(stateLiveData) { searchState ->
             liveData.value = when (searchState) {
                 is SearchFragmentState.Default -> searchState
-                is SearchFragmentState.Content -> SearchFragmentState.Content(searchState.vacancies, searchState.vacanciesCount)
+                is SearchFragmentState.Content -> SearchFragmentState.Content(
+                    searchState.vacancies,
+                    searchState.vacanciesCount
+                )
                 is SearchFragmentState.Empty -> searchState
                 is SearchFragmentState.ServerError -> searchState
                 is SearchFragmentState.InternetError -> searchState
