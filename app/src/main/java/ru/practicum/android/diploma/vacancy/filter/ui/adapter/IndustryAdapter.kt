@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.vacancy.filter.ui.chooseindustry
+package ru.practicum.android.diploma.vacancy.filter.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.databinding.FragmentChooseIndustryBinding
+import ru.practicum.android.diploma.vacancy.filter.ui.adapter.IndustryAdapter
 
 class ChooseIndustryFragment : Fragment() {
 

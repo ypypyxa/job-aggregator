@@ -16,6 +16,12 @@ class IndustryFilterRepositoryImpl(
     private val converter: Converter
 
 ) : IndustryFilterRepository {
+    companion object {
+        private const val LOG_TAG = "IndustryFilterRepository"
+        private const val NETWORK_ERROR = "Network error: "
+        private const val HTTP_ERROR = "HTTP error: "
+        private const val UNEXPECTED_ERROR = "Unexpected error: "
+    }
 
     private val industryCache = mutableListOf<IndustriesDto>()
 
@@ -31,13 +37,13 @@ class IndustryFilterRepositoryImpl(
             industryCache.clear()
             industryCache.addAll(response.industries)
         } catch (e: IOException) {
-            Log.e("IndustryFilterRepository", "Network error: ${e.message}")
+            Log.e(LOG_TAG, "$NETWORK_ERROR${e.message}")
             throw e
         } catch (e: HttpException) {
-            Log.e("IndustryFilterRepository", "HTTP error: ${e.code()} - ${e.message()}")
+            Log.e(LOG_TAG, "$HTTP_ERROR${e.code()} - ${e.message()}")
             throw e
         } catch (e: Exception) {
-            Log.e("IndustryFilterRepository", "Unexpected error: ${e.localizedMessage}")
+            Log.e(LOG_TAG, "$UNEXPECTED_ERROR${e.localizedMessage}")
             throw e
         }
     }

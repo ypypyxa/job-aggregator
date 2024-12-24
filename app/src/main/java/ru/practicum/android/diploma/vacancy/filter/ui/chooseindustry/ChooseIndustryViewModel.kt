@@ -28,19 +28,23 @@ class ChooseIndustryViewModel(
                 val industries = interactor.fetchIndustries()
                 _industryState.value = industries
             } catch (e: IOException) {
-                // Сетевая ошибка (отключен интернет)
                 _industryState.value = emptyList()
-                Log.e("ChooseIndustryViewModel", "Network error: ${e.message}")
+                Log.e(LOG_TAG, "$NETWORK_ERROR${e.message}")
             } catch (e: HttpException) {
-                // Сервер вернул ошибку
                 _industryState.value = emptyList()
-                Log.e("ChooseIndustryViewModel", "Server error: ${e.code()}")
+                Log.e(LOG_TAG, "$SERVER_ERROR${e.code()}")
             } catch (e: Exception) {
-                // Любая другая ошибка
                 _industryState.value = emptyList()
-                Log.e("ChooseIndustryViewModel", "Unexpected error: ${e.localizedMessage}")
+                Log.e(LOG_TAG, "$UNEXPECTED_ERROR${e.localizedMessage}")
             }
         }
+    }
+
+    companion object {
+        private const val LOG_TAG = "ChooseIndustryViewModel"
+        private const val NETWORK_ERROR = "Network error: "
+        private const val SERVER_ERROR = "Server error: "
+        private const val UNEXPECTED_ERROR = "Unexpected error: "
     }
 
 }
