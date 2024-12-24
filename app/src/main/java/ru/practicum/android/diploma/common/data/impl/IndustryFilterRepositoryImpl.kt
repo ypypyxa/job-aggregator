@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.common.data.impl
 
+import android.media.session.PlaybackState.STATE_ERROR
 import android.util.Log
 import retrofit2.HttpException
 import ru.practicum.android.diploma.common.data.dto.IndustriesDto
@@ -21,8 +22,8 @@ class IndustryFilterRepositoryImpl(
         private const val NETWORK_ERROR = "Network error: "
         private const val HTTP_ERROR = "HTTP error: "
         private const val UNEXPECTED_ERROR = "Unexpected error: "
-        private const val ARGUMENT_ERROR = "Argument error: "
-        private const val NULL_POINTER_ERROR = "Null pointer error: "
+        private const val CAST_ERROR = "Class cast error: "
+        private const val STATE_ERROR = "Illegal state error: "
     }
 
     private val industryCache = mutableListOf<IndustriesDto>()
@@ -36,6 +37,8 @@ class IndustryFilterRepositoryImpl(
     override suspend fun fetchIndustries() {
         try {
             val response = networkClient.doRequest(IndustryRequest()) as IndustryResponse
+            require(response.industries.isNotEmpty()) { "Industry list is empty" }
+
             industryCache.clear()
             industryCache.addAll(response.industries)
         } catch (e: IOException) {
@@ -44,11 +47,11 @@ class IndustryFilterRepositoryImpl(
         } catch (e: HttpException) {
             Log.e(LOG_TAG, "$HTTP_ERROR${e.code()} - ${e.message()}")
             throw e
-        } catch (e: IllegalArgumentException) {
-            Log.e(LOG_TAG, "$ARGUMENT_ERROR${e.message}")
+        } catch (e: ClassCastException) {
+            Log.e(LOG_TAG, "$CAST_ERROR${e.message}")
             throw e
-        } catch (e: NullPointerException) {
-            Log.e(LOG_TAG, "$NULL_POINTER_ERROR${e.message}")
+        } catch (e: IllegalStateException) {
+            Log.e(LOG_TAG, "$STATE_ERROR${e.message}")
             throw e
         } catch (e: Exception) {
             Log.e(LOG_TAG, "$UNEXPECTED_ERROR${e.localizedMessage}")
