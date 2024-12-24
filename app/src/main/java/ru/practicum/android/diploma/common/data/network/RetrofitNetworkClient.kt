@@ -11,6 +11,7 @@ import ru.practicum.android.diploma.common.data.network.requests.SearchRequest
 import ru.practicum.android.diploma.common.data.network.requests.VacancyDetailRequest
 import ru.practicum.android.diploma.common.data.network.response.AreaResponse
 import ru.practicum.android.diploma.common.data.network.response.IndustryResponse
+import ru.practicum.android.diploma.common.data.network.response.SearchResponse
 import ru.practicum.android.diploma.common.data.network.response.VacancyDetailResponse
 import ru.practicum.android.diploma.common.utils.isInternetAvailable
 import java.io.IOException
@@ -61,7 +62,7 @@ class RetrofitNetworkClient(
     }
 
     // поиск вакансий
-    private suspend fun makeVacancySearchRequest(dto: SearchRequest): Response {
+    private suspend fun makeVacancySearchRequest(dto: SearchRequest): SearchResponse {
         return headHunterApi.getVacancies(dto.params).apply {
             resultCode = SUCCESS
         }

@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.practicum.android.diploma.R
@@ -24,6 +25,8 @@ class DetailsFragment : Fragment() {
 
     private var _binding: FragmentDetailsBinding? = null
     private val binding get() = _binding!!
+
+    private val corner by lazy { requireContext().resources.getDimension(R.dimen.dimens_12).toInt() }
 
     private var vacancy: VacancyDetails? = null
     private var vacancyId: Int? = 0
@@ -104,31 +107,38 @@ class DetailsFragment : Fragment() {
 
     private fun updateUI(vacancyDetails: VacancyDetails?) {
         vacancyDetails?.let {
-            // Заголовок
+            setupBasicInfo(it)
+            setupDescription(it)
+        }
+    }
+
+    private fun setupBasicInfo(vacancyDetails: VacancyDetails) {
+        vacancyDetails?.let {
             binding.tvVacancyName.text = it.title
-            // ЗП
             binding.tvSalary.text = formatSalary(it.salaryFrom, it.salaryTo, it.currency)
-            // Название компании
             binding.tvEmployerText.text = it.employerName
-            // город
             binding.tvCityText.text = it.city
-            // опыт
             binding.tvExperience.text = it.experience
-            // ЛОГО
-            Glide.with(binding.ivEmployerLogo.context)
+            Glide
+                .with(binding.ivEmployerLogo.context)
                 .load(it.employerLogoUri)
+                .fitCenter()
                 .placeholder(R.drawable.placeholder)
+                .transform(RoundedCorners(corner))
                 .into(binding.ivEmployerLogo)
-            // График работы
             binding.tvSchedule.text = it.schedule
-            // Веб текст вывод
-            binding.wvDescription.settings.javaScriptEnabled = true
-            val isNightMode = resources.configuration.uiMode and
+        }
+    }
+
+    private fun setupDescription(vacancyDetails: VacancyDetails) {
+        binding.wvDescription.settings.javaScriptEnabled = true
+        val isNightMode =
+            resources.configuration.uiMode and
                 android.content.res.Configuration.UI_MODE_NIGHT_MASK ==
                 android.content.res.Configuration.UI_MODE_NIGHT_YES
-            val textColor = if (isNightMode) "#FDFDFD" else "#1A1B22"
-            val backgroundColor = if (isNightMode) "#1A1B22" else "#FDFDFD"
-            val jobDescriptionHtml = """
+        val textColor = if (isNightMode) "#FDFDFD" else "#1A1B22"
+        val backgroundColor = if (isNightMode) "#1A1B22" else "#FDFDFD"
+        val jobDescriptionHtml = """
     <html>
     <head>
         <style>
@@ -144,13 +154,11 @@ class DetailsFragment : Fragment() {
         ${vacancyDetails.jobDescription ?: ""}
     </body>
     </html>
-            """.trimIndent()
-            binding.wvDescription.loadDataWithBaseURL(null, jobDescriptionHtml, "text/html", "UTF-8", null)
-            hideAll()
-            binding.clBody.show()
-            vacancy = vacancyDetails
-            vacancyUrl = vacancyDetails.vacancyUrl
-        }
+        """.trimIndent()
+        binding.wvDescription.loadDataWithBaseURL(null, jobDescriptionHtml, "text/html", "UTF-8", null)
+        hideAll()
+        binding.clBody.show()
+        vacancy = vacancyDetails
     }
 
     private fun showLoading() {
@@ -190,7 +198,6 @@ class DetailsFragment : Fragment() {
     }
 
     private fun showToast(additionalMessage: String) {
-        Toast.makeText(requireContext(), additionalMessage, Toast.LENGTH_LONG)
-            .show()
+        Toast.makeText(requireContext(), additionalMessage, Toast.LENGTH_LONG).show()
     }
 }
