@@ -28,7 +28,7 @@ class AreaRepositoryImpl(
             }
             SUCCESS -> {
                 val areas = (response as AreaResponse).areas.map {
-                    converter.AreaDtotoArea(it)
+                    converter.convertAreaDtotoArea(it)
                 }
                 emit(Resource.success(areas))
             }
@@ -46,7 +46,7 @@ class AreaRepositoryImpl(
             }
             SUCCESS -> {
                 val regions = (response as AreaResponse).areas.firstOrNull()?.areas?.map {
-                    converter.AreaDtotoArea(it)
+                    converter.convertAreaDtotoArea(it)
                 } ?: emptyList()
                 emit(Resource.success(regions))
             }

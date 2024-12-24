@@ -48,13 +48,13 @@ class Converter {
         )
     }
 
-    fun AreaDtotoArea(dto: AreasDto, parentName: String? = null): Area {
+    fun convertAreaDtotoArea(dto: AreasDto, parentName: String? = null): Area {
         return Area(
             id = dto.id,
             name = dto.name,
             parentId = dto.parentId,
             parentName = parentName,
-            areas = dto.areas?.map { AreaDtotoArea(it, dto.name) } ?: emptyList()
+            areas = dto.areas?.map { convertAreaDtotoArea(it, dto.name) } ?: emptyList()
         )
     }
 }
