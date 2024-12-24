@@ -33,9 +33,9 @@ class ChooseIndustryViewModel(
             } catch (e: HttpException) {
                 _industryState.value = emptyList()
                 Log.e(LOG_TAG, "$SERVER_ERROR${e.code()}")
-            } catch (e: Exception) {
+            } catch (e: IllegalStateException) {
                 _industryState.value = emptyList()
-                Log.e(LOG_TAG, "$UNEXPECTED_ERROR${e.localizedMessage}")
+                Log.e(LOG_TAG, "$ILLEGAL_STATE_ERROR${e.message}")
             }
         }
     }
@@ -44,7 +44,7 @@ class ChooseIndustryViewModel(
         private const val LOG_TAG = "ChooseIndustryViewModel"
         private const val NETWORK_ERROR = "Network error: "
         private const val SERVER_ERROR = "Server error: "
-        private const val UNEXPECTED_ERROR = "Unexpected error: "
+        private const val ILLEGAL_STATE_ERROR = "Illegal state: "
     }
 
 }

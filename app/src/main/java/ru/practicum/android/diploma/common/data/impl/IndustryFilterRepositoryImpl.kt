@@ -42,10 +42,9 @@ class IndustryFilterRepositoryImpl(
         } catch (e: HttpException) {
             Log.e(LOG_TAG, "$HTTP_ERROR${e.code()} - ${e.message()}")
             throw e
-        } catch (e: Exception) {
+        } catch (e: RuntimeException) {
             Log.e(LOG_TAG, "$UNEXPECTED_ERROR${e.localizedMessage}")
             throw e
         }
     }
-
 }
