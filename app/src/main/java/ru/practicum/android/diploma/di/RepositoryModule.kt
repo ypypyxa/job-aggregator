@@ -26,6 +26,6 @@ val repositoryModule = module {
         FavoritesRepositoryImpl(get(), get())
     }
     single<AreaRepository> {
-        AreaRepositoryImpl(get(), androidContext())
+        AreaRepositoryImpl(get(), androidContext(), get())
     }
 }

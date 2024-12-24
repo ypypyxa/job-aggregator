@@ -1,9 +1,11 @@
 package ru.practicum.android.diploma.common.utils
 
 import com.google.gson.Gson
+import ru.practicum.android.diploma.common.data.dto.AreasDto
 import ru.practicum.android.diploma.common.data.network.response.SearchResponse
 import ru.practicum.android.diploma.common.data.network.response.VacancyDetailResponse
 import ru.practicum.android.diploma.vacancy.details.domain.model.VacancyDetails
+import ru.practicum.android.diploma.vacancy.filter.domain.model.Area
 import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearch
 
 class Converter {
@@ -43,6 +45,16 @@ class Converter {
             employerName = response.vacancy.employer?.name ?: "Unknown",
             employerLogoUri = response.vacancy.employer?.logoUrls?.original,
             vacancyUrl = response.vacancy.alternateUrl
+        )
+    }
+
+    fun AreaDtotoArea(dto: AreasDto, parentName: String? = null): Area {
+        return Area(
+            id = dto.id,
+            name = dto.name,
+            parentId = dto.parentId,
+            parentName = parentName,
+            areas = dto.areas?.map { AreaDtotoArea(it, dto.name) } ?: emptyList()
         )
     }
 }

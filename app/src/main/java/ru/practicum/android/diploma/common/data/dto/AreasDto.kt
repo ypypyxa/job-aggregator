@@ -9,14 +9,4 @@ data class AreasDto(
     val name: String,
     @SerializedName("parent_id") val parentId: String?,
     val areas: List<AreasDto>?
-) {
-    fun toDomain(parentName: String? = null): Area {
-        return Area(
-            id = id,
-            name = name,
-            parentId = parentId,
-            parentName = parentName,
-            areas = areas?.map { it.toDomain(name) } ?: emptyList()
-        )
-    }
-}
+)
