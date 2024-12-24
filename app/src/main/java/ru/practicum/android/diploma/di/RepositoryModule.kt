@@ -31,6 +31,6 @@ val repositoryModule = module {
         AreaRepositoryImpl(get(), androidContext(), get())
     }
     single<IndustryFilterRepository> {
-        IndustryFilterRepositoryImpl(get())
+        IndustryFilterRepositoryImpl(get(), get())
     }
 }

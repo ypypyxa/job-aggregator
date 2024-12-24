@@ -26,7 +26,7 @@ val intercatorModule = module {
         AreaInteractorImpl(get()) }
 
     factory<IndustryFilterInteractor> {
-        IndustryFilterInteractorImpl(get<IndustryFilterRepository>())
+        IndustryFilterInteractorImpl(get<IndustryFilterRepository>(), get())
     }
 
 }

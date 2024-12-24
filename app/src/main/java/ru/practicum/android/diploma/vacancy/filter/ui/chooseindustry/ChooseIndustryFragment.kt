@@ -16,7 +16,7 @@ class ChooseIndustryFragment : Fragment() {
     private var _binding: FragmentChooseIndustryBinding? = null
     private val binding get() = _binding!!
     private val viewModel: ChooseIndustryViewModel by viewModel()
-    private lateinit var industryAdapter: IndustryAdapter
+    private var industryAdapter: IndustryAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,

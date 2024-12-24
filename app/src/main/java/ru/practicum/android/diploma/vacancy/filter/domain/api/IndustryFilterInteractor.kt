@@ -6,4 +6,6 @@ interface IndustryFilterInteractor {
     suspend fun fetchIndustries(): List<FilterIndustryValue>
     suspend fun getCachedIndustries(): List<FilterIndustryValue>
     suspend fun getDomainIndustries(): List<FilterIndustryValue>
+    fun saveSelectedIndustry(industry: FilterIndustryValue)
+    fun getSelectedIndustry(): FilterIndustryValue?
 }
