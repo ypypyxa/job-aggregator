@@ -68,7 +68,6 @@ class ChooseCountryFragment : Fragment() {
         }
     }
 
-
     private fun render(state: ChooseCountryFragmentState) {
         when (state) {
             is ChooseCountryFragmentState.Default -> showDefault(state.areas)
