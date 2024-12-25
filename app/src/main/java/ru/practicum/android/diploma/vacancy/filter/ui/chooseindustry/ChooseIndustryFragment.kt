@@ -5,16 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.coroutines.flow.collectLatest
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.databinding.FragmentChooseIndustryBinding
+import ru.practicum.android.diploma.vacancy.filter.ui.adapter.IndustryAdapter
 
 class ChooseIndustryFragment : Fragment() {
 
 
-    private val viewModel: ChooseIndustryViewModel by viewModels()
+    private val viewModel: ChooseIndustryViewModel by viewModel()
 
     private var _binding: FragmentChooseIndustryBinding? = null
     private val binding get() = _binding!!
