@@ -8,7 +8,7 @@
     tools:context=".vacancy.filter.ui.choosecountry.ChooseCountryFragment">
 
     <ImageView
-        android:id="@+id/choose_region_back"
+        android:id="@+id/choose_country_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dimens_20"
@@ -18,7 +18,7 @@
         app:srcCompat="@drawable/ic_arrow_back" />
 
     <TextView
-        android:id="@+id/choose_region_header"
+        android:id="@+id/choose_country_header"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dimens_20"
@@ -27,16 +27,16 @@
         android:text="@string/choose_country"
         android:textColor="@color/night_day"
         android:textSize="@dimen/text_size_22"
-        app:layout_constraintStart_toEndOf="@+id/choose_region_back"
+        app:layout_constraintStart_toEndOf="@+id/choose_country_back"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/region_list_recyclerView"
+        android:id="@+id/country_list_recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dimens_36"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintTop_toBottomOf="@id/choose_region_back"
+        app:layout_constraintTop_toBottomOf="@id/choose_country_back"
         tools:listitem="@layout/item_country" />
 
 

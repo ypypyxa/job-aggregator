@@ -73,14 +73,14 @@ class FilterFragment : Fragment() {
 
     fun editingRegioan() {
         binding.tlWorkPlaceFilter.setEndIconOnClickListener {
-            // Логика нажатия для поля "Место работы"
+            findNavController().navigate(R.id.action_filterFragment_to_chooseWorkplaceFragment)
             Toast.makeText(requireContext(), "Выбрано место работы", Toast.LENGTH_SHORT).show()
         }
     }
 
     fun editingIndustry() {
         binding.tlIndustry.setEndIconOnClickListener {
-            // Логика нажатия для поля "Отрасль"
+            findNavController().navigate(R.id.action_filterFragment_to_chooseIndustryFragment)
             Toast.makeText(requireContext(), "Выбрана отрасль", Toast.LENGTH_SHORT).show()
         }
     }
