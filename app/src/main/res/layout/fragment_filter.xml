@@ -30,7 +30,6 @@
         android:layout_marginTop="@dimen/dimens_16"
         android:gravity="center_vertical"
         android:layout_marginStart="@dimen/dimens_16"
-        android:layout_marginEnd="@dimen/dimens_16"
         android:orientation="vertical"
         android:paddingVertical="@dimen/dimens_8"
         app:layout_constraintEnd_toEndOf="parent"
@@ -42,7 +41,6 @@
             android:id="@+id/tl_work_place_filter"
             style="@style/TextInputLayout.FilterItem"
             android:backgroundTint="@color/white_universal"
-            android:paddingRight="@dimen/minus16"
             android:textColorHint="@color/gray"
             app:endIconDrawable="@drawable/ic_arrow_forward"
             app:endIconMode="custom"
@@ -56,7 +54,9 @@
                 android:layout_marginStart="@dimen/minus16"
                 android:ellipsize="end"
                 android:hint="@string/workplace"
-                android:textSize="@dimen/text_size_16" />
+                android:textSize="@dimen/text_size_16"
+                android:focusable="false"
+                android:clickable="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -65,7 +65,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:backgroundTint="@color/white_universal"
-            android:paddingRight="@dimen/minus16"
             android:textColorHint="@color/gray"
             app:endIconDrawable="@drawable/ic_arrow_forward"
             app:endIconMode="custom">
@@ -77,7 +76,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/minus16"
                 android:hint="@string/industry"
-                android:textSize="@dimen/text_size_16" />
+                android:textSize="@dimen/text_size_16"
+                android:focusable="false"
+                android:clickable="true" />
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 

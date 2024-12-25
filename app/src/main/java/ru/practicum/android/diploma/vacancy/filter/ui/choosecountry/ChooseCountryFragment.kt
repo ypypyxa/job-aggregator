@@ -5,29 +5,82 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.databinding.FragmentChooseCountryBinding
+import ru.practicum.android.diploma.vacancy.filter.domain.model.Area
+import ru.practicum.android.diploma.vacancy.filter.ui.adapter.AreaAdapter
+import ru.practicum.android.diploma.vacancy.filter.ui.choosecountry.model.ChooseCountryFragmentState
 
 class ChooseCountryFragment : Fragment() {
 
-    companion object {
-        fun newInstance() = ChooseCountryFragment()
-    }
-
     private val viewModel: ChooseCountryViewModel by viewModel()
+
+    private var _binding: FragmentChooseCountryBinding? = null
+    private val binding get() = _binding!!
+
+    private var areaAdapter: AreaAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.fragment_choose_country, container, false)
+        _binding = FragmentChooseCountryBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.loadVacancy()
-        viewModel.loadVacancyById("1620")
+        setRecyclerView()
+        setObservers()
+        setListeners()
+    }
+
+    private fun setRecyclerView() {
+        areaAdapter = AreaAdapter(emptyList()) { area ->
+            when (area.id) {
+                "-1" -> viewModel.loadCountries()
+                else -> {
+                    val action = ChooseCountryFragmentDirections
+                        .actionChooseCountryFragmentToChooseWorkplaceFragment(area.name)
+                    findNavController().navigate(action)
+                }
+            }
+        }
+        binding.regionListRecyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = areaAdapter
+        }
+    }
+
+    private fun setObservers() {
+        viewModel.observeState().observe(viewLifecycleOwner) {
+            render(it)
+        }
+    }
+
+    private fun setListeners() {
+        binding.chooseRegionBack.setOnClickListener() {
+            findNavController().navigateUp()
+        }
+    }
+
+    private fun render(state: ChooseCountryFragmentState) {
+        when (state) {
+            is ChooseCountryFragmentState.Default -> showDefault(state.areas)
+            is ChooseCountryFragmentState.Content -> showContent(state.areas)
+        }
+    }
+
+    private fun showDefault(areas: List<Area>) {
+        areaAdapter?.setAreas(areas)
+
+    }
+
+    private fun showContent(areas: List<Area>) {
+        areaAdapter?.setAreas(areas)
     }
 }
