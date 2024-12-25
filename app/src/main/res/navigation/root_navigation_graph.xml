@@ -75,7 +75,7 @@
         android:label="fragment_choose_industry"
         tools:layout="@layout/fragment_choose_industry" />
     <fragment
-        android:id="@+id/chooseRegionFragment2"
+        android:id="@+id/chooseRegionFragment"
         android:name="ru.practicum.android.diploma.vacancy.filter.ui.chooseregion.ChooseRegionFragment"
         android:label="fragment_choose_region"
         tools:layout="@layout/fragment_choose_region" />
@@ -89,6 +89,6 @@
             app:destination="@id/chooseCountryFragment" />
         <action
             android:id="@+id/action_chooseWorkplaceFragment_to_chooseRegionFragment"
-            app:destination="@id/chooseRegionFragment2" />
+            app:destination="@id/chooseRegionFragment" />
     </fragment>
 </navigation>

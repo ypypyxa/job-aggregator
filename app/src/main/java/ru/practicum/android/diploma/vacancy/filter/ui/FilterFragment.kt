@@ -10,8 +10,10 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentFilterBinding
+import ru.practicum.android.diploma.vacancy.filter.ui.chooseindustry.ChooseIndustryViewModel
 
 class FilterFragment : Fragment() {
 
@@ -20,6 +22,8 @@ class FilterFragment : Fragment() {
     }
 
     private val viewModel: FilterViewModel by viewModels()
+
+    private val industryViewModel: ChooseIndustryViewModel by viewModel()
 
     private var _binding: FragmentFilterBinding? = null
     private val binding get() = _binding!!
@@ -43,6 +47,7 @@ class FilterFragment : Fragment() {
         editingIndustry()
         backToSearch()
         focusPocus()
+
     }
 
     override fun onDestroyView() {
@@ -81,7 +86,6 @@ class FilterFragment : Fragment() {
     fun editingIndustry() {
         binding.tlIndustry.setEndIconOnClickListener {
             findNavController().navigate(R.id.action_filterFragment_to_chooseIndustryFragment)
-            Toast.makeText(requireContext(), "Выбрана отрасль", Toast.LENGTH_SHORT).show()
         }
     }
 }

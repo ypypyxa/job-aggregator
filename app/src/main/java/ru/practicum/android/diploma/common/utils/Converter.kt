@@ -2,10 +2,12 @@ package ru.practicum.android.diploma.common.utils
 
 import com.google.gson.Gson
 import ru.practicum.android.diploma.common.data.dto.AreasDto
+import ru.practicum.android.diploma.common.data.dto.IndustriesDto
 import ru.practicum.android.diploma.common.data.network.response.SearchResponse
 import ru.practicum.android.diploma.common.data.network.response.VacancyDetailResponse
 import ru.practicum.android.diploma.vacancy.details.domain.model.VacancyDetails
 import ru.practicum.android.diploma.vacancy.filter.domain.model.Area
+import ru.practicum.android.diploma.vacancy.filter.domain.model.FilterIndustryValue
 import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearch
 
 class Converter {
@@ -55,6 +57,12 @@ class Converter {
             parentId = dto.parentId,
             parentName = parentName,
             areas = dto.areas?.map { convertAreaDtotoArea(it, dto.name) } ?: emptyList()
+        )
+    }
+    fun industriesDtoToDomain(dto: IndustriesDto): FilterIndustryValue {
+        return FilterIndustryValue(
+            id = dto.id,
+            text = dto.name
         )
     }
 }
