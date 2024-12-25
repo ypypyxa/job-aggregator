@@ -15,12 +15,9 @@ import ru.practicum.android.diploma.vacancy.filter.ui.adapter.IndustryAdapter
 
 class ChooseIndustryFragment : Fragment() {
 
-
     private val viewModel: ChooseIndustryViewModel by viewModel()
-
     private var _binding: FragmentChooseIndustryBinding? = null
     private val binding get() = _binding!!
-
     private var industryAdapter: IndustryAdapter? = null
 
     override fun onCreateView(
@@ -70,6 +67,4 @@ class ChooseIndustryFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
-
 }

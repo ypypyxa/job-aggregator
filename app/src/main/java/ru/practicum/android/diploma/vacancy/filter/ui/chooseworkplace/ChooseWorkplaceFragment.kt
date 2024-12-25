@@ -17,10 +17,8 @@ class ChooseWorkplaceFragment : Fragment() {
     }
 
     private val viewModel: ChooseWorkplaceViewModel by viewModels()
-
     private var _binding: FragmentChooseWorkplaceBinding? = null
     private val binding get() = _binding!!
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
