@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
@@ -13,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.common.utils.debounce
 import ru.practicum.android.diploma.databinding.FragmentSearchBinding
 import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearch
@@ -23,6 +25,10 @@ class SearchFragment : Fragment() {
 
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 500L
+        const val UNIT = 10
+        const val HUNDRED = 100
+        val RANGE_EXCEPTION = 12..14
+        val RANGE_FEW = 2..4
     }
 
     private var _binding: FragmentSearchBinding? = null
@@ -107,6 +113,15 @@ class SearchFragment : Fragment() {
                 viewModel.onSearchQueryChanged(text.toString())
             }
         }
+        binding.editSearch.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE) {
+                val query = binding.editSearch.text.toString()
+                if (query.isNotEmpty()) {
+                    viewModel.onSearchButtonPress(query)
+                }
+            }
+            false
+        }
 
         binding.buttonClearEditSearch.setOnClickListener {
             binding.editSearch.text.clear()
@@ -129,7 +144,7 @@ class SearchFragment : Fragment() {
     private fun render(state: SearchFragmentState) {
         when (state) {
             is SearchFragmentState.Default -> showDefault()
-            is SearchFragmentState.Content -> showContent(state.vacancies)
+            is SearchFragmentState.Content -> showContent(state.vacancies, state.vacanciesCount)
             is SearchFragmentState.Empty -> showEmpty()
             is SearchFragmentState.ServerError -> showServerError()
             is SearchFragmentState.InternetError -> showInternetError()
@@ -144,8 +159,10 @@ class SearchFragment : Fragment() {
         binding.placeholderSearch.visibility = View.VISIBLE
     }
 
-    private fun showContent(vacancies: List<VacancySearch>) {
+    private fun showContent(vacancies: List<VacancySearch>, vacanciesCount: Int) {
         hideAll()
+        binding.searchState.setVacancyCountText(vacanciesCount)
+        binding.searchState.visibility = View.VISIBLE
         binding.recyclerView.visibility = View.VISIBLE
         if (viewModel.currentPage <= 0) {
             vacancyAdapter.updateVacancies(vacancies)
@@ -162,11 +179,14 @@ class SearchFragment : Fragment() {
         binding.recyclerView.visibility = View.GONE
         binding.progressBar.visibility = View.GONE
         binding.progressBarPagination.visibility = View.GONE
+        binding.searchState.visibility = View.GONE
     }
 
     private fun showEmpty() {
         hideAll()
         binding.placeholderNothingFound.visibility = View.VISIBLE
+        binding.searchState.text = requireContext().getString(R.string.search_state_nothing_found)
+        binding.searchState.visibility = View.VISIBLE
     }
 
     private fun showServerError() {
@@ -193,4 +213,17 @@ class SearchFragment : Fragment() {
         binding.progressBarPagination.visibility = View.VISIBLE
     }
 
+    private fun TextView.setVacancyCountText(count: Int) {
+        val text = when {
+            count % UNIT == 1 && count % HUNDRED !in RANGE_EXCEPTION ->
+                context.getString(R.string.vacancy_found_one, count)
+
+            count % UNIT in RANGE_FEW && count % HUNDRED !in RANGE_EXCEPTION ->
+                context.getString(R.string.vacancy_found_few, count)
+
+            else ->
+                context.getString(R.string.vacancy_found_many, count)
+        }
+        this.text = text
+    }
 }
