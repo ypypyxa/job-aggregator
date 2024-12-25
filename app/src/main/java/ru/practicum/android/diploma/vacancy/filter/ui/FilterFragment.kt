@@ -79,7 +79,7 @@ class FilterFragment : Fragment() {
     fun editingRegioan() {
         binding.tlWorkPlaceFilter.setEndIconOnClickListener {
             // Логика нажатия для поля "Место работы"
-            Toast.makeText(requireContext(), "Выбрано место работы", Toast.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.action_filterFragment_to_chooseWorkplaceFragment)
         }
     }
 

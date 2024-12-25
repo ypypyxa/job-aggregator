@@ -78,7 +78,7 @@
         android:layout_marginTop="@dimen/dimens_16"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintTop_toBottomOf="@id/choose_region_enter_field_edittext"
-        tools:listitem="@layout/item_region" />
+        tools:listitem="@layout/item_area" />
 
     <LinearLayout
         android:id="@+id/no_region"

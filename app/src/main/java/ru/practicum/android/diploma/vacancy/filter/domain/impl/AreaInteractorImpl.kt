@@ -9,8 +9,8 @@ import ru.practicum.android.diploma.vacancy.filter.domain.model.Area
 
 class AreaInteractorImpl(private val repository: AreaRepository) : AreaInteractor {
 
-    override fun fetchArea(): Flow<Pair<List<Area>?, String?>> {
-        return repository.fetchArea().map { result ->
+    override fun fetchCountries(): Flow<Pair<List<Area>?, String?>> {
+        return repository.fetchCountries().map { result ->
             when (result) {
                 is Resource.Success -> Pair(result.data, null)
                 is Resource.Error -> Pair(null, result.message)
@@ -18,7 +18,7 @@ class AreaInteractorImpl(private val repository: AreaRepository) : AreaInteracto
         }
     }
 
-    override fun fetchAreaById(areaId: String): Flow<Pair<List<Area>?, String?>> {
+    override fun fetchAreaById(areaId: String): Flow<Pair<Area?, String?>> {
         return repository.fetchAreaById(areaId).map { result ->
             when (result) {
                 is Resource.Success -> Pair(result.data, null)

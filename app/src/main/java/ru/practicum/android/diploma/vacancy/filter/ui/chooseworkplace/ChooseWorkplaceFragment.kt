@@ -5,27 +5,74 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.databinding.FragmentChooseWorkplaceBinding
+import ru.practicum.android.diploma.vacancy.filter.ui.chooseworkplace.model.ChooseWorkplaceFragmentState
 
 class ChooseWorkplaceFragment : Fragment() {
 
-    companion object {
-        fun newInstance() = ChooseWorkplaceFragment()
+    private val viewModel: ChooseWorkplaceViewModel by viewModel() {
+        parametersOf(countryName)
     }
 
-    private val viewModel: ChooseWorkplaceViewModel by viewModels()
+    private var countryName: String = ""
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
+    private var _binding: FragmentChooseWorkplaceBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.fragment_choose_workplace, container, false)
+        _binding = FragmentChooseWorkplaceBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val args: ChooseWorkplaceFragmentArgs by navArgs()
+        countryName = args.countryName
+
+        setListeners()
+        setObservers()
+    }
+
+    private fun setListeners() {
+        binding.forwardArrowCountry.setOnClickListener() {
+            findNavController().navigate(R.id.action_chooseWorkplaceFragment_to_chooseCountryFragment)
+        }
+    }
+
+    private fun setObservers() {
+        viewModel.observeState().observe(viewLifecycleOwner) {
+            render(it)
+        }
+    }
+
+    private fun render(state: ChooseWorkplaceFragmentState) {
+        when (state) {
+            is ChooseWorkplaceFragmentState.Empty -> showEmpty()
+            is ChooseWorkplaceFragmentState.CountrySelected -> setCountryName(state.name)
+            is ChooseWorkplaceFragmentState.CitySelected -> setCityName(state.name)
+        }
+    }
+
+    private fun showEmpty() {
+        binding.chooseCountryTextInputEditText.text?.clear()
+        binding.chooseCityTextInputEditText.text?.clear()
+    }
+
+    private fun setCountryName(name: String) {
+        binding.chooseCountryTextInputEditText.setText(name)
+    }
+
+    private fun setCityName(name: String) {
+        binding.chooseCityTextInputEditText.setText(name)
     }
 }
