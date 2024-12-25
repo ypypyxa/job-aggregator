@@ -34,9 +34,15 @@ class ChooseCountryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        onBackPressed()
         setRecyclerView()
         setObservers()
-        setListeners()
+    }
+
+    fun onBackPressed() {
+        binding.chooseCountryBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     private fun setRecyclerView() {
@@ -50,7 +56,7 @@ class ChooseCountryFragment : Fragment() {
                 }
             }
         }
-        binding.regionListRecyclerView.apply {
+        binding.countryListRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = areaAdapter
         }
@@ -59,12 +65,6 @@ class ChooseCountryFragment : Fragment() {
     private fun setObservers() {
         viewModel.observeState().observe(viewLifecycleOwner) {
             render(it)
-        }
-    }
-
-    private fun setListeners() {
-        binding.chooseRegionBack.setOnClickListener() {
-            findNavController().navigateUp()
         }
     }
 

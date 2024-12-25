@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -14,9 +15,9 @@ import ru.practicum.android.diploma.vacancy.filter.ui.adapter.IndustryAdapter
 
 class ChooseIndustryFragment : Fragment() {
 
+    private val viewModel: ChooseIndustryViewModel by viewModel()
     private var _binding: FragmentChooseIndustryBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: ChooseIndustryViewModel by viewModel()
     private var industryAdapter: IndustryAdapter? = null
 
     override fun onCreateView(
@@ -30,9 +31,15 @@ class ChooseIndustryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        onBackPressed()
         setupRecyclerView()
         observeIndustries()
+    }
+
+    fun onBackPressed() {
+        binding.chooseIndustryBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     private fun setupRecyclerView() {

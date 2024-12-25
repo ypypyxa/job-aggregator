@@ -41,6 +41,9 @@ class ChooseWorkplaceFragment : Fragment() {
 
         setListeners()
         setObservers()
+        selectCountry()
+        selectRegion()
+        onBackPressed()
     }
 
     private fun setListeners() {
@@ -74,5 +77,28 @@ class ChooseWorkplaceFragment : Fragment() {
 
     private fun setCityName(name: String) {
         binding.chooseCityTextInputEditText.setText(name)
+    }
+
+    fun selectCountry() {
+        binding.chooseCountryTextInputEditText.setOnClickListener {
+            findNavController().navigate(R.id.action_chooseWorkplaceFragment_to_chooseCountryFragment)
+        }
+    }
+
+    fun selectRegion() {
+        binding.chooseCityTextInputEditText.setOnClickListener {
+            findNavController().navigate(R.id.action_chooseWorkplaceFragment_to_chooseRegionFragment)
+        }
+    }
+
+    fun onBackPressed() {
+        binding.backArrow.setOnClickListener {
+            findNavController().navigate(R.id.action_chooseWorkplaceFragment_to_filterFragment)
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
