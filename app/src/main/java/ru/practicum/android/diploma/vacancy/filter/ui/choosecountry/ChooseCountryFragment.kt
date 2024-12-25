@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.databinding.FragmentChooseCountryBinding
 import ru.practicum.android.diploma.vacancy.filter.domain.model.Area
+import ru.practicum.android.diploma.vacancy.filter.ui.adapter.AreaAdapter
+import ru.practicum.android.diploma.vacancy.filter.ui.choosecountry.model.ChooseCountryFragmentState
 
 class ChooseCountryFragment : Fragment() {
 
@@ -32,12 +34,9 @@ class ChooseCountryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.loadVacancy()
-        viewModel.loadVacancyById("1620")
         onBackPressed()
         setRecyclerView()
         setObservers()
-        setListeners()
     }
 
     fun onBackPressed() {
@@ -57,7 +56,7 @@ class ChooseCountryFragment : Fragment() {
                 }
             }
         }
-        binding.regionListRecyclerView.apply {
+        binding.countryListRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = areaAdapter
         }
@@ -69,11 +68,6 @@ class ChooseCountryFragment : Fragment() {
         }
     }
 
-    private fun setListeners() {
-        binding.chooseRegionBack.setOnClickListener() {
-            findNavController().navigateUp()
-        }
-    }
 
     private fun render(state: ChooseCountryFragmentState) {
         when (state) {

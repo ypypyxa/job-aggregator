@@ -12,6 +12,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentChooseWorkplaceBinding
+import ru.practicum.android.diploma.vacancy.filter.ui.chooseworkplace.model.ChooseWorkplaceFragmentState
 
 class ChooseWorkplaceFragment : Fragment() {
 
@@ -41,7 +42,6 @@ class ChooseWorkplaceFragment : Fragment() {
 
         setListeners()
         setObservers()
-
         selectCountry()
         selectRegion()
         onBackPressed()
@@ -87,14 +87,14 @@ class ChooseWorkplaceFragment : Fragment() {
     }
 
     fun selectRegion() {
-        binding.chooseRegionTextInputEditText.setOnClickListener {
+        binding.chooseCityTextInputEditText.setOnClickListener {
             findNavController().navigate(R.id.action_chooseWorkplaceFragment_to_chooseRegionFragment)
         }
     }
 
     fun onBackPressed() {
         binding.backArrow.setOnClickListener {
-            findNavController().popBackStack()
+            findNavController().navigate(R.id.action_chooseWorkplaceFragment_to_filterFragment)
         }
     }
 

@@ -100,6 +100,10 @@
         android:name="ru.practicum.android.diploma.vacancy.filter.ui.chooseworkplace.ChooseWorkplaceFragment"
         android:label="fragment_choose_workplace"
         tools:layout="@layout/fragment_choose_workplace">
+        <argument
+            android:name="countryName"
+            app:argType="string"
+            android:defaultValue="Unknown" />
         <action
             android:id="@+id/action_chooseWorkplaceFragment_to_chooseCountryFragment"
             app:destination="@id/chooseCountryFragment" />
