@@ -9,7 +9,7 @@ import ru.practicum.android.diploma.vacancy.filter.domain.model.Area
 class AreaAdapter(
     private var areas: List<Area>,
     private val onClick: (Area) -> Unit
-) : RecyclerView.Adapter<AreaAdapter. AreaViewHolder>() {
+) : RecyclerView.Adapter<AreaAdapter.AreaViewHolder>() {
 
     inner class AreaViewHolder(
         private val binding: ItemAreaBinding

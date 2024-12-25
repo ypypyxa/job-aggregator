@@ -24,7 +24,8 @@ class ChooseWorkplaceViewModel(
         liveData.addSource(stateLiveData) { state ->
             liveData.value = when (state) {
                 is ChooseWorkplaceFragmentState.Empty -> ChooseWorkplaceFragmentState.Empty
-                is ChooseWorkplaceFragmentState.CountrySelected -> ChooseWorkplaceFragmentState.CountrySelected(state.name)
+                is ChooseWorkplaceFragmentState.CountrySelected ->
+                    ChooseWorkplaceFragmentState.CountrySelected(state.name)
                 is ChooseWorkplaceFragmentState.CitySelected -> ChooseWorkplaceFragmentState.CitySelected(state.name)
             }
         }

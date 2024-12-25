@@ -11,6 +11,10 @@ class ChooseRegionViewModel(
     private val areaInteractor: AreaInteractor
 ) : ViewModel() {
 
+    init {
+        loadAreaById("1")
+    }
+
     private fun loadAreaById(areaId: String) {
         viewModelScope.launch {
             areaInteractor.fetchAreaById(areaId)
