@@ -7,7 +7,6 @@ import ru.practicum.android.diploma.vacancy.details.domain.api.DetailsInteractor
 import ru.practicum.android.diploma.vacancy.details.domain.impl.DetailsInteractorImpl
 import ru.practicum.android.diploma.vacancy.filter.domain.api.AreaInteractor
 import ru.practicum.android.diploma.vacancy.filter.domain.api.IndustryFilterInteractor
-import ru.practicum.android.diploma.vacancy.filter.domain.api.IndustryFilterRepository
 import ru.practicum.android.diploma.vacancy.filter.domain.impl.AreaInteractorImpl
 import ru.practicum.android.diploma.vacancy.filter.domain.impl.IndustryFilterInteractorImpl
 import ru.practicum.android.diploma.vacancy.search.domain.api.SearchInteractor
