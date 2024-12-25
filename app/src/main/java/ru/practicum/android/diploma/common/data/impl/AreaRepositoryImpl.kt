@@ -20,17 +20,17 @@ class AreaRepositoryImpl(
     private val converter: Converter
 ) : AreaRepository {
 
-    override fun fetchArea(): Flow<Resource<List<Area>>> = flow {
+    override fun fetchCountries(): Flow<Resource<List<Area>>> = flow {
         val response = networkClient.doRequest(AreaRequest())
         when (response.resultCode) {
             NO_INTERNET_ERROR -> {
                 emit(Resource.error(NO_INTERNET_ERROR, context.getString(R.string.search_no_internet)))
             }
             SUCCESS -> {
-                val areas = (response as AreaResponse).areas.map {
+                val areas = (response as AreaResponse).areas?.map {
                     converter.convertAreaDtotoArea(it)
                 }
-                emit(Resource.success(areas))
+                emit(Resource.success(areas!!))
             }
             else -> {
                 emit(Resource.error(response.resultCode, context.getString(R.string.server_error)))
@@ -38,17 +38,15 @@ class AreaRepositoryImpl(
         }
     }
 
-    override fun fetchAreaById(areaId: String): Flow<Resource<List<Area>>> = flow {
+    override fun fetchAreaById(areaId: String): Flow<Resource<Area>> = flow {
         val response = networkClient.doRequest(AreaRequest(areaId.toInt()))
         when (response.resultCode) {
             NO_INTERNET_ERROR -> {
                 emit(Resource.error(NO_INTERNET_ERROR, context.getString(R.string.search_no_internet)))
             }
             SUCCESS -> {
-                val regions = (response as AreaResponse).areas.firstOrNull()?.areas?.map {
-                    converter.convertAreaDtotoArea(it)
-                } ?: emptyList()
-                emit(Resource.success(regions))
+                val area = converter.convertAreaDtotoArea((response as AreaResponse).area!!)
+                emit(Resource.success(area))
             }
             else -> {
                 emit(Resource.error(response.resultCode, context.getString(R.string.server_error)))

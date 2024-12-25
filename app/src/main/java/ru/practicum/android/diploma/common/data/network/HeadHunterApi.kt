@@ -30,14 +30,15 @@ interface HeadHunterApi {
         @Path("vacancy_id") vacancyId: Int
     ): VacancyItemDto
 
-    @GET("areas")
-    suspend fun getAreas(): List<AreasDto>
-
-    @GET("industries")
-    suspend fun getIndustries(): List<IndustriesDto>
+    @GET("areas/countries")
+    suspend fun getCountres(): List<AreasDto>
 
     @GET("areas/{area_id}")
     suspend fun getAreaById(
         @Path("area_id") areaId: Int
     ): AreasDto
+
+    @GET("industries")
+    suspend fun getIndustries(): List<IndustriesDto>
+
 }

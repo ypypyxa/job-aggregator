@@ -7,7 +7,7 @@
     android:minHeight="60dp">
 
     <TextView
-        android:id="@+id/country_item_textview"
+        android:id="@+id/area_name_textview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/ys_display_regular"
@@ -17,5 +17,5 @@
         app:drawableRightCompat="@drawable/ic_arrow_forward"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Регион" />
+        tools:text="Страна/Область/Город" />
 </androidx.constraintlayout.widget.ConstraintLayout>

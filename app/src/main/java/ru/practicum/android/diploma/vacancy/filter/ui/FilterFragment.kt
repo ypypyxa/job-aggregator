@@ -85,6 +85,7 @@ class FilterFragment : Fragment() {
 
     fun editingIndustry() {
         binding.tlIndustry.setEndIconOnClickListener {
+            // Логика нажатия для поля "Отрасль"
             findNavController().navigate(R.id.action_filterFragment_to_chooseIndustryFragment)
         }
     }

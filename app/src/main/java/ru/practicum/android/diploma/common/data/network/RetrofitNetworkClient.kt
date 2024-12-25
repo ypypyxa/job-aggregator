@@ -78,11 +78,11 @@ class RetrofitNetworkClient(
     // регионы
     private suspend fun makeAreasRequest(dto: AreaRequest): Response {
         dto.id?.let {
-            return AreaResponse(areas = listOf(headHunterApi.getAreaById(areaId = it))).apply {
+            return AreaResponse(area = headHunterApi.getAreaById(areaId = it), areas = null).apply {
                 resultCode = SUCCESS
             }
         }
-        return AreaResponse(areas = headHunterApi.getAreas()).apply {
+        return AreaResponse(area = null, areas = headHunterApi.getCountres()).apply {
             resultCode = SUCCESS
         }
     }
