@@ -73,11 +73,11 @@
         app:layout_constraintTop_toTopOf="@id/choose_country_textInputLayout" />
 
     <ImageView
-        android:id="@+id/ic_clear"
+        android:id="@+id/clear_country_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/dimens_16"
-        android:src="@drawable/ic_clear"
+        android:src="@drawable/ic_clear_item_button"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/choose_country_textInputLayout"
         app:layout_constraintEnd_toEndOf="parent"
@@ -117,7 +117,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <ImageView
-        android:id="@+id/forward_arrow_region"
+        android:id="@+id/forward_arrow_city"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/dimens_16"
@@ -127,11 +127,11 @@
         app:layout_constraintTop_toTopOf="@id/choose_city_textInputLayout" />
 
     <ImageView
-        android:id="@+id/area_clear"
+        android:id="@+id/clear_city_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/dimens_16"
-        android:src="@drawable/ic_clear"
+        android:src="@drawable/ic_clear_item_button"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/choose_city_textInputLayout"
         app:layout_constraintEnd_toEndOf="parent"

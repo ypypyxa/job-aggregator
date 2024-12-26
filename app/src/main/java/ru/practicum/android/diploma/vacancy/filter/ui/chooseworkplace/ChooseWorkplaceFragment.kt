@@ -10,6 +10,8 @@ import androidx.navigation.fragment.navArgs
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.common.utils.gone
+import ru.practicum.android.diploma.common.utils.show
 import ru.practicum.android.diploma.databinding.FragmentChooseWorkplaceBinding
 import ru.practicum.android.diploma.vacancy.filter.ui.chooseworkplace.model.ChooseWorkplaceFragmentState
 
@@ -50,21 +52,25 @@ class ChooseWorkplaceFragment : Fragment() {
     }
 
     private fun setListeners() {
-        binding.forwardArrowCountry.setOnClickListener() {
+        binding.forwardArrowCountry.setOnClickListener {
             findNavController().navigate(R.id.action_chooseWorkplaceFragment_to_chooseCountryFragment)
         }
-        binding.chooseCountryTextInputEditText.setOnClickListener {
-            findNavController().navigate(R.id.action_chooseWorkplaceFragment_to_chooseCountryFragment)
+        binding.clearCountryButton.setOnClickListener {
+            countryId = null
+            countryName = null
+            cityId = null
+            cityName = null
+            showEmpty()
         }
-        binding.forwardArrowRegion.setOnClickListener {
+        binding.forwardArrowCity.setOnClickListener {
             val action = ChooseWorkplaceFragmentDirections
                 .actionChooseWorkplaceFragmentToChooseRegionFragment(countryId)
             findNavController().navigate(action)
         }
-        binding.chooseCityTextInputEditText.setOnClickListener {
-            val action = ChooseWorkplaceFragmentDirections
-                .actionChooseWorkplaceFragmentToChooseRegionFragment(countryId)
-            findNavController().navigate(action)
+        binding.clearCityButton.setOnClickListener {
+            setCountryName(countryName)
+            cityId = null
+            cityName = null
         }
         binding.backArrow.setOnClickListener {
             findNavController().navigate(R.id.action_chooseWorkplaceFragment_to_filterFragment)
@@ -98,19 +104,32 @@ class ChooseWorkplaceFragment : Fragment() {
     private fun showEmpty() {
         binding.chooseCountryTextInputEditText.text?.clear()
         binding.chooseCityTextInputEditText.text?.clear()
-        binding.forwardArrowRegion.isEnabled = false
+        binding.forwardArrowCity.isEnabled = false
         binding.chooseCountryTextInputLayout.isEnabled = false
+        binding.clearCountryButton.gone()
+        binding.forwardArrowCountry.show()
+        binding.clearCityButton.gone()
+        binding.forwardArrowCity.show()
     }
 
     private fun setCountryName(name: String?) {
         binding.chooseCountryTextInputEditText.setText(name)
-        binding.forwardArrowRegion.isEnabled = true
+        binding.chooseCityTextInputEditText.text?.clear()
+        binding.forwardArrowCity.isEnabled = true
         binding.chooseCountryTextInputLayout.isEnabled = true
+        binding.clearCountryButton.show()
+        binding.forwardArrowCountry.gone()
+        binding.clearCityButton.gone()
+        binding.forwardArrowCity.show()
     }
 
     private fun setCityName(countryName: String?, cityName: String?) {
         binding.chooseCountryTextInputEditText.setText(countryName)
         binding.chooseCityTextInputEditText.setText(cityName)
+        binding.clearCountryButton.show()
+        binding.forwardArrowCountry.gone()
+        binding.clearCityButton.show()
+        binding.forwardArrowCity.gone()
     }
 
     override fun onDestroyView() {
