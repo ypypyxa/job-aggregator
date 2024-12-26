@@ -24,6 +24,7 @@ class ChooseRegionViewModel(
     }
 
     private var countryName: String? = null
+    private var selectedCountry: Area? = null
 
     private val mediatorStateLiveData = MediatorLiveData<ChooseRegionFragmentState>().also { liveData ->
         liveData.addSource(stateLiveData) { state ->
@@ -32,7 +33,11 @@ class ChooseRegionViewModel(
                     ChooseRegionFragmentState.ShowRegion(state.areas, state.countryName)
                 is ChooseRegionFragmentState.ShowCity ->
                     ChooseRegionFragmentState.ShowCity(state.areas)
-                else -> null
+                is ChooseRegionFragmentState.ShowSearch ->
+                    ChooseRegionFragmentState.ShowSearch(state.areas)
+                is ChooseRegionFragmentState.NothingFound ->
+                    ChooseRegionFragmentState.NothingFound
+                else -> ChooseRegionFragmentState.ShowError
             }
         }
     }
@@ -49,14 +54,15 @@ class ChooseRegionViewModel(
         var area = areaResult
         when {
             errorMessage != null -> {
+                renderState(ChooseRegionFragmentState.ShowError)
                 Log.d(CHOOSE_AREA, "$errorMessage")
             }
-
             area == null -> {
+                renderState(ChooseRegionFragmentState.ShowError)
                 Log.d(CHOOSE_AREA, "Такого места не существует")
             }
-
             else -> {
+                selectedCountry = area
                 countryName = area.name
                 renderState(ChooseRegionFragmentState.ShowRegion(area.areas, area.name))
             }
@@ -77,15 +83,58 @@ class ChooseRegionViewModel(
             errorMessage != null -> {
                 Log.d(CHOOSE_AREA, "$errorMessage")
             }
-
             area == null -> {
                 Log.d(CHOOSE_AREA, "Такого места не существует")
             }
-
             else -> {
                 renderState(ChooseRegionFragmentState.ShowCity(area.areas))
             }
         }
+    }
+
+    fun searchArea(query: String) {
+        if (query.isBlank() || selectedCountry == null) {
+            renderState(
+                ChooseRegionFragmentState.ShowRegion(selectedCountry?.areas, selectedCountry?.name)
+            )
+            return
+        }
+
+        val lowerCaseQuery = query.lowercase()
+        val nameMatches = mutableListOf<Area>()
+        val parentNameMatches = mutableListOf<Area>()
+
+        fun searchRecursively(area: Area) {
+            // Проверяем совпадение с name
+            if (area.name.lowercase().startsWith(lowerCaseQuery)) {
+                nameMatches.add(area)
+            }
+            // Проверяем совпадение с parentName
+            else if (area.parentName?.lowercase()?.startsWith(lowerCaseQuery) == true) {
+                parentNameMatches.add(area)
+            }
+            // Рекурсивно ищем в вложенных areas
+            area.areas.forEach { subArea ->
+                searchRecursively(subArea)
+            }
+        }
+
+        selectedCountry!!.areas.forEach { area ->
+            searchRecursively(area)
+        }
+
+        // Объединяем результаты: сначала совпадения по name, затем по parentName
+        val searchedArea = nameMatches + parentNameMatches
+
+        if (searchedArea.isEmpty()) {
+            renderState(ChooseRegionFragmentState.NothingFound)
+        } else {
+            renderState(ChooseRegionFragmentState.ShowSearch(searchedArea))
+        }
+    }
+
+    fun onClearSearch() {
+        renderState(ChooseRegionFragmentState.ShowRegion(selectedCountry?.areas, selectedCountry?.name))
     }
 
     private fun renderState(state: ChooseRegionFragmentState) {
