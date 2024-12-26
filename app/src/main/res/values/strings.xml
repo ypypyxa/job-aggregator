@@ -50,4 +50,6 @@
     <string name="choose_country">Выбор страны</string>
     <string name="enter_region">Введите регион</string>
     <string name="choose_region">Выбор региона</string>
+    <string name="industry_empty_list">Не удалось получить список</string>
+
 </resources>

@@ -93,9 +93,38 @@
         android:textAllCaps="false"
         android:textColor="@color/white_universal"
         android:textSize="@dimen/text_size_16"
-        android:visibility="gone"
+        android:visibility="visible"
+        android:background="@drawable/background_search_state"
         app:layout_constraintBottom_toBottomOf="@+id/choose_industry_list_recycle_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_error_message"
+        style="@style/Text.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimens_16"
+        android:gravity="center_horizontal"
+        android:textColor="@color/night_day"
+        android:text="@string/industry_empty_list"
+        app:drawableTopCompat="@drawable/placeholder_areas_cant_receive_list"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="gone" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar_industry"
+        android:layout_width="@dimen/dimens_48"
+        android:layout_height="@dimen/dimens_48"
+        android:indeterminateTint="@color/blue"
+        android:indeterminateTintMode="src_in"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 
