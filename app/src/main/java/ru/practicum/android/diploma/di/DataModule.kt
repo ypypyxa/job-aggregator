@@ -11,9 +11,12 @@ import ru.practicum.android.diploma.common.data.db.AppDatabase
 import ru.practicum.android.diploma.common.data.network.HeadHunterApi
 import ru.practicum.android.diploma.common.data.network.NetworkClient
 import ru.practicum.android.diploma.common.data.network.RetrofitNetworkClient
+import ru.practicum.android.diploma.common.utils.FILTER_SETTINGS_SP
 import ru.practicum.android.diploma.favorites.domain.api.FavoritesDBConverter
 import ru.practicum.android.diploma.favorites.domain.impl.FavoritesDBConverterImpl
+import ru.practicum.android.diploma.vacancy.filter.data.FilterSettingsRepositoryImpl
 import ru.practicum.android.diploma.vacancy.filter.data.IndustryLocalDataSource
+import ru.practicum.android.diploma.vacancy.filter.domain.FilterSettingsRepository
 
 val dataModule = module {
     single<Retrofit> {
@@ -51,4 +54,17 @@ val dataModule = module {
         androidContext().getSharedPreferences("filter_prefs", Context.MODE_PRIVATE)
     }
     single { IndustryLocalDataSource(get()) }
+
+    // Shared Preferences
+    single<SharedPreferences> {
+        androidContext().getSharedPreferences(FILTER_SETTINGS_SP, Context.MODE_PRIVATE)
+    }
+
+    single<FilterSettingsRepository> {
+        FilterSettingsRepositoryImpl(
+            sharedPreferences = get(),
+            gson = get()
+        )
+    }
+
 }

@@ -5,14 +5,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.common.utils.DataTransmitter
 import ru.practicum.android.diploma.databinding.FragmentFilterBinding
+import ru.practicum.android.diploma.vacancy.filter.domain.model.Country
+import ru.practicum.android.diploma.vacancy.filter.domain.model.FilterSettings
+import ru.practicum.android.diploma.vacancy.filter.domain.model.Industry
+import ru.practicum.android.diploma.vacancy.filter.domain.model.Region
 import ru.practicum.android.diploma.vacancy.filter.ui.chooseindustry.ChooseIndustryViewModel
 
 class FilterFragment : Fragment() {
@@ -21,16 +24,12 @@ class FilterFragment : Fragment() {
         fun newInstance() = FilterFragment()
     }
 
-    private val viewModel: FilterViewModel by viewModels()
+    private val viewModel: FilterViewModel by viewModel()
 
     private val industryViewModel: ChooseIndustryViewModel by viewModel()
 
     private var _binding: FragmentFilterBinding? = null
     private val binding get() = _binding!!
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,7 +46,8 @@ class FilterFragment : Fragment() {
         editingIndustry()
         backToSearch()
         focusPocus()
-
+        setConfirmButtonClickListener()
+        resetButtonClickListener()
     }
 
     override fun onDestroyView() {
@@ -72,14 +72,14 @@ class FilterFragment : Fragment() {
 
     private fun backToSearch() {
         binding.toolBarFilter.setNavigationOnClickListener {
-            findNavController().navigateUp()
+            clearFields()
+            findNavController().popBackStack(R.id.searchFragment, false)
         }
     }
 
     fun editingRegioan() {
         binding.tlWorkPlaceFilter.setEndIconOnClickListener {
             findNavController().navigate(R.id.action_filterFragment_to_chooseWorkplaceFragment)
-            Toast.makeText(requireContext(), "Выбрано место работы", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -88,5 +88,86 @@ class FilterFragment : Fragment() {
             // Логика нажатия для поля "Отрасль"
             findNavController().navigate(R.id.action_filterFragment_to_chooseIndustryFragment)
         }
+    }
+
+    private fun setConfirmButtonClickListener() {
+        binding.btnApply.setOnClickListener {
+            val expectedSalary = parseExpectedSalary()
+            val notShowWithoutSalary = binding.checkboxHideWithSalary.isChecked
+
+            val updatedFilterSettings = createUpdatedFilterSettings(expectedSalary, notShowWithoutSalary)
+
+            viewModel.saveFilterSettings(updatedFilterSettings)
+            navigateBackToSearch()
+        }
+    }
+
+    // Вспомогательная функция для обработки поля зарплаты
+    private fun parseExpectedSalary(): Int {
+        return binding.tiSalaryField.text.toString().toIntOrNull() ?: -1
+    }
+
+    // Создание обновлённого объекта FilterSettings
+    private fun createUpdatedFilterSettings(expectedSalary: Int, notShowWithoutSalary: Boolean): FilterSettings {
+        val oldFilterSettings = viewModel.filterSettings.value
+
+        val country = getValidCountryOrNull(DataTransmitter.getCountry(), oldFilterSettings?.country)
+        val region = getValidRegionOrNull(DataTransmitter.getRegion(), oldFilterSettings?.region)
+        val industry = getValidIndustryOrNull(DataTransmitter.getIndustry(), oldFilterSettings?.industry)
+
+        return FilterSettings(
+            country = country,
+            region = region,
+            industry = industry,
+            expectedSalary = expectedSalary,
+            notShowWithoutSalary = notShowWithoutSalary
+        )
+    }
+
+    private fun getValidCountryOrNull(newCountry: Country?, oldCountry: Country?): Country? {
+        return newCountry ?: oldCountry?.takeIf { it.id.isNotEmpty() }
+    }
+
+    private fun getValidRegionOrNull(newRegion: Region?, oldRegion: Region?): Region? {
+        return newRegion ?: oldRegion?.takeIf { it.id.isNotEmpty() }
+    }
+
+    private fun getValidIndustryOrNull(newIndustry: Industry?, oldIndustry: Industry?): Industry? {
+        return newIndustry ?: oldIndustry?.takeIf { it.id.isNotEmpty() }
+    }
+
+    // Навигация назад
+    private fun navigateBackToSearch() {
+        findNavController().popBackStack(R.id.searchFragment, false)
+    }
+
+    private fun resetButtonClickListener() {
+        binding.btnReset.setOnClickListener {
+            binding.apply {
+                tiWorkPlace.setText("")
+                tiIndustryField.setText("")
+                tiSalaryField.setText("")
+                checkboxHideWithSalary.isChecked = false
+            }
+            viewModel.clearFilterSettings()
+            showConfirmAndClearButtons(false)
+            DataTransmitter.apply {
+                postRegion(null)
+                postCountry(null)
+                postIndustry(null)
+                // Реализацию рендера для текстов место работы и отрасль сюда добавьте когда напишете
+            }
+        }
+    }
+
+    private fun showConfirmAndClearButtons(isVisible: Boolean) {
+//        binding.btnApply.isVisible = isVisible
+//        binding.btnReset.isVisible = isVisible
+    }
+
+    private fun clearFields() {
+        DataTransmitter.postIndustry(null)
+        DataTransmitter.postCountry(null)
+        DataTransmitter.postRegion(null)
     }
 }
