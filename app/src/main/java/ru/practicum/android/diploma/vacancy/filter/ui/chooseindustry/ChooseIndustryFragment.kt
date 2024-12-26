@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentChooseIndustryBinding
 import ru.practicum.android.diploma.vacancy.filter.ui.adapter.IndustryAdapter
 
@@ -52,10 +53,16 @@ class ChooseIndustryFragment : Fragment() {
     private fun setupListeners() {
         binding.chooseButton.setOnClickListener {
             viewModel.selectedIndustry.value?.let { selectedIndustry ->
-                val action = ChooseIndustryFragmentDirections
-                    .actionChooseIndustryFragmentToFilterFragment(selectedIndustry)
-                findNavController().navigate(action)
+                val navController = findNavController()
 
+                // Передаем выбранную отрасль
+                navController.previousBackStackEntry?.savedStateHandle?.set(
+                    "selectedIndustry",
+                    selectedIndustry
+                )
+
+                // Очищаем стек до фрагмента фильтра
+                navController.popBackStack(R.id.filterFragment, false)
             }
         }
         binding.chooseRegionEnterFieldEdittext.addTextChangedListener { text ->

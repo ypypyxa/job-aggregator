@@ -14,6 +14,7 @@ import androidx.navigation.fragment.navArgs
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentFilterBinding
+import ru.practicum.android.diploma.vacancy.filter.domain.model.FilterIndustryValue
 import ru.practicum.android.diploma.vacancy.filter.ui.chooseindustry.ChooseIndustryViewModel
 
 class FilterFragment : Fragment() {
@@ -50,10 +51,7 @@ class FilterFragment : Fragment() {
         editingIndustry()
         backToSearch()
         focusPocus()
-        val selectedIndustry = args.selectedIndustry
-        selectedIndustry?.let {
-            binding.tlIndustry.editText?.setText(it.text)
-        }
+        observeSelectedIndustry()
 
     }
 
@@ -62,7 +60,7 @@ class FilterFragment : Fragment() {
         _binding = null
     }
 
-    fun focusPocus() {
+    private fun focusPocus() {
         val textInputLayout = binding.tlSalary
         val editText = binding.tiSalaryField
 
@@ -83,17 +81,27 @@ class FilterFragment : Fragment() {
         }
     }
 
-    fun editingRegioan() {
+    private fun editingRegioan() {
         binding.tlWorkPlaceFilter.setEndIconOnClickListener {
             findNavController().navigate(R.id.action_filterFragment_to_chooseWorkplaceFragment)
             Toast.makeText(requireContext(), "Выбрано место работы", Toast.LENGTH_SHORT).show()
         }
     }
 
-    fun editingIndustry() {
+    private fun editingIndustry() {
         binding.tlIndustry.setEndIconOnClickListener {
             // Логика нажатия для поля "Отрасль"
             findNavController().navigate(R.id.action_filterFragment_to_chooseIndustryFragment)
         }
     }
+
+    // тут получаем отрасль из фрагмента выбора отрасли и экран не пересоздается
+    private fun observeSelectedIndustry() {
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<FilterIndustryValue>(
+            "selectedIndustry"
+        )?.observe(viewLifecycleOwner) { industry ->
+            binding.tlIndustry.editText?.setText(industry.text)
+        }
+    }
+
 }
