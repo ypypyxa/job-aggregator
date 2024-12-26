@@ -75,7 +75,8 @@ class ChooseWorkplaceFragment : Fragment() {
                     countryId = countryId,
                     countryName = countryName,
                     cityId = cityId,
-                    cityName = cityName)
+                    cityName = cityName
+                )
             findNavController().navigate(action)
         }
     }

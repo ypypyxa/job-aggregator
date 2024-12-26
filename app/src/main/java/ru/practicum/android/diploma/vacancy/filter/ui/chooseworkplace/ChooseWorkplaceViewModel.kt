@@ -15,7 +15,7 @@ class ChooseWorkplaceViewModel(
     fun observeState(): LiveData<ChooseWorkplaceFragmentState> = mediatorStateLiveData
 
     init {
-        if  (!cityName.isNullOrEmpty()) {
+        if (!cityName.isNullOrEmpty()) {
             renderState(ChooseWorkplaceFragmentState.CitySelected(countryName, cityName))
         } else if (!countryName.isNullOrEmpty()) {
             renderState(ChooseWorkplaceFragmentState.CountrySelected(countryName))

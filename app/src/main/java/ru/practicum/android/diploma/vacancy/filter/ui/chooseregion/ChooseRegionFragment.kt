@@ -61,7 +61,7 @@ class ChooseRegionFragment : Fragment() {
                 emptyList<Area>() -> {
                     val action = ChooseRegionFragmentDirections
                         .actionChooseRegionFragmentToChooseWorkplaceFragment(
-                            countryId =countryId,
+                            countryId = countryId,
                             countryName = countryName,
                             cityId = area.id,
                             cityName = area.name
@@ -72,7 +72,7 @@ class ChooseRegionFragment : Fragment() {
             }
         }
 
-    binding.regionListRecyclerView.apply {
+        binding.regionListRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = areaAdapter
         }
