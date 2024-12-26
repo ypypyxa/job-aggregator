@@ -104,7 +104,8 @@
             android:layout_marginTop="@dimen/dimens_16"
             android:fontFamily="@font/ys_display_medium"
             android:textColor="@color/night_day"
-            android:textSize="@dimen/text_size_22" />
+            android:textSize="@dimen/text_size_22"
+            android:text="@string/no_region_found" />
 
     </LinearLayout>
 
@@ -133,7 +134,8 @@
             android:layout_marginTop="@dimen/dimens_16"
             android:fontFamily="@font/ys_display_medium"
             android:textColor="@color/night_day"
-            android:textSize="@dimen/text_size_22" />
+            android:textSize="@dimen/text_size_22"
+            android:text="@string/industry_empty_list"/>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
 

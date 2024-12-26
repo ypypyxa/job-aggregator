@@ -35,7 +35,9 @@ class ChooseRegionViewModel(
                     ChooseRegionFragmentState.ShowCity(state.areas)
                 is ChooseRegionFragmentState.ShowSearch ->
                     ChooseRegionFragmentState.ShowSearch(state.areas)
-                else -> null
+                is ChooseRegionFragmentState.NothingFound ->
+                    ChooseRegionFragmentState.NothingFound
+                else -> ChooseRegionFragmentState.ShowError
             }
         }
     }
@@ -52,13 +54,13 @@ class ChooseRegionViewModel(
         var area = areaResult
         when {
             errorMessage != null -> {
+                renderState(ChooseRegionFragmentState.ShowError)
                 Log.d(CHOOSE_AREA, "$errorMessage")
             }
-
             area == null -> {
+                renderState(ChooseRegionFragmentState.ShowError)
                 Log.d(CHOOSE_AREA, "Такого места не существует")
             }
-
             else -> {
                 selectedCountry = area
                 countryName = area.name
@@ -81,11 +83,9 @@ class ChooseRegionViewModel(
             errorMessage != null -> {
                 Log.d(CHOOSE_AREA, "$errorMessage")
             }
-
             area == null -> {
                 Log.d(CHOOSE_AREA, "Такого места не существует")
             }
-
             else -> {
                 renderState(ChooseRegionFragmentState.ShowCity(area.areas))
             }
@@ -119,8 +119,11 @@ class ChooseRegionViewModel(
         selectedCountry!!.areas.forEach { area ->
             searchRecursively(area)
         }
-
-        renderState(ChooseRegionFragmentState.ShowSearch(searchedArea))
+        if (searchedArea.isEmpty()) {
+            renderState(ChooseRegionFragmentState.NothingFound)
+        } else {
+            renderState(ChooseRegionFragmentState.ShowSearch(searchedArea))
+        }
     }
 
     fun onClearSearch() {

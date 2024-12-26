@@ -66,18 +66,8 @@ class ChooseRegionFragment : Fragment() {
             } else {
                 binding.icSearchCity.gone()
                 binding.clearEditSearchCityButton.show()
-//                viewModel.onSearchQueryChanged(text.toString())
                 viewModel.searchArea(text.toString())
             }
-        }
-        binding.chooseRegionEnterFieldEdittext.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE) {
-                val query = binding.chooseRegionEnterFieldEdittext.text.toString()
-                if (query.isNotEmpty()) {
-                    viewModel.searchArea(query)
-                }
-            }
-            false
         }
         binding.clearEditSearchCityButton.setOnClickListener {
             binding.chooseRegionEnterFieldEdittext.text.clear()
@@ -118,17 +108,37 @@ class ChooseRegionFragment : Fragment() {
             is ChooseRegionFragmentState.ShowRegion -> showRegion(state.areas, state.countryName)
             is ChooseRegionFragmentState.ShowCity -> showCity(state.areas)
             is ChooseRegionFragmentState.ShowSearch -> showSearch(state.areas)
+            is ChooseRegionFragmentState.NothingFound -> nothingFound()
+            is ChooseRegionFragmentState.ShowError -> showError()
         }
     }
 
     private fun showRegion(areas: List<Area>?, name: String?) {
         countryName = name
         areaAdapter?.setAreas(areas!!)
+        hidePlaceholders()
+        binding.regionListRecyclerView.show()
     }
     private fun showCity(areas: List<Area>) {
         areaAdapter?.setAreas(areas)
+        hidePlaceholders()
+        binding.regionListRecyclerView.show()
     }
     private fun showSearch(areas: List<Area>?) {
         areaAdapter?.setAreas(areas!!)
+        hidePlaceholders()
+        binding.regionListRecyclerView.show()
+    }
+    private fun nothingFound() {
+        binding.regionListRecyclerView.gone()
+        binding.noRegion.show()
+    }
+    private fun showError() {
+        binding.regionListRecyclerView.gone()
+        binding.noGetRegionList.show()
+    }
+    private fun hidePlaceholders() {
+        binding.noRegion.gone()
+        binding.noGetRegionList.gone()
     }
 }

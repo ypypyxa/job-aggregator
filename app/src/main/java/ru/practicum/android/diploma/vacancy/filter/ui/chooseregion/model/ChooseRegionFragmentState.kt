@@ -9,4 +9,8 @@ interface ChooseRegionFragmentState {
     data class ShowCity(val areas: List<Area>) : ChooseRegionFragmentState
 
     data class ShowSearch(val areas: List<Area>?) : ChooseRegionFragmentState
+
+    object NothingFound : ChooseRegionFragmentState
+
+    object ShowError : ChooseRegionFragmentState
 }
