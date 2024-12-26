@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android") version "2.1.0"
     id("ru.practicum.android.diploma.plugins.developproperties")
     id("com.google.devtools.ksp") version "2.1.0-1.0.29"
+    id("kotlin-parcelize")
 }
 
 android {

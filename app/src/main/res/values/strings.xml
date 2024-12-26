@@ -11,4 +11,20 @@
     <string name="ali_lagkonov">Али Лагконов</string>
     <string name="damir_garipov">Дамир Гарипов</string>
     <string name="polina_domahina">Полина Домахина</string>
+    <string name="search_vacancies">Поиск вакансий</string>
+    <string name="search_edit_hint">Введите запрос</string>
+    <string name="search_no_internet">Нет интернета</string>
+    <string name="search_nothing_found">Не удалось получить\nсписок вакансий</string>
+    <string name="server_error">Ошибка сервера</string>
+    <string name="search_state_nothing_found">Таких вакансий нет</string>
+    <string name="vacancy">Вакансия</string>
+    <string name="similar_vacancies">Похожие вакансии</string>
+    <string name="required_expirience">Требуемый опыт</string>
+    <string name="list_empty">Список пуст</string>
+
+    <string name="salary_template_from_to">от %1$s до %2$s %3$s</string>
+    <string name="salary_template_from">от %1$s %2$s</string>
+    <string name="salary_template_to">до %1$s %2$s</string>
+    <string name="message_salary_not_pointed">Зарплата не указана</string>
+    <string name="company_not_specified">Не указано</string>
 </resources>

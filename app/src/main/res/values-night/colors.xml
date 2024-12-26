@@ -3,4 +3,5 @@
 <!--    color_changes-->
     <color name="day_night">#1A1B22</color>
     <color name="night_day">#FDFDFD</color>
+    <color name="search_edit_hint_color">#FDFDFD</color>
 </resources>

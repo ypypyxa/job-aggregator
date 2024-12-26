@@ -3,10 +3,11 @@
     <style name="Base.Theme.PracticumAndroidDiploma" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/white_universal</item>
         <item name="textFillColor">@color/black_universal</item><!-- цвет текста -->
-        <item name="colorSecondary">@color/light_grey</item><!-- строка поиска -->
+        <item name="colorSecondary">@color/light_gray</item><!-- строка поиска -->
 
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:statusBarColor">@color/white_universal</item>
+        <item name="android:windowBackground">@color/white_universal</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="Theme.PracticumAndroidDiploma" parent="Base.Theme.PracticumAndroidDiploma" />
