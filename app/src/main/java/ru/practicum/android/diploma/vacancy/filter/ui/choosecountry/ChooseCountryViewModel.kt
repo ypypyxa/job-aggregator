@@ -16,6 +16,9 @@ class ChooseCountryViewModel(
     private val areaInteractor: AreaInteractor
 ) : ViewModel() {
 
+    private val stateLiveData = MutableLiveData<ChooseCountryFragmentState>()
+    fun observeState(): LiveData<ChooseCountryFragmentState> = mediatorStateLiveData
+
     init {
         viewModelScope.launch {
             val areas = getDefaultCountryList()
@@ -23,8 +26,6 @@ class ChooseCountryViewModel(
         }
     }
 
-    private val stateLiveData = MutableLiveData<ChooseCountryFragmentState>()
-    fun observeState(): LiveData<ChooseCountryFragmentState> = mediatorStateLiveData
     private val mediatorStateLiveData = MediatorLiveData<ChooseCountryFragmentState>().also { liveData ->
         liveData.addSource(stateLiveData) { state ->
             liveData.value = when (state) {

@@ -48,10 +48,13 @@ class ChooseCountryFragment : Fragment() {
     private fun setRecyclerView() {
         areaAdapter = AreaAdapter(emptyList()) { area ->
             when (area.id) {
-                "-1" -> viewModel.loadCountries()
+                CHOOSE_COUNTRY -> viewModel.loadCountries()
                 else -> {
                     val action = ChooseCountryFragmentDirections
-                        .actionChooseCountryFragmentToChooseWorkplaceFragment(area.name)
+                        .actionChooseCountryFragmentToChooseWorkplaceFragment(
+                            countryId = area.id,
+                            countryName = area.name
+                        )
                     findNavController().navigate(action)
                 }
             }
@@ -82,5 +85,9 @@ class ChooseCountryFragment : Fragment() {
 
     private fun showContent(areas: List<Area>) {
         areaAdapter?.setAreas(areas)
+    }
+
+    companion object {
+        private const val CHOOSE_COUNTRY = "-1"
     }
 }

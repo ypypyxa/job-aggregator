@@ -68,6 +68,26 @@
         <action
             android:id="@+id/action_filterFragment_to_chooseWorkplaceFragment"
             app:destination="@id/chooseWorkplaceFragment" />
+        <argument
+            android:name="countryId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="countryName"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="cityId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="cityName"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
     <fragment
         android:id="@+id/chooseCountryFragment"
@@ -103,16 +123,17 @@
         <action
             android:id="@+id/action_chooseRegionFragment_to_chooseWorkplaceFragment"
             app:destination="@id/chooseWorkplaceFragment" />
+        <argument
+            android:name="countryId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
     <fragment
         android:id="@+id/chooseWorkplaceFragment"
         android:name="ru.practicum.android.diploma.vacancy.filter.ui.chooseworkplace.ChooseWorkplaceFragment"
         android:label="fragment_choose_workplace"
         tools:layout="@layout/fragment_choose_workplace">
-        <argument
-            android:name="countryName"
-            app:argType="string"
-            android:defaultValue="Unknown" />
         <action
             android:id="@+id/action_chooseWorkplaceFragment_to_chooseCountryFragment"
             app:destination="@id/chooseCountryFragment" />
@@ -122,5 +143,25 @@
         <action
             android:id="@+id/action_chooseWorkplaceFragment_to_filterFragment"
             app:destination="@id/filterFragment" />
+        <argument
+            android:name="countryId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="countryName"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="cityId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="cityName"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
 </navigation>
