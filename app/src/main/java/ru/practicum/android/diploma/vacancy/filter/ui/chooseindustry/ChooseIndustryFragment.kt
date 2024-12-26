@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentChooseIndustryBinding
+import ru.practicum.android.diploma.vacancy.filter.ui.FilterViewModel
 import ru.practicum.android.diploma.vacancy.filter.ui.adapter.IndustryAdapter
 
 class ChooseIndustryFragment : Fragment() {
@@ -21,7 +22,7 @@ class ChooseIndustryFragment : Fragment() {
     private var _binding: FragmentChooseIndustryBinding? = null
     private val binding get() = _binding!!
     private var industryAdapter: IndustryAdapter? = null
-
+    private val filterViewModel: FilterViewModel by viewModel()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -55,13 +56,13 @@ class ChooseIndustryFragment : Fragment() {
             viewModel.selectedIndustry.value?.let { selectedIndustry ->
                 val navController = findNavController()
 
-                // Передаем выбранную отрасль
+                filterViewModel.saveIndustry(selectedIndustry)
+
                 navController.previousBackStackEntry?.savedStateHandle?.set(
                     "selectedIndustry",
                     selectedIndustry
                 )
 
-                // Очищаем стек до фрагмента фильтра
                 navController.popBackStack(R.id.filterFragment, false)
             }
         }

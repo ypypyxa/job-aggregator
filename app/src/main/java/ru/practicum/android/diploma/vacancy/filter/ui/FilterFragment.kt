@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -23,7 +22,7 @@ class FilterFragment : Fragment() {
         fun newInstance() = FilterFragment()
     }
 
-    private val viewModel: FilterViewModel by viewModels()
+    private val viewModel: FilterViewModel by viewModel()
 
     private val industryViewModel: ChooseIndustryViewModel by viewModel()
 
@@ -100,6 +99,8 @@ class FilterFragment : Fragment() {
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<FilterIndustryValue>(
             "selectedIndustry"
         )?.observe(viewLifecycleOwner) { industry ->
+            binding.tlIndustry.editText?.setText(industry.text)
+            viewModel.saveIndustry(industry)
             binding.tlIndustry.editText?.setText(industry.text)
         }
     }
