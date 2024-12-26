@@ -127,7 +127,7 @@ class SearchFragment : Fragment() {
             binding.editSearch.text.clear()
         }
         binding.buttonFilter.setOnClickListener {
-            val action = SearchFragmentDirections.actionSearchFragmentToFilterFragment()
+            val action = SearchFragmentDirections.actionSearchFragmentToFilterFragment(null) //TODO
             findNavController().navigate(action)
         }
     }

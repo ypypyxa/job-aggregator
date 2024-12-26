@@ -18,33 +18,66 @@ class ChooseIndustryViewModel(
     private val _industryState = MutableStateFlow<List<FilterIndustryValue>>(emptyList())
     val industryState: StateFlow<List<FilterIndustryValue>> = _industryState
 
+    private val _selectedIndustry = MutableStateFlow<FilterIndustryValue?>(null)
+    val selectedIndustry: StateFlow<FilterIndustryValue?> = _selectedIndustry
+
+    private var allIndustries: List<FilterIndustryValue> = emptyList()
+
+    private val _isLoading = MutableStateFlow(true)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
+    private val _hasError = MutableStateFlow(false)
+    val hasError: StateFlow<Boolean> = _hasError
+
     init {
         fetchIndustries()
     }
 
     private fun fetchIndustries() {
         viewModelScope.launch {
+            _isLoading.value = true
+            _hasError.value = false
             try {
                 val industries = interactor.fetchIndustries()
+                allIndustries = industries
                 _industryState.value = industries
+                _hasError.value = industries.isEmpty()
             } catch (e: IOException) {
-                _industryState.value = emptyList()
                 Log.e(LOG_TAG, "$NETWORK_ERROR${e.message}")
+                _industryState.value = emptyList()
+                _hasError.value = true
             } catch (e: HttpException) {
-                _industryState.value = emptyList()
                 Log.e(LOG_TAG, "$SERVER_ERROR${e.code()}")
-            } catch (e: IllegalStateException) {
                 _industryState.value = emptyList()
-                Log.e(LOG_TAG, "$ILLEGAL_STATE_ERROR${e.message}")
+                _hasError.value = true
+            } finally {
+                _isLoading.value = false
             }
         }
     }
+
+    fun filterIndustries(query: String) {
+        val filteredList = if (query.isEmpty()) {
+            allIndustries
+        } else {
+            allIndustries.filter {
+                it.text?.contains(query, ignoreCase = true) == true
+            }
+        }
+        _industryState.value = filteredList
+        _hasError.value = filteredList.isEmpty()
+    }
+
+
+    fun selectIndustry(industry: FilterIndustryValue) {
+        _selectedIndustry.value = industry
+    }
+
 
     companion object {
         private const val LOG_TAG = "ChooseIndustryViewModel"
         private const val NETWORK_ERROR = "Network error: "
         private const val SERVER_ERROR = "Server error: "
-        private const val ILLEGAL_STATE_ERROR = "Illegal state: "
     }
 
 }

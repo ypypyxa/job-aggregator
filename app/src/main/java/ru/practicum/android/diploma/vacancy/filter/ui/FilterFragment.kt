@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentFilterBinding
@@ -27,6 +28,8 @@ class FilterFragment : Fragment() {
 
     private var _binding: FragmentFilterBinding? = null
     private val binding get() = _binding!!
+
+    private val args: FilterFragmentArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +50,10 @@ class FilterFragment : Fragment() {
         editingIndustry()
         backToSearch()
         focusPocus()
+        val selectedIndustry = args.selectedIndustry
+        selectedIndustry?.let {
+            binding.tlIndustry.editText?.setText(it.text)
+        }
 
     }
 

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -31,20 +32,43 @@ class ChooseIndustryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        onBackPressed()
+        setupListeners()
         setupRecyclerView()
         observeIndustries()
+        observeSelectedIndustry()
+        backToSearch()
+        observeLoadingState()
+        observeErrorState()
+
+        binding.chooseRegionEnterFieldEdittext.addTextChangedListener { text ->
+            viewModel.filterIndustries(text.toString())
+        }
     }
 
-    fun onBackPressed() {
+    private fun backToSearch() {
         binding.chooseIndustryBack.setOnClickListener {
             findNavController().popBackStack()
+        }
+    }
+
+    private fun setupListeners() {
+        binding.chooseButton.setOnClickListener {
+            viewModel.selectedIndustry.value?.let { selectedIndustry ->
+                val action = ChooseIndustryFragmentDirections
+                    .actionChooseIndustryFragmentToFilterFragment(selectedIndustry)
+                findNavController().navigate(action)
+
+            }
+        }
+        binding.chooseRegionEnterFieldEdittext.addTextChangedListener { text ->
+            viewModel.filterIndustries(text.toString())
         }
     }
 
     private fun setupRecyclerView() {
         industryAdapter = IndustryAdapter(emptyList()) { industry ->
             // Логика при выборе отрасли
+            viewModel.selectIndustry(industry)
         }
         binding.chooseIndustryListRecycleView.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -57,8 +81,36 @@ class ChooseIndustryFragment : Fragment() {
             viewModel.industryState.collectLatest { list ->
                 industryAdapter = IndustryAdapter(list) { industry ->
                     // Логика нажатия
+                    viewModel.selectIndustry(industry)
+
                 }
                 binding.chooseIndustryListRecycleView.adapter = industryAdapter
+            }
+        }
+    }
+    private fun observeSelectedIndustry() {
+        lifecycleScope.launchWhenStarted {
+            viewModel.selectedIndustry.collectLatest { selectedIndustry ->
+                binding.chooseButton.visibility =
+                    if (selectedIndustry != null) View.VISIBLE else View.GONE
+                industryAdapter?.setSelectedIndustry(selectedIndustry)
+            }
+        }
+    }
+
+    private fun observeLoadingState() {
+        lifecycleScope.launchWhenStarted {
+            viewModel.isLoading.collectLatest { isLoading ->
+                binding.progressBarIndustry.visibility = if (isLoading) View.VISIBLE else View.GONE
+                binding.chooseIndustryListRecycleView.visibility = if (isLoading) View.GONE else View.VISIBLE
+            }
+        }
+    }
+    private fun observeErrorState() {
+        lifecycleScope.launchWhenStarted {
+            viewModel.hasError.collectLatest { hasError ->
+                binding.tvErrorMessage.visibility = if (hasError) View.VISIBLE else View.GONE
+                binding.chooseIndustryListRecycleView.visibility = if (hasError) View.GONE else View.VISIBLE
             }
         }
     }

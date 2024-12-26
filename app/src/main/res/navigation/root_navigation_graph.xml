@@ -57,6 +57,10 @@
         android:name="ru.practicum.android.diploma.vacancy.filter.ui.FilterFragment"
         android:label="fragment_filter"
         tools:layout="@layout/fragment_filter">
+        <argument
+            android:name="selectedIndustry"
+            app:argType="ru.practicum.android.diploma.vacancy.filter.domain.model.FilterIndustryValue"
+            app:nullable="true" />
         <action
             android:id="@+id/action_filterFragment_to_chooseIndustryFragment"
             app:destination="@id/chooseIndustryFragment" />
@@ -84,7 +88,11 @@
         tools:layout="@layout/fragment_choose_industry">
         <action
             android:id="@+id/action_chooseIndustryFragment_to_filterFragment"
-            app:destination="@id/filterFragment" />
+            app:destination="@id/filterFragment">
+        <argument
+            android:name="selectedIndustry"
+            app:argType="ru.practicum.android.diploma.vacancy.filter.domain.model.FilterIndustryValue" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/chooseRegionFragment"
