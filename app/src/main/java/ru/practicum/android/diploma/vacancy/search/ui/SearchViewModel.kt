@@ -65,6 +65,7 @@ class SearchViewModel(
     fun observeShowToast(): LiveData<String> = showToast
 
     fun onSearchQueryChanged(query: String) {
+        if (query == latestSearchText) return
         currentPage = 0
         if (query.isBlank()) {
             latestSearchText = null
@@ -134,7 +135,7 @@ class SearchViewModel(
             else -> {
                 val currentState = stateLiveData.value
                 val updatedVacancies = when {
-                    currentPage == 0 -> newVacancies // Для нового поиска полностью заменяем список
+                    currentPage == 0 -> newVacancies
                     currentState is SearchFragmentState.Content -> currentState.vacancies + newVacancies
                     else -> newVacancies
                 }
