@@ -38,7 +38,9 @@ class IndustryFilterRepositoryImpl(
             require(response.industries.isNotEmpty()) { "Industry list is empty" }
 
             industryCache.clear()
-            industryCache.addAll(response.industries)
+            response.industries.forEach { industry ->
+                addIndustryRecursively(industry)
+            }
         } catch (e: IOException) {
             Log.e(LOG_TAG, "$NETWORK_ERROR${e.message}")
             throw e
@@ -51,6 +53,12 @@ class IndustryFilterRepositoryImpl(
         } catch (e: IllegalStateException) {
             Log.e(LOG_TAG, "$STATE_ERROR${e.message}")
             throw e
+        }
+    }
+    private fun addIndustryRecursively(industry: IndustriesDto) {
+        industryCache.add(industry)
+        industry.industries?.forEach { subIndustry ->
+            addIndustryRecursively(subIndustry)
         }
     }
 }

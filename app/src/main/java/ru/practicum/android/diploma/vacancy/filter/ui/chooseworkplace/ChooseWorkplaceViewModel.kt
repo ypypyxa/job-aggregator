@@ -7,16 +7,20 @@ import androidx.lifecycle.ViewModel
 import ru.practicum.android.diploma.vacancy.filter.ui.chooseworkplace.model.ChooseWorkplaceFragmentState
 
 class ChooseWorkplaceViewModel(
-    private var countryName: String
+    private var countryName: String?,
+    private var cityName: String?
 ) : ViewModel() {
 
     private val stateLiveData = MutableLiveData<ChooseWorkplaceFragmentState>()
     fun observeState(): LiveData<ChooseWorkplaceFragmentState> = mediatorStateLiveData
 
     init {
-        when (countryName) {
-            "Unknown" -> renderState(ChooseWorkplaceFragmentState.Empty)
-            else -> renderState(ChooseWorkplaceFragmentState.CountrySelected(countryName))
+        if (!cityName.isNullOrEmpty()) {
+            renderState(ChooseWorkplaceFragmentState.CitySelected(countryName, cityName))
+        } else if (!countryName.isNullOrEmpty()) {
+            renderState(ChooseWorkplaceFragmentState.CountrySelected(countryName))
+        } else {
+            renderState(ChooseWorkplaceFragmentState.Empty)
         }
     }
 
@@ -26,7 +30,8 @@ class ChooseWorkplaceViewModel(
                 is ChooseWorkplaceFragmentState.Empty -> ChooseWorkplaceFragmentState.Empty
                 is ChooseWorkplaceFragmentState.CountrySelected ->
                     ChooseWorkplaceFragmentState.CountrySelected(state.name)
-                is ChooseWorkplaceFragmentState.CitySelected -> ChooseWorkplaceFragmentState.CitySelected(state.name)
+                is ChooseWorkplaceFragmentState.CitySelected ->
+                    ChooseWorkplaceFragmentState.CitySelected(state.countryName, state.cityName)
             }
         }
     }
