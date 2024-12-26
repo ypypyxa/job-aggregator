@@ -48,7 +48,7 @@
         app:layout_constraintTop_toBottomOf="@+id/choose_region_header" />
 
     <ImageView
-        android:id="@+id/search_region"
+        android:id="@+id/ic_search_city"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/dimens_16"
@@ -59,7 +59,7 @@
         app:layout_constraintTop_toTopOf="@id/choose_region_enter_field_edittext" />
 
     <ImageView
-        android:id="@+id/clear_region"
+        android:id="@+id/clear_editSearchCity_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/dimens_16"

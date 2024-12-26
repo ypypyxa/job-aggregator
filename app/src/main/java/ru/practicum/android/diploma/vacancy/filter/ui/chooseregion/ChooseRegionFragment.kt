@@ -4,12 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import ru.practicum.android.diploma.common.utils.gone
+import ru.practicum.android.diploma.common.utils.show
 import ru.practicum.android.diploma.databinding.FragmentChooseRegionBinding
 import ru.practicum.android.diploma.vacancy.filter.domain.model.Area
 import ru.practicum.android.diploma.vacancy.filter.ui.adapter.AreaAdapter
@@ -53,6 +56,32 @@ class ChooseRegionFragment : Fragment() {
         binding.chooseRegionBack.setOnClickListener {
             findNavController().popBackStack()
         }
+
+        binding.chooseRegionEnterFieldEdittext.doOnTextChanged { text, _, _, _ ->
+            val isTextEmpty = text.isNullOrEmpty()
+            if (isTextEmpty) {
+                binding.icSearchCity.show()
+                binding.clearEditSearchCityButton.gone()
+                viewModel.onClearSearch()
+            } else {
+                binding.icSearchCity.gone()
+                binding.clearEditSearchCityButton.show()
+//                viewModel.onSearchQueryChanged(text.toString())
+                viewModel.searchArea(text.toString())
+            }
+        }
+        binding.chooseRegionEnterFieldEdittext.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE) {
+                val query = binding.chooseRegionEnterFieldEdittext.text.toString()
+                if (query.isNotEmpty()) {
+                    viewModel.searchArea(query)
+                }
+            }
+            false
+        }
+        binding.clearEditSearchCityButton.setOnClickListener {
+            binding.chooseRegionEnterFieldEdittext.text.clear()
+        }
     }
 
     private fun setRecyclerView() {
@@ -88,14 +117,18 @@ class ChooseRegionFragment : Fragment() {
         when (state) {
             is ChooseRegionFragmentState.ShowRegion -> showRegion(state.areas, state.countryName)
             is ChooseRegionFragmentState.ShowCity -> showCity(state.areas)
+            is ChooseRegionFragmentState.ShowSearch -> showSearch(state.areas)
         }
     }
 
-    private fun showRegion(areas: List<Area>, name: String) {
+    private fun showRegion(areas: List<Area>?, name: String?) {
         countryName = name
-        areaAdapter?.setAreas(areas)
+        areaAdapter?.setAreas(areas!!)
     }
     private fun showCity(areas: List<Area>) {
         areaAdapter?.setAreas(areas)
+    }
+    private fun showSearch(areas: List<Area>?) {
+        areaAdapter?.setAreas(areas!!)
     }
 }

@@ -24,6 +24,7 @@ class ChooseRegionViewModel(
     }
 
     private var countryName: String? = null
+    private var selectedCountry: Area? = null
 
     private val mediatorStateLiveData = MediatorLiveData<ChooseRegionFragmentState>().also { liveData ->
         liveData.addSource(stateLiveData) { state ->
@@ -32,6 +33,8 @@ class ChooseRegionViewModel(
                     ChooseRegionFragmentState.ShowRegion(state.areas, state.countryName)
                 is ChooseRegionFragmentState.ShowCity ->
                     ChooseRegionFragmentState.ShowCity(state.areas)
+                is ChooseRegionFragmentState.ShowSearch ->
+                    ChooseRegionFragmentState.ShowSearch(state.areas)
                 else -> null
             }
         }
@@ -57,6 +60,7 @@ class ChooseRegionViewModel(
             }
 
             else -> {
+                selectedCountry = area
                 countryName = area.name
                 renderState(ChooseRegionFragmentState.ShowRegion(area.areas, area.name))
             }
@@ -86,6 +90,41 @@ class ChooseRegionViewModel(
                 renderState(ChooseRegionFragmentState.ShowCity(area.areas))
             }
         }
+    }
+
+    fun searchArea(query: String) {
+        if (query.isBlank() || selectedCountry == null) {
+            renderState(
+                ChooseRegionFragmentState.ShowRegion(selectedCountry?.areas, selectedCountry?.name)
+            )
+            return
+        }
+
+        val lowerCaseQuery = query.lowercase()
+        val searchedArea = mutableListOf<Area>()
+
+        fun searchRecursively(area: Area) {
+            // Проверяем совпадение с name или parentName
+            if ((area.name.lowercase().startsWith(lowerCaseQuery)) ||
+                (area.parentName?.lowercase()?.startsWith(lowerCaseQuery) == true)
+            ) {
+                searchedArea.add(area)
+            }
+            // Рекурсивно ищем в вложенных areas
+            area.areas.forEach { subArea ->
+                searchRecursively(subArea)
+            }
+        }
+
+        selectedCountry!!.areas.forEach { area ->
+            searchRecursively(area)
+        }
+
+        renderState(ChooseRegionFragmentState.ShowSearch(searchedArea))
+    }
+
+    fun onClearSearch() {
+        renderState(ChooseRegionFragmentState.ShowRegion(selectedCountry?.areas, selectedCountry?.name))
     }
 
     private fun renderState(state: ChooseRegionFragmentState) {
