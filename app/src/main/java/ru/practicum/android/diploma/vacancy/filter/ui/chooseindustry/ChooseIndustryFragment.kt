@@ -39,10 +39,8 @@ class ChooseIndustryFragment : Fragment() {
         backToSearch()
         observeLoadingState()
         observeErrorState()
+        setupSearchField()
 
-        binding.chooseRegionEnterFieldEdittext.addTextChangedListener { text ->
-            viewModel.filterIndustries(text.toString())
-        }
     }
 
     private fun backToSearch() {
@@ -88,6 +86,7 @@ class ChooseIndustryFragment : Fragment() {
             }
         }
     }
+
     private fun observeSelectedIndustry() {
         lifecycleScope.launchWhenStarted {
             viewModel.selectedIndustry.collectLatest { selectedIndustry ->
@@ -106,12 +105,38 @@ class ChooseIndustryFragment : Fragment() {
             }
         }
     }
+
     private fun observeErrorState() {
         lifecycleScope.launchWhenStarted {
             viewModel.hasError.collectLatest { hasError ->
                 binding.tvErrorMessage.visibility = if (hasError) View.VISIBLE else View.GONE
                 binding.chooseIndustryListRecycleView.visibility = if (hasError) View.GONE else View.VISIBLE
             }
+        }
+    }
+
+    private fun setupSearchField() {
+        binding.chooseRegionEnterFieldEdittext.setOnFocusChangeListener { _, hasFocus ->
+            toggleSearchIcon(hasFocus, binding.chooseRegionEnterFieldEdittext.text.isNotEmpty())
+        }
+
+        binding.clearRegion.setOnClickListener {
+            binding.chooseRegionEnterFieldEdittext.text.clear()
+            viewModel.filterIndustries("")
+            toggleSearchIcon(false, false) // Сбрасываем значок на поиск
+        }
+
+        binding.chooseRegionEnterFieldEdittext.addTextChangedListener { text ->
+            toggleSearchIcon(true, !text.isNullOrEmpty())
+        }
+    }
+    private fun toggleSearchIcon(hasFocus: Boolean, hasText: Boolean) {
+        if (hasFocus && hasText) {
+            binding.clearRegion.visibility = View.VISIBLE
+            binding.searchRegion.visibility = View.GONE
+        } else {
+            binding.clearRegion.visibility = View.GONE
+            binding.searchRegion.visibility = View.VISIBLE
         }
     }
 
