@@ -101,14 +101,17 @@ class ChooseRegionViewModel(
         }
 
         val lowerCaseQuery = query.lowercase()
-        val searchedArea = mutableListOf<Area>()
+        val nameMatches = mutableListOf<Area>()
+        val parentNameMatches = mutableListOf<Area>()
 
         fun searchRecursively(area: Area) {
-            // Проверяем совпадение с name или parentName
-            if ((area.name.lowercase().startsWith(lowerCaseQuery)) ||
-                (area.parentName?.lowercase()?.startsWith(lowerCaseQuery) == true)
-            ) {
-                searchedArea.add(area)
+            // Проверяем совпадение с name
+            if (area.name.lowercase().startsWith(lowerCaseQuery)) {
+                nameMatches.add(area)
+            }
+            // Проверяем совпадение с parentName
+            else if (area.parentName?.lowercase()?.startsWith(lowerCaseQuery) == true) {
+                parentNameMatches.add(area)
             }
             // Рекурсивно ищем в вложенных areas
             area.areas.forEach { subArea ->
@@ -119,6 +122,10 @@ class ChooseRegionViewModel(
         selectedCountry!!.areas.forEach { area ->
             searchRecursively(area)
         }
+
+        // Объединяем результаты: сначала совпадения по name, затем по parentName
+        val searchedArea = nameMatches + parentNameMatches
+
         if (searchedArea.isEmpty()) {
             renderState(ChooseRegionFragmentState.NothingFound)
         } else {
