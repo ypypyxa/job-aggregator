@@ -68,11 +68,9 @@ class ChooseIndustryViewModel(
         _hasError.value = filteredList.isEmpty()
     }
 
-
     fun selectIndustry(industry: FilterIndustryValue) {
         _selectedIndustry.value = industry
     }
-
 
     companion object {
         private const val LOG_TAG = "ChooseIndustryViewModel"
