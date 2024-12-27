@@ -14,7 +14,7 @@ class FilterViewModel(
     val selectedIndustry: StateFlow<FilterIndustryValue?> = _selectedIndustry
 
     private val _onlyWithSalary = MutableStateFlow(false)
-    val onlyWithSalary: StateFlow<Boolean> = _onlyWithSalary // TODO:
+    val onlyWithSalary: StateFlow<Boolean> = _onlyWithSalary
 
     init {
         loadSelectedIndustry()

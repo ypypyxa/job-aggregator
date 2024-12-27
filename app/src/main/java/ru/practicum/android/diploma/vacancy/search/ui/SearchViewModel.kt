@@ -26,7 +26,7 @@ class SearchViewModel(
         const val TAG = "SearchViewModel"
         const val PAGE_SIZE = 20
     }
-    private var onlyWithSalary: Boolean = false // TODO:
+    private var onlyWithSalary: Boolean = false
 
     var latestSearchText: String? = null
     var currentPage: Int = 0
