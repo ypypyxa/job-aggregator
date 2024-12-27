@@ -44,7 +44,6 @@ class FilterViewModel(
         _onlyWithSalary.value = value
     }
 
-
     // Получить настройки фильтров
     fun loadFilterSettings() {
         viewModelScope.launch {

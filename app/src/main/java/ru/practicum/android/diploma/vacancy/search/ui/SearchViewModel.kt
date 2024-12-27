@@ -26,9 +26,10 @@ class SearchViewModel(
         const val TAG = "SearchViewModel"
         const val PAGE_SIZE = 20
     }
+
     private var onlyWithSalary: Boolean = false
 
-    private var latestSearchText: String? = null
+    var latestSearchText: String? = null
     var currentPage: Int = 0
     private var totalPages = 1
     private val pageSize = PAGE_SIZE
@@ -54,6 +55,7 @@ class SearchViewModel(
                     searchState.vacancies,
                     searchState.vacanciesCount
                 )
+
                 is SearchFragmentState.Empty -> searchState
                 is SearchFragmentState.ServerError -> searchState
                 is SearchFragmentState.InternetError -> searchState
@@ -66,17 +68,19 @@ class SearchViewModel(
     fun observeShowToast(): LiveData<String> = showToast
 
     fun onSearchQueryChanged(query: String, forceUpdate: Boolean = false) {
-        if (query == latestSearchText) return
-        currentPage = 0
-        if (query.isBlank()) {
-            latestSearchText = null
-            clearVacancies()
-            return
-        }
-        if (forceUpdate) {
-            searchRequest(query)
-        } else {
-            debounceSearch(query)
+        if (forceUpdate || query != latestSearchText) {
+            currentPage = 0
+            if (query.isBlank()) {
+                latestSearchText = null
+                clearVacancies()
+                return
+            }
+            if (forceUpdate) {
+                latestSearchText = query
+                searchRequest(query)
+            } else {
+                debounceSearch(query)
+            }
         }
     }
 
@@ -124,6 +128,7 @@ class SearchViewModel(
                 when (errorMessage) {
                     context.getString(R.string.search_no_internet) ->
                         renderState(SearchFragmentState.InternetError)
+
                     else ->
                         renderState(SearchFragmentState.ServerError)
                 }

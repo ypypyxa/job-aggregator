@@ -58,7 +58,8 @@ class FilterFragment : Fragment() {
         setConfirmButtonClickListener()
         resetButtonClickListener()
         observeSelectedIndustry()
-
+        applyFilter()
+        restoreCheckboxState()
     }
 
     override fun onDestroyView() {
