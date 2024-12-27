@@ -69,6 +69,8 @@ class SearchFragment : Fragment() {
         setupRecyclerView()
         setupListeners()
         observeViewModel()
+        observeFilterResults()
+
     }
 
     override fun onDestroyView() {
@@ -226,4 +228,14 @@ class SearchFragment : Fragment() {
         }
         this.text = text
     }
+
+    private fun observeFilterResults() {
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>(
+            "onlyWithSalary"
+        )?.observe(viewLifecycleOwner) { onlyWithSalary ->
+            viewModel.setOnlyWithSalary(onlyWithSalary)
+            viewModel.onSearchQueryChanged(viewModel.latestSearchText ?: "", forceUpdate = true)
+        }
+    }
+
 }
