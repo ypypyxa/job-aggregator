@@ -13,6 +13,9 @@ class FilterViewModel(
     private val _selectedIndustry = MutableStateFlow<FilterIndustryValue?>(null)
     val selectedIndustry: StateFlow<FilterIndustryValue?> = _selectedIndustry
 
+    private val _onlyWithSalary = MutableStateFlow(false)
+    val onlyWithSalary: StateFlow<Boolean> = _onlyWithSalary // TODO:
+
     init {
         loadSelectedIndustry()
     }
@@ -27,4 +30,8 @@ class FilterViewModel(
         interactor.saveSelectedIndustry(industry)
         _selectedIndustry.value = industry
     }
+    fun setOnlyWithSalary(value: Boolean) {
+        _onlyWithSalary.value = value
+    }
+
 }

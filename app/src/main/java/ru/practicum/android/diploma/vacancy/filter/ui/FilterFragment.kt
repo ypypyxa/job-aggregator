@@ -51,7 +51,8 @@ class FilterFragment : Fragment() {
         backToSearch()
         focusPocus()
         observeSelectedIndustry()
-
+        applyFilter()
+        restoreCheckboxState()
     }
 
     override fun onDestroyView() {
@@ -103,6 +104,26 @@ class FilterFragment : Fragment() {
             viewModel.saveIndustry(industry)
             binding.tlIndustry.editText?.setText(industry.text)
         }
+    }
+
+    // Кнопка "Применить" ФИЛЬТРАЦИЯ
+    private fun applyFilter() {
+        binding.btnApply.setOnClickListener {
+            val onlyWithSalaryChecked = binding.checkboxHideWithSalary.isChecked
+            viewModel.setOnlyWithSalary(onlyWithSalaryChecked) // Сохраняем состояние в ViewModel
+
+            findNavController().previousBackStackEntry?.savedStateHandle?.set(
+                "onlyWithSalary",
+                onlyWithSalaryChecked
+            )
+            findNavController().navigateUp()
+        }
+    }
+
+    private fun restoreCheckboxState() {
+        val savedStateHandle = findNavController().previousBackStackEntry?.savedStateHandle
+        val savedState = savedStateHandle?.get<Boolean>("onlyWithSalary")
+        binding.checkboxHideWithSalary.isChecked = savedState ?: false
     }
 
 }

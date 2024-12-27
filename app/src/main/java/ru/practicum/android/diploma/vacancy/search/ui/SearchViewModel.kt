@@ -26,8 +26,9 @@ class SearchViewModel(
         const val TAG = "SearchViewModel"
         const val PAGE_SIZE = 20
     }
+    private var onlyWithSalary: Boolean = false // TODO:
 
-    private var latestSearchText: String? = null
+    var latestSearchText: String? = null
     var currentPage: Int = 0
     private var totalPages = 1
     private val pageSize = PAGE_SIZE
@@ -53,6 +54,7 @@ class SearchViewModel(
                     searchState.vacancies,
                     searchState.vacanciesCount
                 )
+
                 is SearchFragmentState.Empty -> searchState
                 is SearchFragmentState.ServerError -> searchState
                 is SearchFragmentState.InternetError -> searchState
@@ -64,14 +66,18 @@ class SearchViewModel(
     private val showToast = SingleLiveEvent<String>()
     fun observeShowToast(): LiveData<String> = showToast
 
-    fun onSearchQueryChanged(query: String) {
+    fun onSearchQueryChanged(query: String, forceUpdate: Boolean = false) {
         currentPage = 0
         if (query.isBlank()) {
             latestSearchText = null
             clearVacancies()
             return
         }
-        debounceSearch(query)
+        if (forceUpdate) {
+            searchRequest(query)
+        } else {
+            debounceSearch(query)
+        }
     }
 
     fun onSearchButtonPress(query: String) {
@@ -99,7 +105,7 @@ class SearchViewModel(
             searchField = "name",
             industry = null,
             salary = null,
-            onlyWithSalary = false
+            onlyWithSalary = onlyWithSalary
         )
 
         // выполняем запрос
@@ -170,7 +176,7 @@ class SearchViewModel(
             searchField = "name",
             industry = null,
             salary = null,
-            onlyWithSalary = false
+            onlyWithSalary = onlyWithSalary
         )
 
         viewModelScope.launch {
@@ -179,6 +185,10 @@ class SearchViewModel(
                     processResult(resource.first, resource.second)
                 }
         }
+    }
+
+    fun setOnlyWithSalary(value: Boolean) {
+        onlyWithSalary = value
     }
 
     private var _isLoading = false

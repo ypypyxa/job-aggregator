@@ -88,6 +88,14 @@
             app:argType="string"
             app:nullable="true"
             android:defaultValue="@null" />
+        <action
+            android:id="@+id/action_filterFragment_to_searchFragment2"
+            app:destination="@id/searchFragment" >
+        <argument
+            android:name="onlyWithSalary"
+            app:argType="boolean"
+            android:defaultValue="false" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/chooseCountryFragment"

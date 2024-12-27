@@ -27,9 +27,9 @@
         android:id="@+id/ll_text_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dimens_16"
         android:layout_marginTop="@dimen/dimens_16"
         android:gravity="center_vertical"
-        android:layout_marginStart="@dimen/dimens_16"
         android:orientation="vertical"
         android:paddingVertical="@dimen/dimens_8"
         app:layout_constraintEnd_toEndOf="parent"
@@ -52,11 +52,11 @@
                 android:id="@+id/ti_work_place"
                 style="@style/TextInputEditText.FilterInput"
                 android:layout_marginStart="@dimen/minus16"
+                android:clickable="true"
                 android:ellipsize="end"
-                android:hint="@string/workplace"
-                android:textSize="@dimen/text_size_16"
                 android:focusable="false"
-                android:clickable="true" />
+                android:hint="@string/workplace"
+                android:textSize="@dimen/text_size_16" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -75,22 +75,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/minus16"
-                android:hint="@string/industry"
-                android:textSize="@dimen/text_size_16"
+                android:clickable="true"
                 android:focusable="false"
-                android:clickable="true" />
+                android:hint="@string/industry"
+                android:textSize="@dimen/text_size_16" />
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tl_salary"
         style="@style/TextInputLayout"
+        android:layout_marginStart="@dimen/dimens_16"
         android:layout_marginTop="@dimen/dimens_24"
+        android:layout_marginEnd="@dimen/dimens_16"
         android:hint="@string/expected_salary"
         android:paddingVertical="@dimen/dimens_8"
         app:expandedHintEnabled="false"
-        android:layout_marginStart="@dimen/dimens_16"
-        android:layout_marginEnd="@dimen/dimens_16"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/ll_text_input"
@@ -108,9 +108,9 @@
     <ImageView
         android:id="@+id/iv_input_button"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dimens_16"
         android:layout_marginEnd="@dimen/dimens_16"
-        android:layout_height="wrap_content"
         android:contentDescription="@string/app_name"
         android:padding="@dimen/dimens_12"
         android:paddingVertical="@dimen/dimens_8"
@@ -145,20 +145,22 @@
 
         <CheckBox
             android:id="@+id/checkbox_hide_with_salary"
+            style="@style/CustomCheckBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:buttonTint="@color/blue"
-            android:gravity="center" />
+            android:gravity="center"
+
+            />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/ll_button_block"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/dimens_24"
-        android:orientation="vertical"
         android:layout_marginStart="@dimen/dimens_16"
         android:layout_marginEnd="@dimen/dimens_16"
+        android:layout_marginBottom="@dimen/dimens_24"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
