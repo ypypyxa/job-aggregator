@@ -28,7 +28,7 @@ class SearchViewModel(
     }
     private var onlyWithSalary: Boolean = false
 
-    var latestSearchText: String? = null
+    private var latestSearchText: String? = null
     var currentPage: Int = 0
     private var totalPages = 1
     private val pageSize = PAGE_SIZE
@@ -54,7 +54,6 @@ class SearchViewModel(
                     searchState.vacancies,
                     searchState.vacanciesCount
                 )
-
                 is SearchFragmentState.Empty -> searchState
                 is SearchFragmentState.ServerError -> searchState
                 is SearchFragmentState.InternetError -> searchState
@@ -67,6 +66,7 @@ class SearchViewModel(
     fun observeShowToast(): LiveData<String> = showToast
 
     fun onSearchQueryChanged(query: String, forceUpdate: Boolean = false) {
+        if (query == latestSearchText) return
         currentPage = 0
         if (query.isBlank()) {
             latestSearchText = null
@@ -140,7 +140,7 @@ class SearchViewModel(
             else -> {
                 val currentState = stateLiveData.value
                 val updatedVacancies = when {
-                    currentPage == 0 -> newVacancies // Для нового поиска полностью заменяем список
+                    currentPage == 0 -> newVacancies
                     currentState is SearchFragmentState.Content -> currentState.vacancies + newVacancies
                     else -> newVacancies
                 }

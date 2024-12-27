@@ -2,6 +2,7 @@ package ru.practicum.android.diploma.di
 
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 import ru.practicum.android.diploma.favorites.ui.FavoritesViewModel
 import ru.practicum.android.diploma.vacancy.details.ui.DetailsViewModel
@@ -13,9 +14,10 @@ import ru.practicum.android.diploma.vacancy.filter.ui.chooseworkplace.ChooseWork
 import ru.practicum.android.diploma.vacancy.search.ui.SearchViewModel
 
 val viewModelModule = module {
-    viewModel { SearchViewModel(get(), androidContext()) }
-    viewModel { FavoritesViewModel(get()) }
-    viewModel { FilterViewModel(get()) }
+    viewModelOf(::SearchViewModel)
+    viewModelOf(::FilterViewModel)
+    viewModelOf(::FavoritesViewModel)
+
     viewModel { (vacancyId: Int) ->
         DetailsViewModel(get(), get(), androidContext(), vacancyId)
     }
@@ -23,9 +25,12 @@ val viewModelModule = module {
         ChooseWorkplaceViewModel(countryName, cityName)
     }
     viewModel { ChooseCountryViewModel(get()) }
+
     viewModel { (countryId: String) ->
         ChooseRegionViewModel(get(), countryId)
     }
 
-    viewModel { ChooseIndustryViewModel(get()) }
+    viewModelOf(::ChooseCountryViewModel)
+    viewModelOf(::ChooseRegionViewModel)
+    viewModelOf(::ChooseIndustryViewModel)
 }
