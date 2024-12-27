@@ -2,6 +2,8 @@ package ru.practicum.android.diploma.vacancy.filter.ui
 
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -60,6 +62,7 @@ class FilterFragment : Fragment() {
         observeSelectedIndustry()
         applyFilter()
         restoreCheckboxState()
+        updateHintColorOnTextChange()
     }
 
     override fun onDestroyView() {
@@ -213,6 +216,53 @@ class FilterFragment : Fragment() {
         val savedStateHandle = findNavController().previousBackStackEntry?.savedStateHandle
         val savedState = savedStateHandle?.get<Boolean>("onlyWithSalary")
         binding.checkboxHideWithSalary.isChecked = savedState ?: false
+    }
+
+    private fun updateHintColorOnTextChange() {
+        val layoutWorkPlaceFilter = binding.tlWorkPlaceFilter
+        val edittextWorkPlace = binding.tiWorkPlace
+        val layoutIndustry = binding.tlIndustry
+        val editTextIndustryField = binding.tiIndustryField
+
+        edittextWorkPlace.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // no-op
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val hintColor = if (s.isNullOrEmpty()) {
+                    R.color.search_edit_hint_color
+                } else {
+                    R.color.night_day
+                }
+                layoutWorkPlaceFilter.defaultHintTextColor =
+                    ColorStateList.valueOf(ContextCompat.getColor(requireContext(), hintColor))
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                // no-op
+            }
+        })
+
+        editTextIndustryField.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // no-op
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val hintColor = if (s.isNullOrEmpty()) {
+                    R.color.search_edit_hint_color
+                } else {
+                    R.color.night_day
+                }
+                layoutIndustry.defaultHintTextColor =
+                    ColorStateList.valueOf(ContextCompat.getColor(requireContext(), hintColor))
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                // no-op
+            }
+        })
     }
 
 }
