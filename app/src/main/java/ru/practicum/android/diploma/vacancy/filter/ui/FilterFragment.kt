@@ -225,7 +225,9 @@ class FilterFragment : Fragment() {
         val editTextIndustryField = binding.tiIndustryField
 
         edittextWorkPlace.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // no-op
+            }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val hintColor = if (s.isNullOrEmpty()) {
@@ -237,11 +239,15 @@ class FilterFragment : Fragment() {
                     ColorStateList.valueOf(ContextCompat.getColor(requireContext(), hintColor))
             }
 
-            override fun afterTextChanged(s: Editable?) {}
+            override fun afterTextChanged(s: Editable?) {
+                // no-op
+            }
         })
 
         editTextIndustryField.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // no-op
+            }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val hintColor = if (s.isNullOrEmpty()) {
@@ -253,7 +259,9 @@ class FilterFragment : Fragment() {
                     ColorStateList.valueOf(ContextCompat.getColor(requireContext(), hintColor))
             }
 
-            override fun afterTextChanged(s: Editable?) {}
+            override fun afterTextChanged(s: Editable?) {
+                // no-op
+            }
         })
     }
 
