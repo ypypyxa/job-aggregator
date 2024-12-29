@@ -93,7 +93,6 @@ class ChooseIndustryFragment : Fragment() {
         )
     }
 
-
     private fun setupRecyclerView() {
         industryAdapter = IndustryAdapter(emptyList()) { industry ->
             // Логика при выборе отрасли

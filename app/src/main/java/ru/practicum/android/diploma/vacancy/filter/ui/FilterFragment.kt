@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -43,7 +42,9 @@ class FilterFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         _binding = FragmentFilterBinding.inflate(inflater, container, false)
         return binding.root
@@ -94,13 +95,11 @@ class FilterFragment : Fragment() {
     private fun editingRegioan() {
         binding.tlWorkPlaceFilter.setEndIconOnClickListener {
             findNavController().navigate(R.id.action_filterFragment_to_chooseWorkplaceFragment)
-            Toast.makeText(requireContext(), "Выбрано место работы", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun editingIndustry() {
         binding.tlIndustry.setEndIconOnClickListener {
-            // Логика нажатия для поля "Отрасль"
             findNavController().navigate(R.id.action_filterFragment_to_chooseIndustryFragment)
         }
     }
@@ -119,7 +118,6 @@ class FilterFragment : Fragment() {
 
                 viewModel.saveFilterSettings(updatedFilterSettings)
                 navigateBackToSearch()
-                Log.d("FilterFragment", "Saving settings: $updatedFilterSettings")
             }
         }
     }
@@ -131,7 +129,9 @@ class FilterFragment : Fragment() {
 
     // Создание обновлённого объекта FilterSettings
     private fun createUpdatedFilterSettings(
-        expectedSalary: Int, notShowWithoutSalary: Boolean, oldFilterSettings: FilterSettings?
+        expectedSalary: Int,
+        notShowWithoutSalary: Boolean,
+        oldFilterSettings: FilterSettings?
     ): FilterSettings {
         val country = getValidCountryOrNull(DataTransmitter.getCountry(), oldFilterSettings?.country)
         val region = getValidRegionOrNull(DataTransmitter.getRegion(), oldFilterSettings?.region)
@@ -186,7 +186,6 @@ class FilterFragment : Fragment() {
 //        binding.btnApply.isVisible = isVisible
 //        binding.btnReset.isVisible = isVisible
     }
-
     private fun clearFields() {
         DataTransmitter.postIndustry(null)
         DataTransmitter.postCountry(null)
@@ -206,7 +205,6 @@ class FilterFragment : Fragment() {
 
     // Кнопка "Применить" ФИЛЬТРАЦИЯ
 
-
 //    private fun restoreCheckboxState() {
 //        val savedStateHandle = findNavController().previousBackStackEntry?.savedStateHandle
 //        val savedState = savedStateHandle?.get<Boolean>("onlyWithSalary")
@@ -215,10 +213,8 @@ class FilterFragment : Fragment() {
 
     private fun handleWorkplaceData() {
         val args: FilterFragmentArgs by navArgs()
-
         val countryName = args.countryName
         val cityName = args.cityName
-
         val workplaceText = buildString {
             if (!countryName.isNullOrEmpty()) append(countryName)
             if (!cityName.isNullOrEmpty()) {
@@ -249,7 +245,6 @@ class FilterFragment : Fragment() {
                     binding.tiSalaryField.setText(
                         if (it.expectedSalary >= 0) it.expectedSalary.toString() else ""
                     )
-                    Log.d("FilterFragment", "Updating checkbox to: ${it.notShowWithoutSalary}")
                     binding.checkboxHideWithSalary.isChecked = it.notShowWithoutSalary
                 }
             }

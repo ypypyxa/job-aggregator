@@ -63,10 +63,8 @@ class ChooseWorkplaceFragment : Fragment() {
             countryName = null
             cityId = null
             cityName = null
-
-        // Очищаем данные в DataTransmitter
-        DataTransmitter.postCountry(null)
-        DataTransmitter.postRegion(null)
+            DataTransmitter.postCountry(null)
+            DataTransmitter.postRegion(null)
         }
         binding.forwardArrowCity.setOnClickListener {
             val action = ChooseWorkplaceFragmentDirections
@@ -77,17 +75,14 @@ class ChooseWorkplaceFragment : Fragment() {
             setCountryName(countryName)
             cityId = null
             cityName = null
-
-        // Очищаем только город
-        DataTransmitter.postRegion(null)
+            DataTransmitter.postRegion(null)
         }
         binding.backArrow.setOnClickListener {
             findNavController().navigate(R.id.action_chooseWorkplaceFragment_to_filterFragment)
         }
         binding.chooseButton.setOnClickListener {
-                // Передаем выбранные данные в DataTransmitter
-        DataTransmitter.postCountry(Country(id = countryId ?: "", name = countryName ?: ""))
-        DataTransmitter.postRegion(Region(id = cityId ?: "", name = cityName ?: ""))
+            DataTransmitter.postCountry(Country(id = countryId ?: "", name = countryName ?: ""))
+            DataTransmitter.postRegion(Region(id = cityId ?: "", name = cityName ?: ""))
             val action = ChooseWorkplaceFragmentDirections
                 .actionChooseWorkplaceFragmentToFilterFragment(
                     countryId = countryId,

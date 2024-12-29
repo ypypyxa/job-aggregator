@@ -48,7 +48,6 @@ val dataModule = module {
     single<FavoritesDBConverter> { FavoritesDBConverterImpl(get()) }
     single { com.google.gson.Gson() }
 
-
     single { IndustryLocalDataSource(get()) }
 
     // Shared Preferences
