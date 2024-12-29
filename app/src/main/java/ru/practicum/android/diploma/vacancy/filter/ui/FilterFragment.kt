@@ -2,10 +2,12 @@ package ru.practicum.android.diploma.vacancy.filter.ui
 
 import android.content.res.ColorStateList
 import android.os.Bundle
-import android.util.Log
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -63,6 +65,8 @@ class FilterFragment : Fragment() {
         observeSelectedIndustry()
 //        restoreCheckboxState()
         handleWorkplaceData()
+//        applyFilter()
+        updateHintColorOnTextChange()
     }
 
     override fun onDestroyView() {
@@ -95,11 +99,13 @@ class FilterFragment : Fragment() {
     private fun editingRegioan() {
         binding.tlWorkPlaceFilter.setEndIconOnClickListener {
             findNavController().navigate(R.id.action_filterFragment_to_chooseWorkplaceFragment)
+            Toast.makeText(requireContext(), "Выбрано место работы", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun editingIndustry() {
         binding.tlIndustry.setEndIconOnClickListener {
+            // Логика нажатия для поля "Отрасль"
             findNavController().navigate(R.id.action_filterFragment_to_chooseIndustryFragment)
         }
     }
@@ -136,7 +142,6 @@ class FilterFragment : Fragment() {
         val country = getValidCountryOrNull(DataTransmitter.getCountry(), oldFilterSettings?.country)
         val region = getValidRegionOrNull(DataTransmitter.getRegion(), oldFilterSettings?.region)
         val industry = getValidIndustryOrNull(DataTransmitter.getIndustry(), oldFilterSettings?.industry)
-        Log.d("FilterFragment", "Country: $country, Region: $region, Industry: $industry")
         return FilterSettings(
             country = country,
             region = region,
@@ -186,6 +191,7 @@ class FilterFragment : Fragment() {
 //        binding.btnApply.isVisible = isVisible
 //        binding.btnReset.isVisible = isVisible
     }
+
     private fun clearFields() {
         DataTransmitter.postIndustry(null)
         DataTransmitter.postCountry(null)
@@ -210,6 +216,18 @@ class FilterFragment : Fragment() {
 //        val savedState = savedStateHandle?.get<Boolean>("onlyWithSalary")
 //        binding.checkboxHideWithSalary.isChecked = savedState ?: viewModel.filterSettings.value?.notShowWithoutSalary ?: false
 //    }
+//private fun applyFilter() {
+//    binding.btnApply.setOnClickListener {
+//        val onlyWithSalaryChecked = binding.checkboxHideWithSalary.isChecked
+//        viewModel.setOnlyWithSalary(onlyWithSalaryChecked) // Сохраняем состояние в ViewModel
+//
+//        findNavController().previousBackStackEntry?.savedStateHandle?.set(
+//            "onlyWithSalary",
+//            onlyWithSalaryChecked
+//        )
+//        findNavController().navigateUp()
+//    }
+//}
 
     private fun handleWorkplaceData() {
         val args: FilterFragmentArgs by navArgs()
@@ -265,5 +283,51 @@ class FilterFragment : Fragment() {
 
     private fun updateCheckbox(settings: FilterSettings) {
         binding.checkboxHideWithSalary.isChecked = settings.notShowWithoutSalary
+    }
+    private fun updateHintColorOnTextChange() {
+        val layoutWorkPlaceFilter = binding.tlWorkPlaceFilter
+        val edittextWorkPlace = binding.tiWorkPlace
+        val layoutIndustry = binding.tlIndustry
+        val editTextIndustryField = binding.tiIndustryField
+
+        edittextWorkPlace.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // no-op
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val hintColor = if (s.isNullOrEmpty()) {
+                    R.color.search_edit_hint_color
+                } else {
+                    R.color.night_day
+                }
+                layoutWorkPlaceFilter.defaultHintTextColor =
+                    ColorStateList.valueOf(ContextCompat.getColor(requireContext(), hintColor))
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                // no-op
+            }
+        })
+
+        editTextIndustryField.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // no-op
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val hintColor = if (s.isNullOrEmpty()) {
+                    R.color.search_edit_hint_color
+                } else {
+                    R.color.night_day
+                }
+                layoutIndustry.defaultHintTextColor =
+                    ColorStateList.valueOf(ContextCompat.getColor(requireContext(), hintColor))
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                // no-op
+            }
+        })
     }
 }
