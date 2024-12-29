@@ -216,7 +216,7 @@ class FilterFragment : Fragment() {
 //        val savedState = savedStateHandle?.get<Boolean>("onlyWithSalary")
 //        binding.checkboxHideWithSalary.isChecked = savedState ?: viewModel.filterSettings.value?.notShowWithoutSalary ?: false
 //    }
-//private fun applyFilter() {
+// private fun applyFilter() {
 //    binding.btnApply.setOnClickListener {
 //        val onlyWithSalaryChecked = binding.checkboxHideWithSalary.isChecked
 //        viewModel.setOnlyWithSalary(onlyWithSalaryChecked) // Сохраняем состояние в ViewModel
@@ -227,7 +227,7 @@ class FilterFragment : Fragment() {
 //        )
 //        findNavController().navigateUp()
 //    }
-//}
+// }
 
     private fun handleWorkplaceData() {
         val args: FilterFragmentArgs by navArgs()
