@@ -2,14 +2,17 @@ package ru.practicum.android.diploma.vacancy.filter.ui
 
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.common.utils.DataTransmitter
@@ -28,7 +31,6 @@ class FilterFragment : Fragment() {
     }
 
     private val viewModel: FilterViewModel by viewModel()
-
     private val industryViewModel: ChooseIndustryViewModel by viewModel()
 
     private var _binding: FragmentFilterBinding? = null
@@ -41,9 +43,7 @@ class FilterFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentFilterBinding.inflate(inflater, container, false)
         return binding.root
@@ -51,6 +51,8 @@ class FilterFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.loadFilterSettings()
+        observeFilterSettings()
         editingRegioan()
         editingIndustry()
         backToSearch()
@@ -58,8 +60,8 @@ class FilterFragment : Fragment() {
         setConfirmButtonClickListener()
         resetButtonClickListener()
         observeSelectedIndustry()
-        applyFilter()
-        restoreCheckboxState()
+//        restoreCheckboxState()
+        handleWorkplaceData()
     }
 
     override fun onDestroyView() {
@@ -105,13 +107,20 @@ class FilterFragment : Fragment() {
 
     private fun setConfirmButtonClickListener() {
         binding.btnApply.setOnClickListener {
-            val expectedSalary = parseExpectedSalary()
-            val notShowWithoutSalary = binding.checkboxHideWithSalary.isChecked
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewModel.loadFilterSettings()
 
-            val updatedFilterSettings = createUpdatedFilterSettings(expectedSalary, notShowWithoutSalary)
+                val filterSettings = viewModel.filterSettings.value
+                val expectedSalary = parseExpectedSalary()
+                val notShowWithoutSalary = binding.checkboxHideWithSalary.isChecked
 
-            viewModel.saveFilterSettings(updatedFilterSettings)
-            navigateBackToSearch()
+                val updatedFilterSettings =
+                    createUpdatedFilterSettings(expectedSalary, notShowWithoutSalary, filterSettings)
+
+                viewModel.saveFilterSettings(updatedFilterSettings)
+                navigateBackToSearch()
+                Log.d("FilterFragment", "Saving settings: $updatedFilterSettings")
+            }
         }
     }
 
@@ -121,13 +130,13 @@ class FilterFragment : Fragment() {
     }
 
     // Создание обновлённого объекта FilterSettings
-    private fun createUpdatedFilterSettings(expectedSalary: Int, notShowWithoutSalary: Boolean): FilterSettings {
-        val oldFilterSettings = viewModel.filterSettings.value
-
+    private fun createUpdatedFilterSettings(
+        expectedSalary: Int, notShowWithoutSalary: Boolean, oldFilterSettings: FilterSettings?
+    ): FilterSettings {
         val country = getValidCountryOrNull(DataTransmitter.getCountry(), oldFilterSettings?.country)
         val region = getValidRegionOrNull(DataTransmitter.getRegion(), oldFilterSettings?.region)
         val industry = getValidIndustryOrNull(DataTransmitter.getIndustry(), oldFilterSettings?.industry)
-
+        Log.d("FilterFragment", "Country: $country, Region: $region, Industry: $industry")
         return FilterSettings(
             country = country,
             region = region,
@@ -196,23 +205,54 @@ class FilterFragment : Fragment() {
     }
 
     // Кнопка "Применить" ФИЛЬТРАЦИЯ
-    private fun applyFilter() {
-        binding.btnApply.setOnClickListener {
-            val onlyWithSalaryChecked = binding.checkboxHideWithSalary.isChecked
-            viewModel.setOnlyWithSalary(onlyWithSalaryChecked) // Сохраняем состояние в ViewModel
 
-            findNavController().previousBackStackEntry?.savedStateHandle?.set(
-                "onlyWithSalary",
-                onlyWithSalaryChecked
-            )
-            findNavController().navigateUp()
+
+//    private fun restoreCheckboxState() {
+//        val savedStateHandle = findNavController().previousBackStackEntry?.savedStateHandle
+//        val savedState = savedStateHandle?.get<Boolean>("onlyWithSalary")
+//        binding.checkboxHideWithSalary.isChecked = savedState ?: viewModel.filterSettings.value?.notShowWithoutSalary ?: false
+//    }
+
+    private fun handleWorkplaceData() {
+        val args: FilterFragmentArgs by navArgs()
+
+        val countryName = args.countryName
+        val cityName = args.cityName
+
+        val workplaceText = buildString {
+            if (!countryName.isNullOrEmpty()) append(countryName)
+            if (!cityName.isNullOrEmpty()) {
+                if (isNotEmpty()) append(", ")
+                append(cityName)
+            }
+        }
+
+        if (workplaceText.isNotEmpty()) {
+            binding.tiWorkPlace.setText(workplaceText)
         }
     }
 
-    private fun restoreCheckboxState() {
-        val savedStateHandle = findNavController().previousBackStackEntry?.savedStateHandle
-        val savedState = savedStateHandle?.get<Boolean>("onlyWithSalary")
-        binding.checkboxHideWithSalary.isChecked = savedState ?: false
+    private fun observeFilterSettings() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.filterSettings.collect { settings ->
+                settings?.let {
+                    binding.tiWorkPlace.setText(
+                        buildString {
+                            append(it.country?.name.orEmpty())
+                            if (!it.region?.name.isNullOrEmpty()) {
+                                if (isNotEmpty()) append(", ")
+                                append(it.region?.name.orEmpty())
+                            }
+                        }
+                    )
+                    binding.tiIndustryField.setText(it.industry?.name.orEmpty())
+                    binding.tiSalaryField.setText(
+                        if (it.expectedSalary >= 0) it.expectedSalary.toString() else ""
+                    )
+                    Log.d("FilterFragment", "Updating checkbox to: ${it.notShowWithoutSalary}")
+                    binding.checkboxHideWithSalary.isChecked = it.notShowWithoutSalary
+                }
+            }
+        }
     }
-
 }

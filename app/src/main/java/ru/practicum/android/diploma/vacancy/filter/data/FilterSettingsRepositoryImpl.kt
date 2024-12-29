@@ -1,6 +1,7 @@
 package ru.practicum.android.diploma.vacancy.filter.data
 
 import android.content.SharedPreferences
+import android.util.Log
 import com.google.gson.Gson
 import ru.practicum.android.diploma.common.utils.COUNTRY_KEY
 import ru.practicum.android.diploma.common.utils.DEFAULT_HIDE_FLAG
@@ -39,10 +40,11 @@ class FilterSettingsRepositoryImpl(
             ?.putInt(EXPECTED_SALARY_KEY, filterSettings.expectedSalary)
             ?.putBoolean(NOT_SHOW_WITHOUT_SALARY_KEY, filterSettings.notShowWithoutSalary)
             ?.apply()
+                Log.d("FilterSettings", "Saved Filter Settings: $filterSettings")
     }
 
     override fun getFilterSettings(): FilterSettings {
-        return FilterSettings(
+      val settings =FilterSettings(
             country = getObject<Country>(COUNTRY_KEY, null),
             region = getObject<Region>(REGION_KEY, null),
             industry = getObject<Industry>(INDUSTRY_KEY, null),
@@ -50,6 +52,8 @@ class FilterSettingsRepositoryImpl(
             notShowWithoutSalary = sharedPreferences?.
                 getBoolean(NOT_SHOW_WITHOUT_SALARY_KEY, DEFAULT_HIDE_FLAG) ?: DEFAULT_HIDE_FLAG
         )
+          Log.d("FilterSettings", "Loaded Filter Settings: $settings")
+            return settings
     }
 
     override fun clearFilterSettings() {

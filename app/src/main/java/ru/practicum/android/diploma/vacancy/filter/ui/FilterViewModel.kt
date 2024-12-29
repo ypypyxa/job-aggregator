@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.vacancy.filter.ui
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -49,7 +50,9 @@ class FilterViewModel(
         viewModelScope.launch {
             val settings = filterSettingsInteractor.getFilterSettings()
             _filterSettings.value = settings
+            Log.d("FilterViewModel", "Loaded settings in ViewModel: $settings")
         }
+
     }
 
     // Сохранить настройки фильтров
@@ -57,6 +60,7 @@ class FilterViewModel(
         viewModelScope.launch {
             filterSettingsInteractor.saveFilterSettings(settings)
             _filterSettings.update { settings }
+            Log.d("FilterViewModel", "Saved settings in ViewModel: $settings")
         }
     }
 
@@ -65,6 +69,8 @@ class FilterViewModel(
         viewModelScope.launch {
             filterSettingsInteractor.clearFilterSettings()
             _filterSettings.value = null
+
         }
+
     }
 }

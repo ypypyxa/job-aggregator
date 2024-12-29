@@ -12,7 +12,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.common.utils.DataTransmitter
 import ru.practicum.android.diploma.databinding.FragmentChooseIndustryBinding
+import ru.practicum.android.diploma.vacancy.filter.domain.model.FilterIndustryValue
+import ru.practicum.android.diploma.vacancy.filter.domain.model.Industry
 import ru.practicum.android.diploma.vacancy.filter.ui.FilterViewModel
 import ru.practicum.android.diploma.vacancy.filter.ui.adapter.IndustryAdapter
 
@@ -54,15 +57,20 @@ class ChooseIndustryFragment : Fragment() {
     private fun setupListeners() {
         binding.chooseButton.setOnClickListener {
             viewModel.selectedIndustry.value?.let { selectedIndustry ->
+                // Преобразование FilterIndustryValue в Industry
+                val industry = selectedIndustry.toIndustry()
+                DataTransmitter.postIndustry(industry)
+
+                // Преобразование обратно в FilterIndustryValue
+                filterViewModel.saveIndustry(industry.toFilterIndustryValue())
+
                 val navController = findNavController()
-
-                filterViewModel.saveIndustry(selectedIndustry)
-
                 navController.previousBackStackEntry?.savedStateHandle?.set(
                     "selectedIndustry",
                     selectedIndustry
                 )
 
+                // Возврат на FilterFragment
                 navController.popBackStack(R.id.filterFragment, false)
             }
         }
@@ -70,6 +78,21 @@ class ChooseIndustryFragment : Fragment() {
             viewModel.filterIndustries(text.toString())
         }
     }
+
+    fun FilterIndustryValue.toIndustry(): Industry {
+        return Industry(
+            id = this.id ?: "",
+            name = this.text ?: ""
+        )
+    }
+
+    fun Industry.toFilterIndustryValue(): FilterIndustryValue {
+        return FilterIndustryValue(
+            id = this.id,
+            text = this.name
+        )
+    }
+
 
     private fun setupRecyclerView() {
         industryAdapter = IndustryAdapter(emptyList()) { industry ->
@@ -138,6 +161,7 @@ class ChooseIndustryFragment : Fragment() {
             toggleSearchIcon(true, !text.isNullOrEmpty())
         }
     }
+
     private fun toggleSearchIcon(hasFocus: Boolean, hasText: Boolean) {
         if (hasFocus && hasText) {
             binding.clearRegion.visibility = View.VISIBLE
