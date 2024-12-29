@@ -63,9 +63,7 @@ class FilterFragment : Fragment() {
         setConfirmButtonClickListener()
         resetButtonClickListener()
         observeSelectedIndustry()
-//        restoreCheckboxState()
         handleWorkplaceData()
-//        applyFilter()
         updateHintColorOnTextChange()
     }
 
@@ -208,26 +206,6 @@ class FilterFragment : Fragment() {
             binding.tlIndustry.editText?.setText(industry.text)
         }
     }
-
-    // Кнопка "Применить" ФИЛЬТРАЦИЯ
-
-//    private fun restoreCheckboxState() {
-//        val savedStateHandle = findNavController().previousBackStackEntry?.savedStateHandle
-//        val savedState = savedStateHandle?.get<Boolean>("onlyWithSalary")
-//        binding.checkboxHideWithSalary.isChecked = savedState ?: viewModel.filterSettings.value?.notShowWithoutSalary ?: false
-//    }
-// private fun applyFilter() {
-//    binding.btnApply.setOnClickListener {
-//        val onlyWithSalaryChecked = binding.checkboxHideWithSalary.isChecked
-//        viewModel.setOnlyWithSalary(onlyWithSalaryChecked) // Сохраняем состояние в ViewModel
-//
-//        findNavController().previousBackStackEntry?.savedStateHandle?.set(
-//            "onlyWithSalary",
-//            onlyWithSalaryChecked
-//        )
-//        findNavController().navigateUp()
-//    }
-// }
 
     private fun handleWorkplaceData() {
         val args: FilterFragmentArgs by navArgs()
