@@ -232,22 +232,38 @@ class FilterFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.filterSettings.collect { settings ->
                 settings?.let {
-                    binding.tiWorkPlace.setText(
-                        buildString {
-                            append(it.country?.name.orEmpty())
-                            if (!it.region?.name.isNullOrEmpty()) {
-                                if (isNotEmpty()) append(", ")
-                                append(it.region?.name.orEmpty())
-                            }
-                        }
-                    )
-                    binding.tiIndustryField.setText(it.industry?.name.orEmpty())
-                    binding.tiSalaryField.setText(
-                        if (it.expectedSalary >= 0) it.expectedSalary.toString() else ""
-                    )
-                    binding.checkboxHideWithSalary.isChecked = it.notShowWithoutSalary
+                    updateWorkplaceField(it)
+                    updateIndustryField(it)
+                    updateSalaryField(it)
+                    updateCheckbox(it)
                 }
             }
         }
+    }
+
+    private fun updateWorkplaceField(settings: FilterSettings) {
+        binding.tiWorkPlace.setText(
+            buildString {
+                append(settings.country?.name.orEmpty())
+                if (!settings.region?.name.isNullOrEmpty()) {
+                    if (isNotEmpty()) append(", ")
+                    append(settings.region?.name.orEmpty())
+                }
+            }
+        )
+    }
+
+    private fun updateIndustryField(settings: FilterSettings) {
+        binding.tiIndustryField.setText(settings.industry?.name.orEmpty())
+    }
+
+    private fun updateSalaryField(settings: FilterSettings) {
+        binding.tiSalaryField.setText(
+            if (settings.expectedSalary >= 0) settings.expectedSalary.toString() else ""
+        )
+    }
+
+    private fun updateCheckbox(settings: FilterSettings) {
+        binding.checkboxHideWithSalary.isChecked = settings.notShowWithoutSalary
     }
 }
