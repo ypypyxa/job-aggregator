@@ -9,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -65,6 +67,7 @@ class FilterFragment : Fragment() {
         observeSelectedIndustry()
         handleWorkplaceData()
         updateHintColorOnTextChange()
+        updateButtonsVisibility()
     }
 
     override fun onDestroyView() {
@@ -108,24 +111,6 @@ class FilterFragment : Fragment() {
         }
     }
 
-    private fun setConfirmButtonClickListener() {
-        binding.btnApply.setOnClickListener {
-            viewLifecycleOwner.lifecycleScope.launch {
-                viewModel.loadFilterSettings()
-
-                val filterSettings = viewModel.filterSettings.value
-                val expectedSalary = parseExpectedSalary()
-                val notShowWithoutSalary = binding.checkboxHideWithSalary.isChecked
-
-                val updatedFilterSettings =
-                    createUpdatedFilterSettings(expectedSalary, notShowWithoutSalary, filterSettings)
-
-                viewModel.saveFilterSettings(updatedFilterSettings)
-                navigateBackToSearch()
-            }
-        }
-    }
-
     // Вспомогательная функция для обработки поля зарплаты
     private fun parseExpectedSalary(): Int {
         return binding.tiSalaryField.text.toString().toIntOrNull() ?: -1
@@ -166,6 +151,34 @@ class FilterFragment : Fragment() {
         findNavController().popBackStack(R.id.searchFragment, false)
     }
 
+    private fun updateButtonsVisibility() {
+        val isFilterSet = binding.tiWorkPlace.text?.isNotEmpty() == true ||
+            binding.tiIndustryField.text?.isNotEmpty() == true ||
+            binding.tiSalaryField.text?.isNotEmpty() == true ||
+            binding.checkboxHideWithSalary.isChecked
+
+        showConfirmAndClearButtons(isFilterSet)
+    }
+
+    private fun setConfirmButtonClickListener() {
+        binding.btnApply.setOnClickListener {
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewModel.loadFilterSettings()
+
+                val filterSettings = viewModel.filterSettings.value
+                val expectedSalary = parseExpectedSalary()
+                val notShowWithoutSalary = binding.checkboxHideWithSalary.isChecked
+
+                val updatedFilterSettings =
+                    createUpdatedFilterSettings(expectedSalary, notShowWithoutSalary, filterSettings)
+
+                viewModel.saveFilterSettings(updatedFilterSettings)
+                updateButtonsVisibility()
+                navigateBackToSearch()
+            }
+        }
+    }
+
     private fun resetButtonClickListener() {
         binding.btnReset.setOnClickListener {
             binding.apply {
@@ -175,19 +188,18 @@ class FilterFragment : Fragment() {
                 checkboxHideWithSalary.isChecked = false
             }
             viewModel.clearFilterSettings()
-            showConfirmAndClearButtons(false)
             DataTransmitter.apply {
                 postRegion(null)
                 postCountry(null)
                 postIndustry(null)
-                // Реализацию рендера для текстов место работы и отрасль сюда добавьте когда напишете
             }
+            updateButtonsVisibility()
         }
     }
 
     private fun showConfirmAndClearButtons(isVisible: Boolean) {
-//        binding.btnApply.isVisible = isVisible
-//        binding.btnReset.isVisible = isVisible
+        binding.btnApply.isVisible = isVisible
+        binding.btnReset.isVisible = isVisible
     }
 
     private fun clearFields() {
@@ -281,6 +293,7 @@ class FilterFragment : Fragment() {
                 }
                 layoutWorkPlaceFilter.defaultHintTextColor =
                     ColorStateList.valueOf(ContextCompat.getColor(requireContext(), hintColor))
+                updateButtonsVisibility()
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -301,11 +314,19 @@ class FilterFragment : Fragment() {
                 }
                 layoutIndustry.defaultHintTextColor =
                     ColorStateList.valueOf(ContextCompat.getColor(requireContext(), hintColor))
+                updateButtonsVisibility()
             }
 
             override fun afterTextChanged(s: Editable?) {
                 // no-op
             }
         })
+        binding.tiSalaryField.doOnTextChanged { text, _, _, _ ->
+            updateButtonsVisibility()
+        }
+
+        binding.checkboxHideWithSalary.setOnCheckedChangeListener { _, _ ->
+            updateButtonsVisibility()
+        }
     }
 }
