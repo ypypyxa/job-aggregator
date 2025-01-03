@@ -116,7 +116,7 @@ class VacancyAdapter(
 
     fun addVacancies(newVacancies: List<VacancySearch>) {
         val startPosition = vacancies.size
-        vacancies = vacancies + newVacancies
+        vacancies = (vacancies + newVacancies).distinctBy { it.id }
         notifyItemRangeInserted(startPosition, newVacancies.size)
     }
 }
