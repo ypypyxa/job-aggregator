@@ -66,5 +66,6 @@ class FilterViewModel(
             filterSettingsInteractor.clearFilterSettings()
             _filterSettings.value = null
         }
+
     }
 }

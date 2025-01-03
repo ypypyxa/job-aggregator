@@ -10,20 +10,32 @@ object DataTransmitter {
     private var currentCountry: Country? = null
     private var currentRegion: Region? = null
 
-    fun getRegion(): Region? = currentRegion
+    // Получение текущего региона
+    fun getRegion(): Region? {
+        return currentRegion
+    }
 
-    fun getCountry(): Country? = currentCountry
+    // Получение текущей страны
+    fun getCountry(): Country? {
+        return currentCountry
+    }
 
-    fun getIndustry(): Industry? = currentIndustry
+    // Получение текущей отрасли
+    fun getIndustry(): Industry? {
+        return currentIndustry
+    }
 
+    // Установка текущего региона
     fun postRegion(region: Region?) {
         currentRegion = region
     }
 
+    // Установка текущей страны
     fun postCountry(country: Country?) {
         currentCountry = country
     }
 
+    // Установка текущей отрасли
     fun postIndustry(industry: Industry?) {
         currentIndustry = industry
     }

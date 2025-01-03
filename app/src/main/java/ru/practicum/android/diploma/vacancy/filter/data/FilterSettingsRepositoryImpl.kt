@@ -42,7 +42,7 @@ class FilterSettingsRepositoryImpl(
     }
 
     override fun getFilterSettings(): FilterSettings {
-        return FilterSettings(
+        val settings = FilterSettings(
             country = getObject<Country>(COUNTRY_KEY, null),
             region = getObject<Region>(REGION_KEY, null),
             industry = getObject<Industry>(INDUSTRY_KEY, null),
@@ -50,6 +50,7 @@ class FilterSettingsRepositoryImpl(
             notShowWithoutSalary = sharedPreferences?.
                 getBoolean(NOT_SHOW_WITHOUT_SALARY_KEY, DEFAULT_HIDE_FLAG) ?: DEFAULT_HIDE_FLAG
         )
+        return settings
     }
 
     override fun clearFilterSettings() {

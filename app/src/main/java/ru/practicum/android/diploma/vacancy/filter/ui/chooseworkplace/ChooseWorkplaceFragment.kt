@@ -10,9 +10,12 @@ import androidx.navigation.fragment.navArgs
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.common.utils.DataTransmitter
 import ru.practicum.android.diploma.common.utils.gone
 import ru.practicum.android.diploma.common.utils.show
 import ru.practicum.android.diploma.databinding.FragmentChooseWorkplaceBinding
+import ru.practicum.android.diploma.vacancy.filter.domain.model.Country
+import ru.practicum.android.diploma.vacancy.filter.domain.model.Region
 import ru.practicum.android.diploma.vacancy.filter.ui.chooseworkplace.model.ChooseWorkplaceFragmentState
 
 class ChooseWorkplaceFragment : Fragment() {
@@ -60,7 +63,8 @@ class ChooseWorkplaceFragment : Fragment() {
             countryName = null
             cityId = null
             cityName = null
-            showEmpty()
+            DataTransmitter.postCountry(null)
+            DataTransmitter.postRegion(null)
         }
         binding.forwardArrowCity.setOnClickListener {
             val action = ChooseWorkplaceFragmentDirections
@@ -71,11 +75,14 @@ class ChooseWorkplaceFragment : Fragment() {
             setCountryName(countryName)
             cityId = null
             cityName = null
+            DataTransmitter.postRegion(null)
         }
         binding.backArrow.setOnClickListener {
             findNavController().navigate(R.id.action_chooseWorkplaceFragment_to_filterFragment)
         }
         binding.chooseButton.setOnClickListener {
+            DataTransmitter.postCountry(Country(id = countryId ?: "", name = countryName ?: ""))
+            DataTransmitter.postRegion(Region(id = cityId ?: "", name = cityName ?: ""))
             val action = ChooseWorkplaceFragmentDirections
                 .actionChooseWorkplaceFragmentToFilterFragment(
                     countryId = countryId,

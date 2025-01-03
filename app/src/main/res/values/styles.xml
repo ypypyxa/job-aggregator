@@ -176,7 +176,6 @@
     </style>
 
     <style name="CustomCheckBox" parent="Widget.Material3.CompoundButton.CheckBox">
-        <item name="android:button">@null</item>
         <item name="buttonTint">@color/blue</item>
         <item name="buttonCompat">@drawable/ic_checkbox_selector</item>
     </style>

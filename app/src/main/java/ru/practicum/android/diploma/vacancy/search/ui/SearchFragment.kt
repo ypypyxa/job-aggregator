@@ -55,6 +55,8 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        applyFilterSettingsAndSearch()
+
         onVacancyClickDebounce = debounce(
             CLICK_DEBOUNCE_DELAY,
             viewLifecycleOwner.lifecycleScope,
@@ -238,4 +240,10 @@ class SearchFragment : Fragment() {
         }
     }
 
+    private fun applyFilterSettingsAndSearch() {
+        viewModel.getFilterSettings {
+            val query = binding.editSearch.text.toString()
+            viewModel.onSearchQueryChanged(query, forceUpdate = true)
+        }
+    }
 }

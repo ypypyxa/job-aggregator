@@ -10,6 +10,8 @@ import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.common.utils.SingleLiveEvent
 import ru.practicum.android.diploma.common.utils.debounce
+import ru.practicum.android.diploma.vacancy.filter.domain.FilterSettingsInteractor
+import ru.practicum.android.diploma.vacancy.filter.domain.model.FilterSettings
 import ru.practicum.android.diploma.vacancy.search.domain.api.SearchInteractor
 import ru.practicum.android.diploma.vacancy.search.domain.model.PagedData
 import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearch
@@ -18,8 +20,11 @@ import ru.practicum.android.diploma.vacancy.search.ui.model.SearchFragmentState
 
 class SearchViewModel(
     private val searchInteractor: SearchInteractor,
+    private val filterSettingsInteractor: FilterSettingsInteractor,
     private val context: Context
 ) : ViewModel() {
+
+    private var currentFilterSettings: FilterSettings? = null
 
     companion object {
         const val LOADING_DELAY_MS = 2000L
@@ -103,13 +108,13 @@ class SearchViewModel(
         // собираем параметры запроса
         val params = VacancySearchParams(
             text = latestSearchText,
-            page = 0,
-            perPage = 20,
-            area = 1,
+            page = currentPage,
+            perPage = pageSize,
+            area = currentFilterSettings?.region?.id?.toIntOrNull(),
             searchField = "name",
-            industry = null,
-            salary = null,
-            onlyWithSalary = onlyWithSalary
+            industry = currentFilterSettings?.industry?.id,
+            salary = currentFilterSettings?.expectedSalary.takeIf { it!! >= 0 },
+            onlyWithSalary = currentFilterSettings?.notShowWithoutSalary ?: onlyWithSalary
         )
 
         // выполняем запрос
@@ -175,13 +180,13 @@ class SearchViewModel(
 
         val params = VacancySearchParams(
             text = latestSearchText,
-            page = currentPage + 1,
+            page = currentPage,
             perPage = pageSize,
-            area = 1,
+            area = currentFilterSettings?.region?.id?.toIntOrNull(),
             searchField = "name",
-            industry = null,
-            salary = null,
-            onlyWithSalary = onlyWithSalary
+            industry = currentFilterSettings?.industry?.id,
+            salary = currentFilterSettings?.expectedSalary.takeIf { it!! >= 0 },
+            onlyWithSalary = currentFilterSettings?.notShowWithoutSalary ?: onlyWithSalary
         )
 
         viewModelScope.launch {
@@ -199,4 +204,11 @@ class SearchViewModel(
     private var _isLoading = false
     val isLoading: Boolean get() = _isLoading
 
+    fun getFilterSettings(callback: (() -> Unit)? = null) {
+        viewModelScope.launch {
+            val settings = filterSettingsInteractor.getFilterSettings()
+            currentFilterSettings = settings
+            callback?.invoke()
+        }
+    }
 }

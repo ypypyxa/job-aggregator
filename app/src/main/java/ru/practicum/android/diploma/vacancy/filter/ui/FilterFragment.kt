@@ -10,8 +10,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.common.utils.DataTransmitter
@@ -30,7 +32,6 @@ class FilterFragment : Fragment() {
     }
 
     private val viewModel: FilterViewModel by viewModel()
-
     private val industryViewModel: ChooseIndustryViewModel by viewModel()
 
     private var _binding: FragmentFilterBinding? = null
@@ -53,6 +54,8 @@ class FilterFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.loadFilterSettings()
+        observeFilterSettings()
         editingRegioan()
         editingIndustry()
         backToSearch()
@@ -60,8 +63,7 @@ class FilterFragment : Fragment() {
         setConfirmButtonClickListener()
         resetButtonClickListener()
         observeSelectedIndustry()
-        applyFilter()
-        restoreCheckboxState()
+        handleWorkplaceData()
         updateHintColorOnTextChange()
     }
 
@@ -108,13 +110,19 @@ class FilterFragment : Fragment() {
 
     private fun setConfirmButtonClickListener() {
         binding.btnApply.setOnClickListener {
-            val expectedSalary = parseExpectedSalary()
-            val notShowWithoutSalary = binding.checkboxHideWithSalary.isChecked
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewModel.loadFilterSettings()
 
-            val updatedFilterSettings = createUpdatedFilterSettings(expectedSalary, notShowWithoutSalary)
+                val filterSettings = viewModel.filterSettings.value
+                val expectedSalary = parseExpectedSalary()
+                val notShowWithoutSalary = binding.checkboxHideWithSalary.isChecked
 
-            viewModel.saveFilterSettings(updatedFilterSettings)
-            navigateBackToSearch()
+                val updatedFilterSettings =
+                    createUpdatedFilterSettings(expectedSalary, notShowWithoutSalary, filterSettings)
+
+                viewModel.saveFilterSettings(updatedFilterSettings)
+                navigateBackToSearch()
+            }
         }
     }
 
@@ -124,13 +132,14 @@ class FilterFragment : Fragment() {
     }
 
     // Создание обновлённого объекта FilterSettings
-    private fun createUpdatedFilterSettings(expectedSalary: Int, notShowWithoutSalary: Boolean): FilterSettings {
-        val oldFilterSettings = viewModel.filterSettings.value
-
+    private fun createUpdatedFilterSettings(
+        expectedSalary: Int,
+        notShowWithoutSalary: Boolean,
+        oldFilterSettings: FilterSettings?
+    ): FilterSettings {
         val country = getValidCountryOrNull(DataTransmitter.getCountry(), oldFilterSettings?.country)
         val region = getValidRegionOrNull(DataTransmitter.getRegion(), oldFilterSettings?.region)
         val industry = getValidIndustryOrNull(DataTransmitter.getIndustry(), oldFilterSettings?.industry)
-
         return FilterSettings(
             country = country,
             region = region,
@@ -198,26 +207,61 @@ class FilterFragment : Fragment() {
         }
     }
 
-    // Кнопка "Применить" ФИЛЬТРАЦИЯ
-    private fun applyFilter() {
-        binding.btnApply.setOnClickListener {
-            val onlyWithSalaryChecked = binding.checkboxHideWithSalary.isChecked
-            viewModel.setOnlyWithSalary(onlyWithSalaryChecked) // Сохраняем состояние в ViewModel
+    private fun handleWorkplaceData() {
+        val args: FilterFragmentArgs by navArgs()
+        val countryName = args.countryName
+        val cityName = args.cityName
+        val workplaceText = buildString {
+            if (!countryName.isNullOrEmpty()) append(countryName)
+            if (!cityName.isNullOrEmpty()) {
+                if (isNotEmpty()) append(", ")
+                append(cityName)
+            }
+        }
 
-            findNavController().previousBackStackEntry?.savedStateHandle?.set(
-                "onlyWithSalary",
-                onlyWithSalaryChecked
-            )
-            findNavController().navigateUp()
+        if (workplaceText.isNotEmpty()) {
+            binding.tiWorkPlace.setText(workplaceText)
         }
     }
 
-    private fun restoreCheckboxState() {
-        val savedStateHandle = findNavController().previousBackStackEntry?.savedStateHandle
-        val savedState = savedStateHandle?.get<Boolean>("onlyWithSalary")
-        binding.checkboxHideWithSalary.isChecked = savedState ?: false
+    private fun observeFilterSettings() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.filterSettings.collect { settings ->
+                settings?.let {
+                    updateWorkplaceField(it)
+                    updateIndustryField(it)
+                    updateSalaryField(it)
+                    updateCheckbox(it)
+                }
+            }
+        }
     }
 
+    private fun updateWorkplaceField(settings: FilterSettings) {
+        binding.tiWorkPlace.setText(
+            buildString {
+                append(settings.country?.name.orEmpty())
+                if (!settings.region?.name.isNullOrEmpty()) {
+                    if (isNotEmpty()) append(", ")
+                    append(settings.region?.name.orEmpty())
+                }
+            }
+        )
+    }
+
+    private fun updateIndustryField(settings: FilterSettings) {
+        binding.tiIndustryField.setText(settings.industry?.name.orEmpty())
+    }
+
+    private fun updateSalaryField(settings: FilterSettings) {
+        binding.tiSalaryField.setText(
+            if (settings.expectedSalary >= 0) settings.expectedSalary.toString() else ""
+        )
+    }
+
+    private fun updateCheckbox(settings: FilterSettings) {
+        binding.checkboxHideWithSalary.isChecked = settings.notShowWithoutSalary
+    }
     private fun updateHintColorOnTextChange() {
         val layoutWorkPlaceFilter = binding.tlWorkPlaceFilter
         val edittextWorkPlace = binding.tiWorkPlace
@@ -264,5 +308,4 @@ class FilterFragment : Fragment() {
             }
         })
     }
-
 }
