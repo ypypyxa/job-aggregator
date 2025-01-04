@@ -2,12 +2,11 @@ package ru.practicum.android.diploma.vacancy.filter.ui
 
 import android.content.res.ColorStateList
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -266,44 +265,24 @@ class FilterFragment : Fragment() {
         val layoutIndustry = binding.tlIndustry
         val editTextIndustryField = binding.tiIndustryField
 
-        edittextWorkPlace.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                // no-op
+        edittextWorkPlace.doOnTextChanged { text, _, _, _ ->
+            val hintColor = if (text.isNullOrEmpty()) {
+                R.color.search_edit_hint_color
+            } else {
+                R.color.night_day
             }
+            layoutWorkPlaceFilter.defaultHintTextColor =
+                ColorStateList.valueOf(ContextCompat.getColor(requireContext(), hintColor))
+        }
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val hintColor = if (s.isNullOrEmpty()) {
-                    R.color.search_edit_hint_color
-                } else {
-                    R.color.night_day
-                }
-                layoutWorkPlaceFilter.defaultHintTextColor =
-                    ColorStateList.valueOf(ContextCompat.getColor(requireContext(), hintColor))
+        editTextIndustryField.doOnTextChanged { text, _, _, _ ->
+            val hintColor = if (text.isNullOrEmpty()) {
+                R.color.search_edit_hint_color
+            } else {
+                R.color.night_day
             }
-
-            override fun afterTextChanged(s: Editable?) {
-                // no-op
-            }
-        })
-
-        editTextIndustryField.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                // no-op
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val hintColor = if (s.isNullOrEmpty()) {
-                    R.color.search_edit_hint_color
-                } else {
-                    R.color.night_day
-                }
-                layoutIndustry.defaultHintTextColor =
-                    ColorStateList.valueOf(ContextCompat.getColor(requireContext(), hintColor))
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                // no-op
-            }
-        })
+            layoutIndustry.defaultHintTextColor =
+                ColorStateList.valueOf(ContextCompat.getColor(requireContext(), hintColor))
+        }
     }
 }
