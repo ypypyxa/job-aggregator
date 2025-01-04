@@ -7,7 +7,6 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -95,15 +94,13 @@ class FilterFragment : Fragment() {
     }
 
     private fun editingRegioan() {
-        binding.tlWorkPlaceFilter.setEndIconOnClickListener {
+        binding.tiWorkPlace.setOnClickListener {
             findNavController().navigate(R.id.action_filterFragment_to_chooseWorkplaceFragment)
-            Toast.makeText(requireContext(), "Выбрано место работы", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun editingIndustry() {
-        binding.tlIndustry.setEndIconOnClickListener {
-            // Логика нажатия для поля "Отрасль"
+        binding.tiIndustryField.setOnClickListener {
             findNavController().navigate(R.id.action_filterFragment_to_chooseIndustryFragment)
         }
     }
@@ -262,6 +259,7 @@ class FilterFragment : Fragment() {
     private fun updateCheckbox(settings: FilterSettings) {
         binding.checkboxHideWithSalary.isChecked = settings.notShowWithoutSalary
     }
+
     private fun updateHintColorOnTextChange() {
         val layoutWorkPlaceFilter = binding.tlWorkPlaceFilter
         val edittextWorkPlace = binding.tiWorkPlace
