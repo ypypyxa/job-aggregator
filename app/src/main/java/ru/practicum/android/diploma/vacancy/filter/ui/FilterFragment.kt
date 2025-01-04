@@ -9,10 +9,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
@@ -65,6 +68,7 @@ class FilterFragment : Fragment() {
         observeSelectedIndustry()
         handleWorkplaceData()
         updateHintColorOnTextChange()
+        updateEndIconBasedOnInput()
     }
 
     override fun onDestroyView() {
@@ -208,9 +212,12 @@ class FilterFragment : Fragment() {
     }
 
     private fun handleWorkplaceData() {
-        val args: FilterFragmentArgs by navArgs()
-        val countryName = args.countryName
-        val cityName = args.cityName
+        val country = DataTransmitter.getCountry()
+        val region = DataTransmitter.getRegion()
+
+        val countryName = country?.name
+        val cityName = region?.name
+
         val workplaceText = buildString {
             if (!countryName.isNullOrEmpty()) append(countryName)
             if (!cityName.isNullOrEmpty()) {
@@ -307,5 +314,45 @@ class FilterFragment : Fragment() {
                 // no-op
             }
         })
+    }
+    private fun updateEndIconBasedOnInput() {
+        binding.apply {
+            setupFieldWithEndIcon(
+                textInputLayout = tlWorkPlaceFilter,
+                editText = tiWorkPlace,
+                navigateAction = R.id.action_filterFragment_to_chooseWorkplaceFragment
+            )
+
+            setupFieldWithEndIcon(
+                textInputLayout = tlIndustry,
+                editText = tiIndustryField,
+                navigateAction = R.id.action_filterFragment_to_chooseIndustryFragment
+            )
+        }
+    }
+
+    private fun setupFieldWithEndIcon(
+        textInputLayout: TextInputLayout,
+        editText: TextInputEditText,
+        navigateAction: Int
+    ) {
+        editText.doOnTextChanged { text, _, _, _ ->
+            textInputLayout.endIconDrawable = ContextCompat.getDrawable(
+                textInputLayout.context,
+                if (!text.isNullOrEmpty()) R.drawable.ic_clear else R.drawable.ic_arrow_forward
+            )
+        }
+
+        textInputLayout.setEndIconOnClickListener {
+            if (!editText.text.isNullOrEmpty()) {
+                editText.text?.clear()
+            } else {
+                findNavController().navigate(navigateAction)
+            }
+        }
+    }
+    override fun onResume() {
+        super.onResume()
+        handleWorkplaceData()
     }
 }

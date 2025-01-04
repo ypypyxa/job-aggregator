@@ -78,14 +78,11 @@ class ChooseRegionFragment : Fragment() {
         areaAdapter = AreaAdapter(emptyList()) { area ->
             when (area.areas) {
                 emptyList<Area>() -> {
-                    val action = ChooseRegionFragmentDirections
-                        .actionChooseRegionFragmentToChooseWorkplaceFragment(
-                            countryId = countryId,
-                            countryName = countryName,
-                            cityId = area.id,
-                            cityName = area.name
-                        )
-                    findNavController().navigate(action)
+                    findNavController().previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("selected_region", area)
+
+                    findNavController().popBackStack()
                 }
                 else -> viewModel.loadCityByAreaId(area.id)
             }

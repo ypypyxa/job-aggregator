@@ -13,7 +13,7 @@ import ru.practicum.android.diploma.vacancy.filter.ui.chooseregion.model.ChooseR
 
 class ChooseRegionViewModel(
     private val areaInteractor: AreaInteractor,
-    private val countryId: String
+    private val countryId: String?
 ) : ViewModel() {
 
     private val stateLiveData = MutableLiveData<ChooseRegionFragmentState>()
@@ -43,8 +43,11 @@ class ChooseRegionViewModel(
     }
 
     fun loadAreaById(areaId: String?) {
+        if (areaId.isNullOrEmpty()) {
+            return
+        }
         viewModelScope.launch {
-            areaInteractor.fetchAreaById(areaId!!)
+            areaInteractor.fetchAreaById(areaId)
                 .collect { resource ->
                     areaResult(resource.first, resource.second)
                 }

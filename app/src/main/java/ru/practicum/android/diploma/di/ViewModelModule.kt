@@ -26,11 +26,10 @@ val viewModelModule = module {
     }
     viewModel { ChooseCountryViewModel(get()) }
 
-    viewModel { (countryId: String) ->
+    viewModel { (countryId: String?) ->
         ChooseRegionViewModel(get(), countryId)
     }
 
     viewModelOf(::ChooseCountryViewModel)
-    viewModelOf(::ChooseRegionViewModel)
     viewModelOf(::ChooseIndustryViewModel)
 }
