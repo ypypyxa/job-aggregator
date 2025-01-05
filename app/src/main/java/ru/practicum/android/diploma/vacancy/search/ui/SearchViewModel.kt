@@ -204,11 +204,12 @@ class SearchViewModel(
     private var _isLoading = false
     val isLoading: Boolean get() = _isLoading
 
-    fun getFilterSettings(callback: (() -> Unit)? = null) {
+    fun getFilterSettings(callback: (FilterSettings?) -> Unit) {
         viewModelScope.launch {
             val settings = filterSettingsInteractor.getFilterSettings()
             currentFilterSettings = settings
-            callback?.invoke()
+            callback(settings)
         }
     }
+
 }
