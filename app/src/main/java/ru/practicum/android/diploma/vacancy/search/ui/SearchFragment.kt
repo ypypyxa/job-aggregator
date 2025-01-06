@@ -55,6 +55,8 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        renderFilter()
+
         applyFilterSettingsAndSearch()
 
         onVacancyClickDebounce = debounce(
@@ -244,6 +246,21 @@ class SearchFragment : Fragment() {
         viewModel.getFilterSettings {
             val query = binding.editSearch.text.toString()
             viewModel.onSearchQueryChanged(query, forceUpdate = true)
+        }
+    }
+    private fun renderFilter() {
+        viewModel.getFilterSettings { filters ->
+            val isActive = filters?.let {
+                it.expectedSalary >= 0 ||
+                    it.notShowWithoutSalary ||
+                    it.region != null ||
+                    it.industry != null ||
+                    it.country != null
+            } ?: false
+
+            binding.buttonFilter.setImageResource(
+                if (isActive) R.drawable.filter_active else R.drawable.ic_filter
+            )
         }
     }
 }
