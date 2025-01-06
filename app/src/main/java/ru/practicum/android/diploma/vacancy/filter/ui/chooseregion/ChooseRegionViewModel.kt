@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.common.utils.Resource
 import ru.practicum.android.diploma.vacancy.filter.domain.api.AreaInteractor
 import ru.practicum.android.diploma.vacancy.filter.domain.model.Area
 import ru.practicum.android.diploma.vacancy.filter.ui.chooseregion.model.ChooseRegionFragmentState
@@ -43,31 +44,79 @@ class ChooseRegionViewModel(
     }
 
     fun loadAreaById(areaId: String?) {
-        if (areaId.isNullOrEmpty()) {
-            return
-        }
+        Log.d("ChooseRegionViewModel", "areaId: $areaId")
         viewModelScope.launch {
-            areaInteractor.fetchAreaById(areaId)
-                .collect { resource ->
-                    areaResult(resource.first, resource.second)
-                }
+            if (areaId.isNullOrEmpty()) {
+                // Запрашиваем список всех стран
+                areaInteractor.fetchCountries()
+                    .collect { pair ->
+                        val countries = pair.first
+                        val errorMessage = pair.second
+
+                        if (!countries.isNullOrEmpty()) {
+                            val allRegions = mutableListOf<Area>()
+
+                            // Для каждой страны запрашиваем регионы и города
+                            countries.forEach { country ->
+                                areaInteractor.fetchAreaById(country.id)
+                                    .collect { areaPair ->
+                                        val region = areaPair.first
+                                        val regionError = areaPair.second
+
+                                        if (region != null) {
+                                            allRegions.addAll(region.areas)
+                                        } else {
+                                            Log.e(CHOOSE_AREA, "Error fetching areas for country ${country.id}: $regionError")
+                                        }
+                                    }
+                            }
+
+                            // Отображаем все регионы и города
+                            renderState(ChooseRegionFragmentState.ShowRegion(allRegions, "Все регионы"))
+                        } else {
+                            Log.e(CHOOSE_AREA, "Error fetching countries: $errorMessage")
+                            renderState(ChooseRegionFragmentState.ShowError)
+                        }
+                    }
+            } else {
+                // Если страна выбрана, загружаем её регионы
+                areaInteractor.fetchAreaById(areaId)
+                    .collect { areaPair ->
+                        val area = areaPair.first
+                        val errorMessage = areaPair.second
+
+                        if (area != null) {
+                            areaResult(Resource.success(area))
+                        } else {
+                            areaResult(Resource.error(-1, errorMessage))
+                        }
+                    }
+            }
         }
     }
-    private fun areaResult(areaResult: Area?, errorMessage: String?) {
-        var area = areaResult
-        when {
-            errorMessage != null -> {
-                renderState(ChooseRegionFragmentState.ShowError)
-                Log.d(CHOOSE_AREA, "$errorMessage")
+
+
+
+
+
+
+
+    private fun areaResult(resource: Resource<Area>) {
+        when (resource) {
+            is Resource.Success -> {
+                val area = resource.data
+                if (area == null) {
+                    renderState(ChooseRegionFragmentState.ShowError)
+                    Log.d(CHOOSE_AREA, "Такого места не существует")
+                } else {
+                    selectedCountry = area
+                    countryName = area.name
+                    renderState(ChooseRegionFragmentState.ShowRegion(area.areas, area.name))
+                }
             }
-            area == null -> {
+            is Resource.Error -> {
                 renderState(ChooseRegionFragmentState.ShowError)
-                Log.d(CHOOSE_AREA, "Такого места не существует")
-            }
-            else -> {
-                selectedCountry = area
-                countryName = area.name
-                renderState(ChooseRegionFragmentState.ShowRegion(area.areas, area.name))
+                Log.d(CHOOSE_AREA, resource.message ?: "Произошла ошибка")
             }
         }
     }
