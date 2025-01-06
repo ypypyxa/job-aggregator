@@ -44,6 +44,7 @@ class ChooseRegionViewModel(
         // Проверяем кэш перед загрузкой данных
         loadAreaById(countryId)
     }
+
     fun loadAreaById(areaId: String?) {
         Log.d("ChooseRegionViewModel", "areaId: $areaId")
 
@@ -54,52 +55,68 @@ class ChooseRegionViewModel(
             }
         }
 
+        if (areaId.isNullOrEmpty()) {
+            loadCountries()
+        } else {
+            loadAreaForId(areaId)
+        }
+    }
+
+    private fun loadCountries() {
         viewModelScope.launch {
-            if (areaId.isNullOrEmpty()) {
-                areaInteractor.fetchCountries()
-                    .collect { pair ->
-                        val countries = pair.first
-                        val errorMessage = pair.second
+            areaInteractor.fetchCountries()
+                .collect { pair ->
+                    val countries = pair.first
+                    val errorMessage = pair.second
 
-                        if (!countries.isNullOrEmpty()) {
-                            val allRegions = mutableListOf<Area>()
-
-                            countries.forEach { country ->
-                                areaInteractor.fetchAreaById(country.id)
-                                    .collect { areaPair ->
-                                        val region = areaPair.first
-                                        val regionError = areaPair.second
-
-                                        if (region != null) {
-                                            allRegions.addAll(region.areas)
-                                            // Кэшируем данные
-                                            areaCache[country.id] = region
-                                        } else {
-                                            Log.e(CHOOSE_AREA, "Error fetching areas for country ${country.id}: $regionError")
-                                        }
-                                    }
-                            }
-
-                            renderState(ChooseRegionFragmentState.ShowRegion(allRegions, "Все регионы"))
-                        } else {
-                            Log.e(CHOOSE_AREA, "Error fetching countries: $errorMessage")
-                            renderState(ChooseRegionFragmentState.ShowError)
-                        }
+                    if (!countries.isNullOrEmpty()) {
+                        loadRegionsForCountries(countries)
+                    } else {
+                        Log.e(CHOOSE_AREA, "Error fetching countries: $errorMessage")
+                        renderState(ChooseRegionFragmentState.ShowError)
                     }
-            } else {
-                areaInteractor.fetchAreaById(areaId)
-                    .collect { areaPair ->
-                        val area = areaPair.first
-                        val errorMessage = areaPair.second
+                }
+        }
+    }
 
-                        if (area != null) {
-                            areaCache[areaId] = area
-                            areaResult(Resource.success(area))
+    private fun loadRegionsForCountries(countries: List<Area>) {
+        viewModelScope.launch {
+            val allRegions = mutableListOf<Area>()
+
+            countries.forEach { country ->
+                areaInteractor.fetchAreaById(country.id)
+                    .collect { areaPair ->
+                        val region = areaPair.first
+                        val regionError = areaPair.second
+
+                        if (region != null) {
+                            allRegions.addAll(region.areas)
+                            // Кэшируем данные
+                            areaCache[country.id] = region
                         } else {
-                            areaResult(Resource.error(-1, errorMessage))
+                            Log.e(CHOOSE_AREA, "Error fetching areas for country ${country.id}: $regionError")
                         }
                     }
             }
+
+            renderState(ChooseRegionFragmentState.ShowRegion(allRegions, "Все регионы"))
+        }
+    }
+
+    private fun loadAreaForId(areaId: String) {
+        viewModelScope.launch {
+            areaInteractor.fetchAreaById(areaId)
+                .collect { areaPair ->
+                    val area = areaPair.first
+                    val errorMessage = areaPair.second
+
+                    if (area != null) {
+                        areaCache[areaId] = area
+                        areaResult(Resource.success(area))
+                    } else {
+                        areaResult(Resource.error(-1, errorMessage))
+                    }
+                }
         }
     }
 

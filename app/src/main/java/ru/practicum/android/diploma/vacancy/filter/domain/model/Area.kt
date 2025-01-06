@@ -10,4 +10,4 @@ data class Area(
     val parentId: String?,
     val parentName: String?,
     val areas: List<Area>
-): Parcelable
+) : Parcelable

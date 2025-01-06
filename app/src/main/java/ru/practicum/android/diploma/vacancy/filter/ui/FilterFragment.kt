@@ -2,20 +2,15 @@ package ru.practicum.android.diploma.vacancy.filter.ui
 
 import android.content.res.ColorStateList
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.widget.doOnTextChanged
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
@@ -28,25 +23,13 @@ import ru.practicum.android.diploma.vacancy.filter.domain.model.FilterIndustryVa
 import ru.practicum.android.diploma.vacancy.filter.domain.model.FilterSettings
 import ru.practicum.android.diploma.vacancy.filter.domain.model.Industry
 import ru.practicum.android.diploma.vacancy.filter.domain.model.Region
-import ru.practicum.android.diploma.vacancy.filter.ui.chooseindustry.ChooseIndustryViewModel
 
 class FilterFragment : Fragment() {
 
-    companion object {
-        fun newInstance() = FilterFragment()
-    }
-
     private val viewModel: FilterViewModel by viewModel()
-    private val industryViewModel: ChooseIndustryViewModel by viewModel()
 
     private var _binding: FragmentFilterBinding? = null
     private val binding get() = _binding!!
-
-    private val args: FilterFragmentArgs by navArgs()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -113,12 +96,10 @@ class FilterFragment : Fragment() {
         }
     }
 
-    // Вспомогательная функция для обработки поля зарплаты
     private fun parseExpectedSalary(): Int {
         return binding.tiSalaryField.text.toString().toIntOrNull() ?: -1
     }
 
-    // Создание обновлённого объекта FilterSettings
     private fun createUpdatedFilterSettings(
         expectedSalary: Int,
         notShowWithoutSalary: Boolean,
@@ -148,7 +129,6 @@ class FilterFragment : Fragment() {
         return newIndustry ?: oldIndustry?.takeIf { it.id.isNotEmpty() }
     }
 
-    // Навигация назад
     private fun navigateBackToSearch() {
         findNavController().popBackStack(R.id.searchFragment, false)
     }
@@ -195,7 +175,6 @@ class FilterFragment : Fragment() {
                 postRegion(null)
                 postCountry(null)
                 postIndustry(null)
-                // Реализацию рендера для текстов место работы и отрасль сюда добавьте когда напишете
             }
             updateButtonsVisibility()
         }
@@ -212,7 +191,6 @@ class FilterFragment : Fragment() {
         DataTransmitter.postRegion(null)
     }
 
-    // тут получаем отрасль из фрагмента выбора отрасли и экран не пересоздается
     private fun observeSelectedIndustry() {
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<FilterIndustryValue>(
             "selectedIndustry"
