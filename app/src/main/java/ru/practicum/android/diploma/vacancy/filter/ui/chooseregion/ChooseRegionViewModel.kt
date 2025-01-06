@@ -20,9 +20,7 @@ class ChooseRegionViewModel(
     private val stateLiveData = MutableLiveData<ChooseRegionFragmentState>()
     fun observeState(): LiveData<ChooseRegionFragmentState> = mediatorStateLiveData
 
-    init {
-        loadAreaById(countryId)
-    }
+    private val areaCache = mutableMapOf<String, Area>()
 
     private var countryName: String? = null
     private var selectedCountry: Area? = null
@@ -42,12 +40,22 @@ class ChooseRegionViewModel(
             }
         }
     }
-
+    init {
+        // Проверяем кэш перед загрузкой данных
+        loadAreaById(countryId)
+    }
     fun loadAreaById(areaId: String?) {
         Log.d("ChooseRegionViewModel", "areaId: $areaId")
+
+        areaId?.let { id ->
+            areaCache[id]?.let { cachedArea ->
+                renderState(ChooseRegionFragmentState.ShowRegion(cachedArea.areas, cachedArea.name))
+                return
+            }
+        }
+
         viewModelScope.launch {
             if (areaId.isNullOrEmpty()) {
-                // Запрашиваем список всех стран
                 areaInteractor.fetchCountries()
                     .collect { pair ->
                         val countries = pair.first
@@ -56,7 +64,6 @@ class ChooseRegionViewModel(
                         if (!countries.isNullOrEmpty()) {
                             val allRegions = mutableListOf<Area>()
 
-                            // Для каждой страны запрашиваем регионы и города
                             countries.forEach { country ->
                                 areaInteractor.fetchAreaById(country.id)
                                     .collect { areaPair ->
@@ -65,13 +72,14 @@ class ChooseRegionViewModel(
 
                                         if (region != null) {
                                             allRegions.addAll(region.areas)
+                                            // Кэшируем данные
+                                            areaCache[country.id] = region
                                         } else {
                                             Log.e(CHOOSE_AREA, "Error fetching areas for country ${country.id}: $regionError")
                                         }
                                     }
                             }
 
-                            // Отображаем все регионы и города
                             renderState(ChooseRegionFragmentState.ShowRegion(allRegions, "Все регионы"))
                         } else {
                             Log.e(CHOOSE_AREA, "Error fetching countries: $errorMessage")
@@ -79,13 +87,13 @@ class ChooseRegionViewModel(
                         }
                     }
             } else {
-                // Если страна выбрана, загружаем её регионы
                 areaInteractor.fetchAreaById(areaId)
                     .collect { areaPair ->
                         val area = areaPair.first
                         val errorMessage = areaPair.second
 
                         if (area != null) {
+                            areaCache[areaId] = area
                             areaResult(Resource.success(area))
                         } else {
                             areaResult(Resource.error(-1, errorMessage))
@@ -94,12 +102,6 @@ class ChooseRegionViewModel(
             }
         }
     }
-
-
-
-
-
-
 
     private fun areaResult(resource: Resource<Area>) {
         when (resource) {
