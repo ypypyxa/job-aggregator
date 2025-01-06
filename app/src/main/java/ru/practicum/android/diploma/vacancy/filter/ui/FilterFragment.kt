@@ -67,7 +67,7 @@ class FilterFragment : Fragment() {
         observeSelectedIndustry()
         handleWorkplaceData()
         updateHintColorOnTextChange()
-        updateButtonsVisibility()
+        setupClearButtonForSalaryField()
     }
 
     override fun onDestroyView() {
@@ -308,4 +308,19 @@ class FilterFragment : Fragment() {
             updateButtonsVisibility()
         }
     }
+
+    private fun setupClearButtonForSalaryField() {
+        val editTextSalaryField = binding.tiSalaryField
+        val clearButton = binding.ivInputButton
+
+        editTextSalaryField.doOnTextChanged { text, _, _, _ ->
+            clearButton.isVisible = !text.isNullOrEmpty()
+        }
+
+        clearButton.setOnClickListener {
+            editTextSalaryField.text?.clear()
+            clearButton.isVisible = false
+        }
+    }
+
 }
