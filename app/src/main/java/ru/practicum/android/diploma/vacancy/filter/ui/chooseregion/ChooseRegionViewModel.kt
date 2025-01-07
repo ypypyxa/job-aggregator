@@ -98,7 +98,13 @@ class ChooseRegionViewModel(
                         }
                     }
             }
-
+            selectedCountry = Area(
+                id = "all",
+                name = "all",
+                parentId = null,
+                parentName = null,
+                areas = allRegions
+            )
             renderState(ChooseRegionFragmentState.ShowRegion(allRegions, "Все регионы"))
         }
     }
