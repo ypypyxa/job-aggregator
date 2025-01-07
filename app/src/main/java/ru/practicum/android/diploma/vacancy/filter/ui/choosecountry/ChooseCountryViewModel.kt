@@ -6,7 +6,6 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.vacancy.filter.domain.api.AreaInteractor
 import ru.practicum.android.diploma.vacancy.filter.domain.model.Area
@@ -21,8 +20,7 @@ class ChooseCountryViewModel(
 
     init {
         viewModelScope.launch {
-            val areas = getDefaultCountryList()
-            renderState(ChooseCountryFragmentState.Default(areas))
+            loadCountries()
         }
     }
 
@@ -36,7 +34,7 @@ class ChooseCountryViewModel(
         }
     }
 
-    fun loadCountries() {
+    private fun loadCountries() {
         viewModelScope.launch {
             areaInteractor.fetchCountries()
                 .collect { resource ->
@@ -63,18 +61,6 @@ class ChooseCountryViewModel(
 
     private fun renderState(state: ChooseCountryFragmentState) {
         stateLiveData.postValue(state)
-    }
-
-    private suspend fun getDefaultCountryList(): List<Area> {
-        val areaIds = listOf(RUSSIA, UKRAINE, KAZAKHSTAN, AZERBAIJAN, BELARUS, GEORGIA, KYRGYZSTAN, UZBEKISTAN)
-
-        val areas = areaIds.mapNotNull { areaId ->
-            areaInteractor.fetchAreaById(areaId).firstOrNull()?.first
-        }.toMutableList() // Преобразуем в изменяемый список для добавления
-
-        areas.add(Area(id = "-1", name = "Другие регионы", parentId = null, parentName = null, areas = emptyList()))
-
-        return areas
     }
 
     companion object {

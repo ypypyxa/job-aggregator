@@ -6,9 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.parametersOf
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.common.utils.DataTransmitter
 import ru.practicum.android.diploma.common.utils.gone
@@ -23,12 +21,10 @@ class ChooseWorkplaceFragment : Fragment() {
 
     private var countryId: String? = null
     private var countryName: String? = null
-    private var cityId: String? = null
-    private var cityName: String? = null
+    private var regionId: String? = null
+    private var regionName: String? = null
 
-    private val viewModel: ChooseWorkplaceViewModel by viewModel() {
-        parametersOf(countryName, cityName)
-    }
+    private val viewModel: ChooseWorkplaceViewModel by viewModel()
 
     private var _binding: FragmentChooseWorkplaceBinding? = null
     private val binding get() = _binding!!
@@ -45,45 +41,15 @@ class ChooseWorkplaceFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val args: ChooseWorkplaceFragmentArgs by navArgs()
-        countryId = args.countryId
-        countryName = args.countryName
-        cityId = args.cityId
-        cityName = args.cityName
-
         findNavController().currentBackStackEntry
             ?.savedStateHandle
-            ?.getLiveData<Area>("selected_country")
-            ?.observe(viewLifecycleOwner) { countryArea ->
-                countryId = countryArea.id
-                countryName = countryArea.name
-
-                viewModel.setCountry(countryName)
-            }
-
-        findNavController().currentBackStackEntry
-            ?.savedStateHandle
-            ?.getLiveData<Area>("selected_region")
+            ?.getLiveData<Area>("selected_area")
             ?.observe(viewLifecycleOwner) { regionArea ->
-                cityId = regionArea.id
-                cityName = regionArea.name
-                if (!regionArea.parentName.isNullOrEmpty()) {
-                    countryName = regionArea.parentName
-                    countryId = regionArea.parentId
-                }
-                viewModel.setCity(countryName, cityName)
+                viewModel.setContent(regionArea)
             }
 
         setListeners()
         setObservers()
-
-        binding.clearCountryButton.setOnClickListener {
-            clearCountryAndCity()
-        }
-        binding.clearCityButton.setOnClickListener {
-            clearCountryAndCity()
-        }
-
     }
 
     private fun setListeners() {
@@ -93,10 +59,11 @@ class ChooseWorkplaceFragment : Fragment() {
         binding.clearCountryButton.setOnClickListener {
             countryId = null
             countryName = null
-            cityId = null
-            cityName = null
+            regionId = null
+            regionName = null
             DataTransmitter.postCountry(null)
             DataTransmitter.postRegion(null)
+            showEmpty()
         }
         binding.forwardArrowCity.setOnClickListener {
             val action = ChooseWorkplaceFragmentDirections
@@ -104,9 +71,17 @@ class ChooseWorkplaceFragment : Fragment() {
             findNavController().navigate(action)
         }
         binding.clearCityButton.setOnClickListener {
-            setCountryName(countryName)
-            cityId = null
-            cityName = null
+            setCountryName(
+                Area(
+                    countryId!!,
+                    countryName!!,
+                    null,
+                    null,
+                    emptyList()
+                )
+            )
+            regionId = null
+            regionName = null
             DataTransmitter.postRegion(null)
         }
         binding.backArrow.setOnClickListener {
@@ -114,7 +89,7 @@ class ChooseWorkplaceFragment : Fragment() {
         }
         binding.chooseButton.setOnClickListener {
             DataTransmitter.postCountry(Country(id = countryId ?: "", name = countryName ?: ""))
-            DataTransmitter.postRegion(Region(id = cityId ?: "", name = cityName ?: ""))
+            DataTransmitter.postRegion(Region(id = regionId ?: "", name = regionName ?: ""))
             findNavController().popBackStack(R.id.filterFragment, false)
         }
     }
@@ -126,22 +101,15 @@ class ChooseWorkplaceFragment : Fragment() {
     }
 
     private fun render(state: ChooseWorkplaceFragmentState) {
-        if (
-            state is ChooseWorkplaceFragmentState.Empty &&
-            !cityName.isNullOrEmpty()
-        ) {
-            setCityName(countryName, cityName)
-            return
-        }
         when (state) {
             is ChooseWorkplaceFragmentState.Empty -> {
                 showEmpty()
             }
             is ChooseWorkplaceFragmentState.CountrySelected -> {
-                setCountryName(state.name)
+                setCountryName(state.area)
             }
             is ChooseWorkplaceFragmentState.CitySelected -> {
-                setCityName(state.countryName, state.cityName)
+                setCityName(state.area)
             }
         }
     }
@@ -156,8 +124,10 @@ class ChooseWorkplaceFragment : Fragment() {
         binding.forwardArrowCity.show()
     }
 
-    private fun setCountryName(name: String?) {
-        binding.chooseCountryTextInputEditText.setText(name)
+    private fun setCountryName(area: Area) {
+        countryId = area.id
+        countryName = area.name
+        binding.chooseCountryTextInputEditText.setText(countryName)
         binding.chooseCityTextInputEditText.text?.clear()
         binding.forwardArrowCity.isEnabled = true
         binding.chooseCountryTextInputLayout.isEnabled = true
@@ -167,9 +137,13 @@ class ChooseWorkplaceFragment : Fragment() {
         binding.forwardArrowCity.show()
     }
 
-    private fun setCityName(countryName: String?, cityName: String?) {
+    private fun setCityName(area: Area) {
+        countryId = area.parentId
+        countryName = area.parentName
+        regionId = area.id
+        regionName = area.name
         binding.chooseCountryTextInputEditText.setText(countryName)
-        binding.chooseCityTextInputEditText.setText(cityName)
+        binding.chooseCityTextInputEditText.setText(regionName)
         binding.clearCountryButton.show()
         binding.forwardArrowCountry.gone()
         binding.clearCityButton.show()
@@ -179,17 +153,5 @@ class ChooseWorkplaceFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    private fun clearCountryAndCity() {
-        countryId = null
-        countryName = null
-        cityId = null
-        cityName = null
-
-        viewModel.setCountry(null)
-
-        DataTransmitter.postCountry(null)
-        DataTransmitter.postRegion(null)
     }
 }

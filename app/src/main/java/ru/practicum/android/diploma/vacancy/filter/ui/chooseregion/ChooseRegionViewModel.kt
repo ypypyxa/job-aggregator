@@ -22,16 +22,13 @@ class ChooseRegionViewModel(
 
     private val areaCache = mutableMapOf<String, Area>()
 
-    private var countryName: String? = null
-    private var selectedCountry: Area? = null
+    private var foundingAreas = emptyList<Area>()
 
     private val mediatorStateLiveData = MediatorLiveData<ChooseRegionFragmentState>().also { liveData ->
         liveData.addSource(stateLiveData) { state ->
             liveData.value = when (state) {
-                is ChooseRegionFragmentState.ShowRegion ->
-                    ChooseRegionFragmentState.ShowRegion(state.areas, state.countryName)
-                is ChooseRegionFragmentState.ShowCity ->
-                    ChooseRegionFragmentState.ShowCity(state.areas)
+                is ChooseRegionFragmentState.ShowRegions ->
+                    ChooseRegionFragmentState.ShowRegions(state.areas)
                 is ChooseRegionFragmentState.ShowSearch ->
                     ChooseRegionFragmentState.ShowSearch(state.areas)
                 is ChooseRegionFragmentState.NothingFound ->
@@ -50,7 +47,7 @@ class ChooseRegionViewModel(
 
         areaId?.let { id ->
             areaCache[id]?.let { cachedArea ->
-                renderState(ChooseRegionFragmentState.ShowRegion(cachedArea.areas, cachedArea.name))
+                renderState(ChooseRegionFragmentState.ShowRegions(cachedArea.areas))
                 return
             }
         }
@@ -98,14 +95,8 @@ class ChooseRegionViewModel(
                         }
                     }
             }
-            selectedCountry = Area(
-                id = "all",
-                name = "all",
-                parentId = null,
-                parentName = null,
-                areas = allRegions
-            )
-            renderState(ChooseRegionFragmentState.ShowRegion(allRegions, "Все регионы"))
+            foundingAreas = allRegions
+            renderState(ChooseRegionFragmentState.ShowRegions(allRegions))
         }
     }
 
@@ -134,9 +125,8 @@ class ChooseRegionViewModel(
                     renderState(ChooseRegionFragmentState.ShowError)
                     Log.d(CHOOSE_AREA, "Такого места не существует")
                 } else {
-                    selectedCountry = area
-                    countryName = area.name
-                    renderState(ChooseRegionFragmentState.ShowRegion(area.areas, area.name))
+                    foundingAreas = area.areas
+                    renderState(ChooseRegionFragmentState.ShowRegions(foundingAreas))
                 }
             }
             is Resource.Error -> {
@@ -146,33 +136,10 @@ class ChooseRegionViewModel(
         }
     }
 
-    fun loadCityByAreaId(areaId: String?) {
-        viewModelScope.launch {
-            areaInteractor.fetchAreaById(areaId!!)
-                .collect { resource ->
-                    cityResult(resource.first, resource.second)
-                }
-        }
-    }
-    private fun cityResult(areaResult: Area?, errorMessage: String?) {
-        var area = areaResult
-        when {
-            errorMessage != null -> {
-                Log.d(CHOOSE_AREA, "$errorMessage")
-            }
-            area == null -> {
-                Log.d(CHOOSE_AREA, "Такого места не существует")
-            }
-            else -> {
-                renderState(ChooseRegionFragmentState.ShowCity(area.areas))
-            }
-        }
-    }
-
     fun searchArea(query: String) {
-        if (query.isBlank() || selectedCountry == null) {
+        if (query.isBlank() || foundingAreas == null) {
             renderState(
-                ChooseRegionFragmentState.ShowRegion(selectedCountry?.areas, selectedCountry?.name)
+                ChooseRegionFragmentState.ShowRegions(foundingAreas)
             )
             return
         }
@@ -196,7 +163,7 @@ class ChooseRegionViewModel(
             }
         }
 
-        selectedCountry!!.areas.forEach { area ->
+        foundingAreas!!.forEach { area ->
             searchRecursively(area)
         }
 
@@ -211,7 +178,7 @@ class ChooseRegionViewModel(
     }
 
     fun onClearSearch() {
-        renderState(ChooseRegionFragmentState.ShowRegion(selectedCountry?.areas, selectedCountry?.name))
+        renderState(ChooseRegionFragmentState.ShowRegions(foundingAreas))
     }
 
     private fun renderState(state: ChooseRegionFragmentState) {

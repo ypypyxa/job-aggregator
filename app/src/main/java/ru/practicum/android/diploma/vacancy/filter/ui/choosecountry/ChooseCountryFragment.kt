@@ -48,11 +48,11 @@ class ChooseCountryFragment : Fragment() {
     private fun setRecyclerView() {
         areaAdapter = AreaAdapter(emptyList()) { area ->
             when (area.id) {
-                CHOOSE_COUNTRY -> viewModel.loadCountries()
+                OTHER_COUNTRIES -> areaAdapter?.setAreas(area.areas)
                 else -> {
                     findNavController().previousBackStackEntry
                         ?.savedStateHandle
-                        ?.set("selected_country", area)
+                        ?.set("selected_area", area)
 
                     findNavController().popBackStack()
                 }
@@ -87,6 +87,6 @@ class ChooseCountryFragment : Fragment() {
     }
 
     companion object {
-        private const val CHOOSE_COUNTRY = "-1"
+        private const val OTHER_COUNTRIES = "1001"
     }
 }
