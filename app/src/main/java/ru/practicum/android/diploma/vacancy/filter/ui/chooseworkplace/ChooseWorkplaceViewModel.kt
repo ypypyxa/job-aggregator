@@ -15,13 +15,7 @@ class ChooseWorkplaceViewModel(
     fun observeState(): LiveData<ChooseWorkplaceFragmentState> = mediatorStateLiveData
 
     init {
-        if (!cityName.isNullOrEmpty()) {
-            renderState(ChooseWorkplaceFragmentState.CitySelected(countryName, cityName))
-        } else if (!countryName.isNullOrEmpty()) {
-            renderState(ChooseWorkplaceFragmentState.CountrySelected(countryName))
-        } else {
-            renderState(ChooseWorkplaceFragmentState.Empty)
-        }
+        renderState(ChooseWorkplaceFragmentState.Empty)
     }
 
     private val mediatorStateLiveData = MediatorLiveData<ChooseWorkplaceFragmentState>().also { liveData ->
@@ -38,5 +32,22 @@ class ChooseWorkplaceViewModel(
 
     private fun renderState(state: ChooseWorkplaceFragmentState) {
         stateLiveData.postValue(state)
+    }
+    fun setCountry(name: String?) {
+        if (!name.isNullOrEmpty()) {
+            renderState(ChooseWorkplaceFragmentState.CountrySelected(name))
+        } else {
+            renderState(ChooseWorkplaceFragmentState.Empty)
+        }
+    }
+
+    fun setCity(countryName: String?, cityName: String?) {
+        if (!cityName.isNullOrEmpty()) {
+            renderState(ChooseWorkplaceFragmentState.CitySelected(countryName, cityName))
+        } else if (!countryName.isNullOrEmpty()) {
+            renderState(ChooseWorkplaceFragmentState.CountrySelected(countryName))
+        } else {
+            renderState(ChooseWorkplaceFragmentState.Empty)
+        }
     }
 }

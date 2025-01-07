@@ -7,21 +7,20 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.common.utils.Resource
 import ru.practicum.android.diploma.vacancy.filter.domain.api.AreaInteractor
 import ru.practicum.android.diploma.vacancy.filter.domain.model.Area
 import ru.practicum.android.diploma.vacancy.filter.ui.chooseregion.model.ChooseRegionFragmentState
 
 class ChooseRegionViewModel(
     private val areaInteractor: AreaInteractor,
-    private val countryId: String
+    private val countryId: String?
 ) : ViewModel() {
 
     private val stateLiveData = MutableLiveData<ChooseRegionFragmentState>()
     fun observeState(): LiveData<ChooseRegionFragmentState> = mediatorStateLiveData
 
-    init {
-        loadAreaById(countryId)
-    }
+    private val areaCache = mutableMapOf<String, Area>()
 
     private var countryName: String? = null
     private var selectedCountry: Area? = null
@@ -41,30 +40,108 @@ class ChooseRegionViewModel(
             }
         }
     }
+    init {
+        // Проверяем кэш перед загрузкой данных
+        loadAreaById(countryId)
+    }
 
     fun loadAreaById(areaId: String?) {
+        Log.d("ChooseRegionViewModel", "areaId: $areaId")
+
+        areaId?.let { id ->
+            areaCache[id]?.let { cachedArea ->
+                renderState(ChooseRegionFragmentState.ShowRegion(cachedArea.areas, cachedArea.name))
+                return
+            }
+        }
+
+        if (areaId.isNullOrEmpty()) {
+            loadCountries()
+        } else {
+            loadAreaForId(areaId)
+        }
+    }
+
+    private fun loadCountries() {
         viewModelScope.launch {
-            areaInteractor.fetchAreaById(areaId!!)
-                .collect { resource ->
-                    areaResult(resource.first, resource.second)
+            areaInteractor.fetchCountries()
+                .collect { pair ->
+                    val countries = pair.first
+                    val errorMessage = pair.second
+
+                    if (!countries.isNullOrEmpty()) {
+                        loadRegionsForCountries(countries)
+                    } else {
+                        Log.e(CHOOSE_AREA, "Error fetching countries: $errorMessage")
+                        renderState(ChooseRegionFragmentState.ShowError)
+                    }
                 }
         }
     }
-    private fun areaResult(areaResult: Area?, errorMessage: String?) {
-        var area = areaResult
-        when {
-            errorMessage != null -> {
-                renderState(ChooseRegionFragmentState.ShowError)
-                Log.d(CHOOSE_AREA, "$errorMessage")
+
+    private fun loadRegionsForCountries(countries: List<Area>) {
+        viewModelScope.launch {
+            val allRegions = mutableListOf<Area>()
+
+            countries.forEach { country ->
+                areaInteractor.fetchAreaById(country.id)
+                    .collect { areaPair ->
+                        val region = areaPair.first
+                        val regionError = areaPair.second
+
+                        if (region != null) {
+                            allRegions.addAll(region.areas)
+                            // Кэшируем данные
+                            areaCache[country.id] = region
+                        } else {
+                            Log.e(CHOOSE_AREA, "Error fetching areas for country ${country.id}: $regionError")
+                        }
+                    }
             }
-            area == null -> {
-                renderState(ChooseRegionFragmentState.ShowError)
-                Log.d(CHOOSE_AREA, "Такого места не существует")
+            selectedCountry = Area(
+                id = "all",
+                name = "all",
+                parentId = null,
+                parentName = null,
+                areas = allRegions
+            )
+            renderState(ChooseRegionFragmentState.ShowRegion(allRegions, "Все регионы"))
+        }
+    }
+
+    private fun loadAreaForId(areaId: String) {
+        viewModelScope.launch {
+            areaInteractor.fetchAreaById(areaId)
+                .collect { areaPair ->
+                    val area = areaPair.first
+                    val errorMessage = areaPair.second
+
+                    if (area != null) {
+                        areaCache[areaId] = area
+                        areaResult(Resource.success(area))
+                    } else {
+                        areaResult(Resource.error(-1, errorMessage))
+                    }
+                }
+        }
+    }
+
+    private fun areaResult(resource: Resource<Area>) {
+        when (resource) {
+            is Resource.Success -> {
+                val area = resource.data
+                if (area == null) {
+                    renderState(ChooseRegionFragmentState.ShowError)
+                    Log.d(CHOOSE_AREA, "Такого места не существует")
+                } else {
+                    selectedCountry = area
+                    countryName = area.name
+                    renderState(ChooseRegionFragmentState.ShowRegion(area.areas, area.name))
+                }
             }
-            else -> {
-                selectedCountry = area
-                countryName = area.name
-                renderState(ChooseRegionFragmentState.ShowRegion(area.areas, area.name))
+            is Resource.Error -> {
+                renderState(ChooseRegionFragmentState.ShowError)
+                Log.d(CHOOSE_AREA, resource.message ?: "Произошла ошибка")
             }
         }
     }

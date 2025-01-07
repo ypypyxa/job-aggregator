@@ -50,12 +50,11 @@ class ChooseCountryFragment : Fragment() {
             when (area.id) {
                 CHOOSE_COUNTRY -> viewModel.loadCountries()
                 else -> {
-                    val action = ChooseCountryFragmentDirections
-                        .actionChooseCountryFragmentToChooseWorkplaceFragment(
-                            countryId = area.id,
-                            countryName = area.name
-                        )
-                    findNavController().navigate(action)
+                    findNavController().previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("selected_country", area)
+
+                    findNavController().popBackStack()
                 }
             }
         }
