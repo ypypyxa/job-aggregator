@@ -2,12 +2,10 @@ package ru.practicum.android.diploma.vacancy.filter.ui
 
 import android.content.res.ColorStateList
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
@@ -105,7 +103,11 @@ class FilterFragment : Fragment() {
 
     private fun editingIndustry() {
         binding.tiIndustryField.setOnClickListener {
-            findNavController().navigate(R.id.action_filterFragment_to_chooseIndustryFragment)
+            val selectedIndustry = viewModel.selectedIndustry.value
+            val action = FilterFragmentDirections
+                .actionFilterFragmentToChooseIndustryFragment(selectedIndustry)
+            findNavController().navigate(action)
+
         }
     }
 
@@ -168,9 +170,14 @@ class FilterFragment : Fragment() {
                 val notShowWithoutSalary = binding.checkboxHideWithSalary.isChecked
 
                 val updatedFilterSettings =
-                    createUpdatedFilterSettings(expectedSalary, notShowWithoutSalary, filterSettings)
+                    createUpdatedFilterSettings(
+                        expectedSalary,
+                        notShowWithoutSalary,
+                        filterSettings
+                    )
 
                 viewModel.saveFilterSettings(updatedFilterSettings)
+                clearTemporaryIndustry()
                 updateButtonsVisibility()
                 navigateBackToSearch()
             }
@@ -186,6 +193,7 @@ class FilterFragment : Fragment() {
                 checkboxHideWithSalary.isChecked = false
             }
             viewModel.clearFilterSettings()
+            clearTemporaryIndustry()
             showConfirmAndClearButtons(false)
             DataTransmitter.apply {
                 postRegion(null)
@@ -194,6 +202,7 @@ class FilterFragment : Fragment() {
                 // Реализацию рендера для текстов место работы и отрасль сюда добавьте когда напишете
             }
             updateButtonsVisibility()
+
         }
     }
 
@@ -210,13 +219,19 @@ class FilterFragment : Fragment() {
 
     // тут получаем отрасль из фрагмента выбора отрасли и экран не пересоздается
     private fun observeSelectedIndustry() {
-        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<FilterIndustryValue>(
-            "selectedIndustry"
-        )?.observe(viewLifecycleOwner) { industry ->
-            binding.tlIndustry.editText?.setText(industry.text)
-            viewModel.saveIndustry(industry)
-            binding.tlIndustry.editText?.setText(industry.text)
-        }
+        findNavController().currentBackStackEntry?.savedStateHandle
+            ?.getLiveData<FilterIndustryValue>("selectedIndustry")
+            ?.observe(viewLifecycleOwner) { industry ->
+                // Устанавливаем отрасль в текстовое поле
+                binding.tlIndustry.editText?.setText(industry.text)
+                viewModel.saveIndustry(industry)
+                findNavController().currentBackStackEntry?.savedStateHandle?.set(
+                    "tempIndustry",
+                    industry
+                )
+                updateButtonsVisibility()
+                saveTemporaryIndustry(industry)
+            }
     }
 
     private fun handleWorkplaceData() {
@@ -239,12 +254,16 @@ class FilterFragment : Fragment() {
     private fun observeFilterSettings() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.filterSettings.collect { settings ->
+                restoreTemporaryIndustry(settings)
+
                 settings?.let {
                     updateWorkplaceField(it)
                     updateIndustryField(it)
                     updateSalaryField(it)
                     updateCheckbox(it)
+
                 }
+
             }
         }
     }
@@ -321,6 +340,37 @@ class FilterFragment : Fragment() {
             editTextSalaryField.text?.clear()
             clearButton.isVisible = false
         }
+    }
+
+    private fun restoreTemporaryIndustry(settings: FilterSettings?) {
+        val tempIndustry = findNavController()
+            .currentBackStackEntry
+            ?.savedStateHandle
+            ?.get<FilterIndustryValue>("tempIndustry")
+
+        val industryToShow = tempIndustry ?: settings?.industry?.toFilterIndustryValue()
+        industryToShow?.let {
+            binding.tiIndustryField.setText(it.text) // Используем text вместо name
+            viewModel.saveIndustry(it)
+        }
+    }
+    private fun Industry.toFilterIndustryValue(): FilterIndustryValue {
+        return FilterIndustryValue(
+            id = this.id,
+            text = this.name // Устанавливаем text из name
+        )
+    }
+    private fun saveTemporaryIndustry(industry: FilterIndustryValue) {
+        findNavController().currentBackStackEntry?.savedStateHandle?.set(
+            "tempIndustry",
+            industry
+        )
+    }
+    private fun clearTemporaryIndustry() {
+        findNavController().currentBackStackEntry?.savedStateHandle?.remove<FilterIndustryValue>("tempIndustry")
+        findNavController().previousBackStackEntry?.savedStateHandle?.remove<FilterIndustryValue>("selectedIndustry")
+        findNavController().currentBackStackEntry?.savedStateHandle?.set("clearIndustrySelection", true)
+        Log.d("FilterFragment", "Industry selection cleared and signal sent")
     }
 
 }
