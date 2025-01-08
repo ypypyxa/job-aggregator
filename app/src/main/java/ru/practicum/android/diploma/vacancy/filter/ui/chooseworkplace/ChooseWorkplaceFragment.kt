@@ -43,7 +43,7 @@ class ChooseWorkplaceFragment : Fragment() {
 
         findNavController().currentBackStackEntry
             ?.savedStateHandle
-            ?.getLiveData<Area>("selected_area")
+            ?.getLiveData<Area>(SELECTED_AREA)
             ?.observe(viewLifecycleOwner) { regionArea ->
                 viewModel.setContent(regionArea)
             }
@@ -66,10 +66,10 @@ class ChooseWorkplaceFragment : Fragment() {
             regionName = null
             DataTransmitter.postCountry(null)
             DataTransmitter.postRegion(null)
-            val area = Area("","", null, null, emptyList())
+            val area = Area("", "", null, null, emptyList())
             findNavController().currentBackStackEntry
                 ?.savedStateHandle
-                ?.set("selected_area", area)
+                ?.set(SELECTED_AREA, area)
             viewModel.setContent(area)
         }
         binding.forwardArrowCity.setOnClickListener {
@@ -89,7 +89,7 @@ class ChooseWorkplaceFragment : Fragment() {
             val area = Area(countryId!!, countryName!!, null, null, emptyList())
             findNavController().currentBackStackEntry
                 ?.savedStateHandle
-                ?.set("selected_area", area)
+                ?.set(SELECTED_AREA, area)
             viewModel.setContent(area)
         }
         binding.backArrow.setOnClickListener {
@@ -164,5 +164,9 @@ class ChooseWorkplaceFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        private const val SELECTED_AREA = "selected_area"
     }
 }

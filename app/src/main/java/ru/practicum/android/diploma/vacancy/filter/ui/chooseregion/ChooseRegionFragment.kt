@@ -76,11 +76,11 @@ class ChooseRegionFragment : Fragment() {
 
     private fun setRecyclerView() {
         areaAdapter = AreaAdapter(emptyList()) { area ->
-             findNavController().previousBackStackEntry
-                 ?.savedStateHandle
-                 ?.set("selected_area", area)
+            findNavController().previousBackStackEntry
+                ?.savedStateHandle
+                ?.set("selected_area", area)
 
-                 findNavController().popBackStack()
+            findNavController().popBackStack()
         }
 
         binding.regionListRecyclerView.apply {
