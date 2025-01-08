@@ -43,8 +43,6 @@ class FilterFragment : Fragment() {
         return binding.root
     }
 
-    private val filterSettingsManager by lazy { FilterSettingsManager(viewModel, binding) }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.loadFilterSettings()
@@ -209,7 +207,6 @@ class FilterFragment : Fragment() {
             ?.getLiveData<FilterIndustryValue>("selectedIndustry")
             ?.observe(viewLifecycleOwner) { industry ->
                 binding.tlIndustry.editText?.setText(industry.text)
-                viewModel.saveIndustry(industry)
                 findNavController().currentBackStackEntry?.savedStateHandle?.set(
                     TEMP_INDUSTRY_KEY,
                     industry
@@ -243,7 +240,7 @@ class FilterFragment : Fragment() {
                 restoreTemporaryIndustry(settings)
 
                 settings?.let {
-                    filterSettingsManager.updateWorkplaceField(it)
+                    updateWorkplaceField(it)
                     updateIndustryField(it)
                     updateSalaryField(it)
                     updateCheckbox(it)
@@ -252,6 +249,18 @@ class FilterFragment : Fragment() {
 
             }
         }
+    }
+
+    fun updateWorkplaceField(settings: FilterSettings) {
+        binding.tiWorkPlace.setText(
+            buildString {
+                append(settings.country?.name.orEmpty())
+                if (!settings.region?.name.isNullOrEmpty()) {
+                    if (isNotEmpty()) append(", ")
+                    append(settings.region?.name.orEmpty())
+                }
+            }
+        )
     }
 
     private fun updateIndustryField(settings: FilterSettings) {
@@ -315,6 +324,7 @@ class FilterFragment : Fragment() {
             clearButton.isVisible = false
         }
     }
+
     private fun updateEndIconBasedOnInput() {
         binding.apply {
             setupFieldWithEndIcon(
@@ -334,23 +344,33 @@ class FilterFragment : Fragment() {
         editText: TextInputEditText,
         navigateAction: Int
     ) {
+        // Слушатель для изменения текста
         editText.doOnTextChanged { text, _, _, _ ->
             textInputLayout.endIconDrawable = ContextCompat.getDrawable(
                 textInputLayout.context,
                 if (!text.isNullOrEmpty()) R.drawable.ic_clear else R.drawable.ic_arrow_forward
             )
         }
+
         textInputLayout.setEndIconOnClickListener {
             if (!editText.text.isNullOrEmpty()) {
                 editText.text?.clear()
+                clearTemporaryIndustry()
+                Log.d("FilterFragment", "TEMP_INDUSTRY_KEY cleared on clear icon click.")
             } else {
+                // Переход на указанный экран, если поле пустое
                 findNavController().navigate(navigateAction)
             }
         }
     }
+
     override fun onResume() {
         super.onResume()
-        handleWorkplaceData()
+        val tempIndustry = findNavController()
+            .currentBackStackEntry
+            ?.savedStateHandle
+            ?.get<FilterIndustryValue>(TEMP_INDUSTRY_KEY) // Брекпоинт здесь
+        Log.d("FilterFragment", "TEMP_INDUSTRY_KEY in onResume: $tempIndustry")
     }
 
     private fun restoreTemporaryIndustry(settings: FilterSettings?) {
@@ -358,17 +378,18 @@ class FilterFragment : Fragment() {
             .currentBackStackEntry
             ?.savedStateHandle
             ?.get<FilterIndustryValue>(TEMP_INDUSTRY_KEY)
-
+        Log.d("FilterFragment", "Restoring temporary industry: $tempIndustry")
+        Log.d("FilterFragment", "Settings industry: ${settings?.industry}")
         val industryToShow = tempIndustry ?: settings?.industry?.toFilterIndustryValue()
         industryToShow?.let {
             binding.tiIndustryField.setText(it.text) // Используем text вместо name
-            viewModel.saveIndustry(it)
+            Log.d("FilterFragment", "Restoring industry: ${it.text}") // Добавьте лог
         }
     }
     private fun Industry.toFilterIndustryValue(): FilterIndustryValue {
         return FilterIndustryValue(
             id = this.id,
-            text = this.name // Устанавливаем text из name
+            text = this.name
         )
     }
     private fun saveTemporaryIndustry(industry: FilterIndustryValue) {
@@ -377,6 +398,7 @@ class FilterFragment : Fragment() {
             industry
         )
     }
+
     private fun clearTemporaryIndustry() {
         findNavController().currentBackStackEntry?.savedStateHandle?.remove<FilterIndustryValue>(TEMP_INDUSTRY_KEY)
         findNavController().previousBackStackEntry?.savedStateHandle?.remove<FilterIndustryValue>("selectedIndustry")
