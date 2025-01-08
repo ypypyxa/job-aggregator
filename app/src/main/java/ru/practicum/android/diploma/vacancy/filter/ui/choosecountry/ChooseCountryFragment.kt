@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.practicum.android.diploma.common.utils.gone
+import ru.practicum.android.diploma.common.utils.show
 import ru.practicum.android.diploma.databinding.FragmentChooseCountryBinding
 import ru.practicum.android.diploma.vacancy.filter.domain.model.Area
 import ru.practicum.android.diploma.vacancy.filter.ui.adapter.AreaAdapter
@@ -74,16 +76,25 @@ class ChooseCountryFragment : Fragment() {
         when (state) {
             is ChooseCountryFragmentState.Default -> showDefault(state.areas)
             is ChooseCountryFragmentState.Content -> showContent(state.areas)
+            is ChooseCountryFragmentState.Loading -> showLoading()
         }
     }
 
     private fun showDefault(areas: List<Area>) {
         areaAdapter?.setAreas(areas)
-
+        binding.progressBar.gone()
+        binding.countryListRecyclerView.show()
     }
 
     private fun showContent(areas: List<Area>) {
         areaAdapter?.setAreas(areas)
+        binding.progressBar.gone()
+        binding.countryListRecyclerView.show()
+    }
+
+    private fun showLoading() {
+        binding.countryListRecyclerView.gone()
+        binding.progressBar.show()
     }
 
     companion object {

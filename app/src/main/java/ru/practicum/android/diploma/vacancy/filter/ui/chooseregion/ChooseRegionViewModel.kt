@@ -33,6 +33,7 @@ class ChooseRegionViewModel(
                     ChooseRegionFragmentState.ShowSearch(state.areas)
                 is ChooseRegionFragmentState.NothingFound ->
                     ChooseRegionFragmentState.NothingFound
+                is ChooseRegionFragmentState.Loading -> ChooseRegionFragmentState.Loading
                 else -> ChooseRegionFragmentState.ShowError
             }
         }
@@ -44,6 +45,8 @@ class ChooseRegionViewModel(
 
     fun loadAreaById(areaId: String?) {
         Log.d("ChooseRegionViewModel", "areaId: $areaId")
+
+        renderState(ChooseRegionFragmentState.Loading)
 
         areaId?.let { id ->
             areaCache[id]?.let { cachedArea ->
@@ -163,7 +166,7 @@ class ChooseRegionViewModel(
             }
         }
 
-        foundingAreas!!.forEach { area ->
+        foundingAreas.forEach { area ->
             searchRecursively(area)
         }
 

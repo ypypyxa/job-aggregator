@@ -11,4 +11,6 @@ interface ChooseRegionFragmentState {
     object NothingFound : ChooseRegionFragmentState
 
     object ShowError : ChooseRegionFragmentState
+
+    object Loading : ChooseRegionFragmentState
 }

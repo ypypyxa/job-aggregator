@@ -21,7 +21,6 @@ import ru.practicum.android.diploma.vacancy.filter.ui.chooseregion.model.ChooseR
 class ChooseRegionFragment : Fragment() {
 
     private var countryId: String? = null
-//    private var countryName: String? = null
 
     private val viewModel: ChooseRegionViewModel by viewModel() {
         parametersOf(countryId)
@@ -101,29 +100,39 @@ class ChooseRegionFragment : Fragment() {
             is ChooseRegionFragmentState.ShowSearch -> showSearch(state.areas)
             is ChooseRegionFragmentState.NothingFound -> nothingFound()
             is ChooseRegionFragmentState.ShowError -> showError()
+            is ChooseRegionFragmentState.Loading -> showLoading()
         }
     }
 
     private fun showRegions(areas: List<Area>?) {
         areaAdapter?.setAreas(areas!!)
         hidePlaceholders()
+        binding.progressBar.gone()
         binding.regionListRecyclerView.show()
     }
     private fun showSearch(areas: List<Area>?) {
         areaAdapter?.setAreas(areas!!)
         hidePlaceholders()
+        binding.progressBar.gone()
         binding.regionListRecyclerView.show()
     }
     private fun nothingFound() {
         binding.regionListRecyclerView.gone()
+        binding.progressBar.gone()
         binding.noRegion.show()
     }
     private fun showError() {
         binding.regionListRecyclerView.gone()
+        binding.progressBar.gone()
         binding.noGetRegionList.show()
     }
     private fun hidePlaceholders() {
         binding.noRegion.gone()
         binding.noGetRegionList.gone()
+    }
+    private fun showLoading() {
+        hidePlaceholders()
+        binding.regionListRecyclerView.gone()
+        binding.progressBar.show()
     }
 }

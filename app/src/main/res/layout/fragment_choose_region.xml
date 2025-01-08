@@ -75,6 +75,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dimens_16"
+        android:visibility="gone"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintTop_toBottomOf="@id/choose_region_enter_field_edittext"
         tools:listitem="@layout/item_area" />
@@ -137,5 +138,18 @@
             android:textSize="@dimen/text_size_22"
             android:text="@string/industry_empty_list"/>
     </LinearLayout>
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        style="?android:attr/progressBarStyle"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/blue"
+        android:layout_marginBottom="@dimen/dimens_16"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
 

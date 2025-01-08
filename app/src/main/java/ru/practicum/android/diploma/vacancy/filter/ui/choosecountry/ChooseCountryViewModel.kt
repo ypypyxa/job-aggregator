@@ -29,12 +29,14 @@ class ChooseCountryViewModel(
             liveData.value = when (state) {
                 is ChooseCountryFragmentState.Default -> ChooseCountryFragmentState.Default(state.areas)
                 is ChooseCountryFragmentState.Content -> ChooseCountryFragmentState.Content(state.areas)
+                is ChooseCountryFragmentState.Loading -> ChooseCountryFragmentState.Loading
                 else -> { null }
             }
         }
     }
 
     private fun loadCountries() {
+        renderState(ChooseCountryFragmentState.Loading)
         viewModelScope.launch {
             areaInteractor.fetchCountries()
                 .collect { resource ->
@@ -65,13 +67,5 @@ class ChooseCountryViewModel(
 
     companion object {
         private const val CHOOSE_AREA = "ChooseArea"
-        private const val RUSSIA = "113"
-        private const val UKRAINE = "5"
-        private const val KAZAKHSTAN = "40"
-        private const val AZERBAIJAN = "9"
-        private const val BELARUS = "16"
-        private const val GEORGIA = "28"
-        private const val KYRGYZSTAN = "48"
-        private const val UZBEKISTAN = "97"
     }
 }
