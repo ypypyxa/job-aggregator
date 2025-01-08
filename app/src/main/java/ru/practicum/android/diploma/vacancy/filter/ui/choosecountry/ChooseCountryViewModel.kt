@@ -60,7 +60,7 @@ class ChooseCountryViewModel(
         }
     }
 
-    private fun List<Area>.sortArea() : List<Area> {
+    private fun List<Area>.sortArea(): List<Area> {
         return sortedWith { area1, area2 ->
             when {
                 area1.id == "1001" && area2.id != "1001" -> 1
