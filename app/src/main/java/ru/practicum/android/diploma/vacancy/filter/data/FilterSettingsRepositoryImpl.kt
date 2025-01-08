@@ -10,6 +10,8 @@ import ru.practicum.android.diploma.common.utils.EXPECTED_SALARY_KEY
 import ru.practicum.android.diploma.common.utils.INDUSTRY_KEY
 import ru.practicum.android.diploma.common.utils.NOT_SHOW_WITHOUT_SALARY_KEY
 import ru.practicum.android.diploma.common.utils.REGION_KEY
+import ru.practicum.android.diploma.common.utils.SELECTED_INDUSTRY_ID
+import ru.practicum.android.diploma.common.utils.SELECTED_INDUSTRY_NAME
 import ru.practicum.android.diploma.vacancy.filter.domain.FilterSettingsRepository
 import ru.practicum.android.diploma.vacancy.filter.domain.model.Country
 import ru.practicum.android.diploma.vacancy.filter.domain.model.FilterSettings
@@ -58,6 +60,8 @@ class FilterSettingsRepositoryImpl(
             putString(COUNTRY_KEY, DEFAULT_JSON)
             putString(REGION_KEY, DEFAULT_JSON)
             putString(INDUSTRY_KEY, DEFAULT_JSON)
+            putString(SELECTED_INDUSTRY_NAME, DEFAULT_JSON)
+            putString(SELECTED_INDUSTRY_ID, DEFAULT_JSON)
             putInt(EXPECTED_SALARY_KEY, DEFAULT_SALARY)
             putBoolean(NOT_SHOW_WITHOUT_SALARY_KEY, DEFAULT_HIDE_FLAG)
             apply()

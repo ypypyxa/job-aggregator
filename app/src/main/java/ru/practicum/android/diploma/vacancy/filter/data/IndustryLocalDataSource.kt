@@ -1,6 +1,8 @@
 package ru.practicum.android.diploma.vacancy.filter.data
 
 import android.content.SharedPreferences
+import ru.practicum.android.diploma.common.utils.SELECTED_INDUSTRY_ID
+import ru.practicum.android.diploma.common.utils.SELECTED_INDUSTRY_NAME
 import ru.practicum.android.diploma.vacancy.filter.domain.model.FilterIndustryValue
 
 class IndustryLocalDataSource(
@@ -21,10 +23,5 @@ class IndustryLocalDataSource(
         } else {
             null
         }
-    }
-
-    companion object {
-        private const val SELECTED_INDUSTRY_ID = "selected_industry_id"
-        private const val SELECTED_INDUSTRY_NAME = "selected_industry_name"
     }
 }

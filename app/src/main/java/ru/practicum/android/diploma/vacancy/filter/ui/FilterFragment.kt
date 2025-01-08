@@ -182,16 +182,14 @@ class FilterFragment : Fragment() {
                 tiSalaryField.setText("")
                 checkboxHideWithSalary.isChecked = false
             }
-            viewModel.clearFilterSettings()
             clearTemporaryIndustry()
-            showConfirmAndClearButtons(false)
+            viewModel.clearFilterSettings()
+            updateButtonsVisibility()
             DataTransmitter.apply {
                 postRegion(null)
                 postCountry(null)
                 postIndustry(null)
             }
-            updateButtonsVisibility()
-
         }
     }
 
