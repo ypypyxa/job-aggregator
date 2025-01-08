@@ -74,7 +74,7 @@ class SearchFragment : Fragment() {
         setupListeners()
         observeViewModel()
         observeFilterResults()
-
+        observeFilterResultsIndustry()
     }
 
     override fun onDestroyView() {
@@ -240,6 +240,16 @@ class SearchFragment : Fragment() {
             viewModel.setOnlyWithSalary(onlyWithSalary)
             viewModel.onSearchQueryChanged(viewModel.latestSearchText ?: "", forceUpdate = true)
         }
+
+    }
+    private fun observeFilterResultsIndustry() {
+        findNavController().currentBackStackEntry?.savedStateHandle
+            ?.getLiveData<Boolean>("filterApplied")
+            ?.observe(viewLifecycleOwner) { isApplied ->
+                if (isApplied) {
+                    applyFilterSettingsAndSearch()
+                }
+            }
     }
 
     private fun applyFilterSettingsAndSearch() {

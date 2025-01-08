@@ -68,7 +68,7 @@ class ChooseIndustryViewModel(
         _hasError.value = filteredList.isEmpty()
     }
 
-    fun selectIndustry(industry: FilterIndustryValue) {
+    fun selectIndustry(industry: FilterIndustryValue?) {
         _selectedIndustry.value = industry
     }
 

@@ -1,6 +1,7 @@
 package ru.practicum.android.diploma.vacancy.filter.ui.chooseindustry
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,6 +36,8 @@ class ChooseIndustryFragment : Fragment() {
         return binding.root
     }
 
+    private var preselectedIndustry: FilterIndustryValue? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupListeners()
@@ -45,7 +48,10 @@ class ChooseIndustryFragment : Fragment() {
         observeLoadingState()
         observeErrorState()
         setupSearchField()
-
+        observeIndustryReset()
+        arguments?.let {
+            preselectedIndustry = it.getParcelable("selectedIndustry")
+        }
     }
 
     private fun backToSearch() {
@@ -79,7 +85,7 @@ class ChooseIndustryFragment : Fragment() {
         }
     }
 
-    fun FilterIndustryValue.toIndustry(): Industry {
+    private fun FilterIndustryValue.toIndustry(): Industry {
         return Industry(
             id = this.id ?: "",
             name = this.text ?: ""
@@ -112,6 +118,8 @@ class ChooseIndustryFragment : Fragment() {
                     viewModel.selectIndustry(industry)
 
                 }
+                industryAdapter?.setSelectedIndustry(preselectedIndustry)
+
                 binding.chooseIndustryListRecycleView.adapter = industryAdapter
             }
         }
@@ -123,6 +131,7 @@ class ChooseIndustryFragment : Fragment() {
                 binding.chooseButton.visibility =
                     if (selectedIndustry != null) View.VISIBLE else View.GONE
                 industryAdapter?.setSelectedIndustry(selectedIndustry)
+
             }
         }
     }
@@ -171,8 +180,30 @@ class ChooseIndustryFragment : Fragment() {
         }
     }
 
+    private fun observeIndustryReset() {
+        findNavController().currentBackStackEntry?.savedStateHandle
+            ?.getLiveData<Boolean>("clearIndustrySelection")
+            ?.observe(viewLifecycleOwner) { shouldClear ->
+                if (shouldClear) {
+                    resetIndustrySelection()
+                }
+            }
+    }
+
+    private fun resetIndustrySelection() {
+        viewModel.selectIndustry(null)
+        industryAdapter?.clearSelection()
+        findNavController().currentBackStackEntry?.savedStateHandle?.remove<Boolean>("clearIndustrySelection")
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+        observeIndustryReset() // Повторная подписка на сигнал сброса
+        Log.d("ChooseIndustryFragment", "onResume triggered observeIndustryReset")
     }
 }

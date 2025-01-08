@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.vacancy.filter.ui.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -23,11 +24,16 @@ class IndustryAdapter(
 
             binding.root.setOnClickListener {
                 onClick(industry)
+                selectedIndustry = industry
+                notifyDataSetChanged()
             }
 
             binding.industryRegionCheckRadiobutton.setOnClickListener {
                 onClick(industry)
+                selectedIndustry = industry
+                notifyDataSetChanged()
             }
+
         }
 
     }
@@ -51,5 +57,10 @@ class IndustryAdapter(
         selectedIndustry = industry
         notifyDataSetChanged()
     }
+    fun clearSelection() {
+        selectedIndustry = null
+        notifyDataSetChanged()
+        Log.d("IndustryAdapter", "clearSelection() called, adapter updated")
 
+    }
 }
