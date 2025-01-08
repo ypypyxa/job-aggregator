@@ -26,7 +26,9 @@ import ru.practicum.android.diploma.vacancy.filter.domain.model.Industry
 import ru.practicum.android.diploma.vacancy.filter.domain.model.Region
 
 class FilterFragment : Fragment() {
-
+    companion object {
+        private const val TEMP_INDUSTRY_KEY = "tempIndustry"
+    }
     private val viewModel: FilterViewModel by viewModel()
 
     private var _binding: FragmentFilterBinding? = null
@@ -208,10 +210,10 @@ class FilterFragment : Fragment() {
         findNavController().currentBackStackEntry?.savedStateHandle
             ?.getLiveData<FilterIndustryValue>("selectedIndustry")
             ?.observe(viewLifecycleOwner) { industry ->
-                 binding.tlIndustry.editText?.setText(industry.text)
+                binding.tlIndustry.editText?.setText(industry.text)
                 viewModel.saveIndustry(industry)
                 findNavController().currentBackStackEntry?.savedStateHandle?.set(
-                    "tempIndustry",
+                    TEMP_INDUSTRY_KEY,
                     industry
                 )
                 updateButtonsVisibility()
@@ -357,7 +359,7 @@ class FilterFragment : Fragment() {
         val tempIndustry = findNavController()
             .currentBackStackEntry
             ?.savedStateHandle
-            ?.get<FilterIndustryValue>("tempIndustry")
+            ?.get<FilterIndustryValue>(TEMP_INDUSTRY_KEY)
 
         val industryToShow = tempIndustry ?: settings?.industry?.toFilterIndustryValue()
         industryToShow?.let {
@@ -373,12 +375,12 @@ class FilterFragment : Fragment() {
     }
     private fun saveTemporaryIndustry(industry: FilterIndustryValue) {
         findNavController().currentBackStackEntry?.savedStateHandle?.set(
-            "tempIndustry",
+            TEMP_INDUSTRY_KEY,
             industry
         )
     }
     private fun clearTemporaryIndustry() {
-        findNavController().currentBackStackEntry?.savedStateHandle?.remove<FilterIndustryValue>("tempIndustry")
+        findNavController().currentBackStackEntry?.savedStateHandle?.remove<FilterIndustryValue>(TEMP_INDUSTRY_KEY)
         findNavController().previousBackStackEntry?.savedStateHandle?.remove<FilterIndustryValue>("selectedIndustry")
         findNavController().currentBackStackEntry?.savedStateHandle?.set("clearIndustrySelection", true)
         Log.d("FilterFragment", "Industry selection cleared and signal sent")
