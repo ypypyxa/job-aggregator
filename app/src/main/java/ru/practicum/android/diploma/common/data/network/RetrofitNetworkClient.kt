@@ -82,7 +82,7 @@ class RetrofitNetworkClient(
                 resultCode = SUCCESS
             }
         }
-        return AreaResponse(area = null, areas = headHunterApi.getCountres()).apply {
+        return AreaResponse(area = null, areas = headHunterApi.getCountries()).apply {
             resultCode = SUCCESS
         }
     }

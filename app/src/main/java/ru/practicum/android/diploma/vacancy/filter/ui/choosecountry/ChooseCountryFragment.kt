@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.practicum.android.diploma.common.utils.gone
+import ru.practicum.android.diploma.common.utils.show
 import ru.practicum.android.diploma.databinding.FragmentChooseCountryBinding
 import ru.practicum.android.diploma.vacancy.filter.domain.model.Area
 import ru.practicum.android.diploma.vacancy.filter.ui.adapter.AreaAdapter
@@ -48,11 +50,11 @@ class ChooseCountryFragment : Fragment() {
     private fun setRecyclerView() {
         areaAdapter = AreaAdapter(emptyList()) { area ->
             when (area.id) {
-                CHOOSE_COUNTRY -> viewModel.loadCountries()
+                OTHER_COUNTRIES -> areaAdapter?.setAreas(area.areas)
                 else -> {
                     findNavController().previousBackStackEntry
                         ?.savedStateHandle
-                        ?.set("selected_country", area)
+                        ?.set("selected_area", Area(area.id, area.name, null, null, emptyList()))
 
                     findNavController().popBackStack()
                 }
@@ -72,21 +74,23 @@ class ChooseCountryFragment : Fragment() {
 
     private fun render(state: ChooseCountryFragmentState) {
         when (state) {
-            is ChooseCountryFragmentState.Default -> showDefault(state.areas)
             is ChooseCountryFragmentState.Content -> showContent(state.areas)
+            is ChooseCountryFragmentState.Loading -> showLoading()
         }
-    }
-
-    private fun showDefault(areas: List<Area>) {
-        areaAdapter?.setAreas(areas)
-
     }
 
     private fun showContent(areas: List<Area>) {
         areaAdapter?.setAreas(areas)
+        binding.progressBar.gone()
+        binding.countryListRecyclerView.show()
+    }
+
+    private fun showLoading() {
+        binding.countryListRecyclerView.gone()
+        binding.progressBar.show()
     }
 
     companion object {
-        private const val CHOOSE_COUNTRY = "-1"
+        private const val OTHER_COUNTRIES = "1001"
     }
 }

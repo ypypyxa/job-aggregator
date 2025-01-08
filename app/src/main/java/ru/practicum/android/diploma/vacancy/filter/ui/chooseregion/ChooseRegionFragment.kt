@@ -21,7 +21,6 @@ import ru.practicum.android.diploma.vacancy.filter.ui.chooseregion.model.ChooseR
 class ChooseRegionFragment : Fragment() {
 
     private var countryId: String? = null
-    private var countryName: String? = null
 
     private val viewModel: ChooseRegionViewModel by viewModel() {
         parametersOf(countryId)
@@ -76,16 +75,11 @@ class ChooseRegionFragment : Fragment() {
 
     private fun setRecyclerView() {
         areaAdapter = AreaAdapter(emptyList()) { area ->
-            when (area.areas) {
-                emptyList<Area>() -> {
-                    findNavController().previousBackStackEntry
-                        ?.savedStateHandle
-                        ?.set("selected_region", area)
+            findNavController().previousBackStackEntry
+                ?.savedStateHandle
+                ?.set("selected_area", area)
 
-                    findNavController().popBackStack()
-                }
-                else -> viewModel.loadCityByAreaId(area.id)
-            }
+            findNavController().popBackStack()
         }
 
         binding.regionListRecyclerView.apply {
@@ -102,40 +96,46 @@ class ChooseRegionFragment : Fragment() {
 
     private fun render(state: ChooseRegionFragmentState) {
         when (state) {
-            is ChooseRegionFragmentState.ShowRegion -> showRegion(state.areas, state.countryName)
-            is ChooseRegionFragmentState.ShowCity -> showCity(state.areas)
+            is ChooseRegionFragmentState.ShowRegions -> showRegions(state.areas)
             is ChooseRegionFragmentState.ShowSearch -> showSearch(state.areas)
             is ChooseRegionFragmentState.NothingFound -> nothingFound()
             is ChooseRegionFragmentState.ShowError -> showError()
+            is ChooseRegionFragmentState.Loading -> showLoading()
         }
     }
 
-    private fun showRegion(areas: List<Area>?, name: String?) {
-        countryName = name
+    private fun showRegions(areas: List<Area>?) {
         areaAdapter?.setAreas(areas!!)
         hidePlaceholders()
-        binding.regionListRecyclerView.show()
-    }
-    private fun showCity(areas: List<Area>) {
-        areaAdapter?.setAreas(areas)
-        hidePlaceholders()
+        binding.progressBar.gone()
+        binding.chooseRegionEnterFieldEdittext.isEnabled = true
         binding.regionListRecyclerView.show()
     }
     private fun showSearch(areas: List<Area>?) {
         areaAdapter?.setAreas(areas!!)
         hidePlaceholders()
+        binding.progressBar.gone()
+        binding.chooseRegionEnterFieldEdittext.isEnabled = true
         binding.regionListRecyclerView.show()
     }
     private fun nothingFound() {
         binding.regionListRecyclerView.gone()
+        binding.progressBar.gone()
         binding.noRegion.show()
     }
     private fun showError() {
         binding.regionListRecyclerView.gone()
+        binding.progressBar.gone()
         binding.noGetRegionList.show()
     }
     private fun hidePlaceholders() {
         binding.noRegion.gone()
         binding.noGetRegionList.gone()
+    }
+    private fun showLoading() {
+        hidePlaceholders()
+        binding.chooseRegionEnterFieldEdittext.isEnabled = false
+        binding.regionListRecyclerView.gone()
+        binding.progressBar.show()
     }
 }
