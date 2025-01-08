@@ -54,7 +54,7 @@ class ChooseCountryFragment : Fragment() {
                 else -> {
                     findNavController().previousBackStackEntry
                         ?.savedStateHandle
-                        ?.set("selected_area", area)
+                        ?.set("selected_area", Area(area.id, area.name, null, null, emptyList()))
 
                     findNavController().popBackStack()
                 }
@@ -74,16 +74,9 @@ class ChooseCountryFragment : Fragment() {
 
     private fun render(state: ChooseCountryFragmentState) {
         when (state) {
-            is ChooseCountryFragmentState.Default -> showDefault(state.areas)
             is ChooseCountryFragmentState.Content -> showContent(state.areas)
             is ChooseCountryFragmentState.Loading -> showLoading()
         }
-    }
-
-    private fun showDefault(areas: List<Area>) {
-        areaAdapter?.setAreas(areas)
-        binding.progressBar.gone()
-        binding.countryListRecyclerView.show()
     }
 
     private fun showContent(areas: List<Area>) {

@@ -43,7 +43,7 @@ class ChooseRegionViewModel(
         loadAreaById(countryId)
     }
 
-    fun loadAreaById(areaId: String?) {
+    private fun loadAreaById(areaId: String?) {
         Log.d("ChooseRegionViewModel", "areaId: $areaId")
 
         renderState(ChooseRegionFragmentState.Loading)
@@ -151,7 +151,8 @@ class ChooseRegionViewModel(
         val nameMatches = mutableListOf<Area>()
         val parentNameMatches = mutableListOf<Area>()
 
-        fun searchRecursively(area: Area) {
+        // Поиск только на текущем уровне
+        foundingAreas.forEach { area ->
             // Проверяем совпадение с name
             if (area.name.lowercase().startsWith(lowerCaseQuery)) {
                 nameMatches.add(area)
@@ -160,14 +161,6 @@ class ChooseRegionViewModel(
             else if (area.parentName?.lowercase()?.startsWith(lowerCaseQuery) == true) {
                 parentNameMatches.add(area)
             }
-            // Рекурсивно ищем в вложенных areas
-            area.areas.forEach { subArea ->
-                searchRecursively(subArea)
-            }
-        }
-
-        foundingAreas.forEach { area ->
-            searchRecursively(area)
         }
 
         // Объединяем результаты: сначала совпадения по name, затем по parentName

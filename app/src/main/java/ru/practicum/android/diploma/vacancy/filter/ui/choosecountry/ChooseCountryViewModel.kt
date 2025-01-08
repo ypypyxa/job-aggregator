@@ -27,7 +27,6 @@ class ChooseCountryViewModel(
     private val mediatorStateLiveData = MediatorLiveData<ChooseCountryFragmentState>().also { liveData ->
         liveData.addSource(stateLiveData) { state ->
             liveData.value = when (state) {
-                is ChooseCountryFragmentState.Default -> ChooseCountryFragmentState.Default(state.areas)
                 is ChooseCountryFragmentState.Content -> ChooseCountryFragmentState.Content(state.areas)
                 is ChooseCountryFragmentState.Loading -> ChooseCountryFragmentState.Loading
                 else -> { null }
@@ -46,17 +45,27 @@ class ChooseCountryViewModel(
     }
 
     private fun countriesResult(areasResult: List<Area>?, errorMessage: String?) {
-        var areas = areasResult
         when {
             errorMessage != null -> {
                 Log.d(CHOOSE_AREA, "$errorMessage")
             }
-            areas == null -> {
+            areasResult == null -> {
                 Log.d(CHOOSE_AREA, "Такого места не существует")
             }
             else -> {
-                Log.d(CHOOSE_AREA, "$areas")
+                Log.d(CHOOSE_AREA, "$areasResult")
+                val areas = areasResult.sortArea()
                 renderState(ChooseCountryFragmentState.Content(areas))
+            }
+        }
+    }
+
+    private fun List<Area>.sortArea() : List<Area> {
+        return sortedWith { area1, area2 ->
+            when {
+                area1.id == "1001" && area2.id != "1001" -> 1
+                area1.id != "1001" && area2.id == "1001" -> -1
+                else -> 0
             }
         }
     }

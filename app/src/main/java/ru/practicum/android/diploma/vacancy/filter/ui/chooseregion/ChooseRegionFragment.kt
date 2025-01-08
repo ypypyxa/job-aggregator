@@ -108,12 +108,14 @@ class ChooseRegionFragment : Fragment() {
         areaAdapter?.setAreas(areas!!)
         hidePlaceholders()
         binding.progressBar.gone()
+        binding.chooseRegionEnterFieldEdittext.isEnabled = true
         binding.regionListRecyclerView.show()
     }
     private fun showSearch(areas: List<Area>?) {
         areaAdapter?.setAreas(areas!!)
         hidePlaceholders()
         binding.progressBar.gone()
+        binding.chooseRegionEnterFieldEdittext.isEnabled = true
         binding.regionListRecyclerView.show()
     }
     private fun nothingFound() {
@@ -132,6 +134,7 @@ class ChooseRegionFragment : Fragment() {
     }
     private fun showLoading() {
         hidePlaceholders()
+        binding.chooseRegionEnterFieldEdittext.isEnabled = false
         binding.regionListRecyclerView.gone()
         binding.progressBar.show()
     }
