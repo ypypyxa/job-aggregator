@@ -12,7 +12,8 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
@@ -23,25 +24,13 @@ import ru.practicum.android.diploma.vacancy.filter.domain.model.FilterIndustryVa
 import ru.practicum.android.diploma.vacancy.filter.domain.model.FilterSettings
 import ru.practicum.android.diploma.vacancy.filter.domain.model.Industry
 import ru.practicum.android.diploma.vacancy.filter.domain.model.Region
-import ru.practicum.android.diploma.vacancy.filter.ui.chooseindustry.ChooseIndustryViewModel
 
 class FilterFragment : Fragment() {
 
-    companion object {
-        fun newInstance() = FilterFragment()
-    }
-
     private val viewModel: FilterViewModel by viewModel()
-    private val industryViewModel: ChooseIndustryViewModel by viewModel()
 
     private var _binding: FragmentFilterBinding? = null
     private val binding get() = _binding!!
-
-    private val args: FilterFragmentArgs by navArgs()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,19 +41,21 @@ class FilterFragment : Fragment() {
         return binding.root
     }
 
+    private val filterSettingsManager by lazy { FilterSettingsManager(viewModel, binding) }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.loadFilterSettings()
         observeFilterSettings()
-        editingRegioan()
-        editingIndustry()
-        backToSearch()
+        setupNavigation()
         focusPocus()
+        editingIndustry()
         setConfirmButtonClickListener()
         resetButtonClickListener()
         observeSelectedIndustry()
         handleWorkplaceData()
         updateHintColorOnTextChange()
+        updateEndIconBasedOnInput()
         setupClearButtonForSalaryField()
     }
 
@@ -88,17 +79,20 @@ class FilterFragment : Fragment() {
         }
     }
 
-    private fun backToSearch() {
+    private fun setupNavigation() {
         binding.toolBarFilter.setNavigationOnClickListener {
             clearFields()
             findNavController().popBackStack(R.id.searchFragment, false)
         }
+        setupNavigationClickListener(binding.tiWorkPlace, R.id.action_filterFragment_to_chooseWorkplaceFragment)
+        setupNavigationClickListener(binding.tiIndustryField, R.id.action_filterFragment_to_chooseIndustryFragment)
     }
 
-    private fun editingRegioan() {
-        binding.tiWorkPlace.setOnClickListener {
-            findNavController().navigate(R.id.action_filterFragment_to_chooseWorkplaceFragment)
+    private fun setupNavigationClickListener(view: View, navigateAction: Int) {
+        view.setOnClickListener {
+            findNavController().navigate(navigateAction)
         }
+
     }
 
     private fun editingIndustry() {
@@ -107,7 +101,6 @@ class FilterFragment : Fragment() {
             val action = FilterFragmentDirections
                 .actionFilterFragmentToChooseIndustryFragment(selectedIndustry)
             findNavController().navigate(action)
-
         }
     }
 
@@ -116,7 +109,6 @@ class FilterFragment : Fragment() {
         return binding.tiSalaryField.text.toString().toIntOrNull() ?: -1
     }
 
-    // Создание обновлённого объекта FilterSettings
     private fun createUpdatedFilterSettings(
         expectedSalary: Int,
         notShowWithoutSalary: Boolean,
@@ -146,7 +138,6 @@ class FilterFragment : Fragment() {
         return newIndustry ?: oldIndustry?.takeIf { it.id.isNotEmpty() }
     }
 
-    // Навигация назад
     private fun navigateBackToSearch() {
         findNavController().popBackStack(R.id.searchFragment, false)
     }
@@ -156,7 +147,6 @@ class FilterFragment : Fragment() {
             binding.tiIndustryField.text?.isNotEmpty() == true ||
             binding.tiSalaryField.text?.isNotEmpty() == true ||
             binding.checkboxHideWithSalary.isChecked
-
         showConfirmAndClearButtons(isFilterSet)
     }
 
@@ -164,11 +154,9 @@ class FilterFragment : Fragment() {
         binding.btnApply.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
                 viewModel.loadFilterSettings()
-
                 val filterSettings = viewModel.filterSettings.value
                 val expectedSalary = parseExpectedSalary()
                 val notShowWithoutSalary = binding.checkboxHideWithSalary.isChecked
-
                 val updatedFilterSettings =
                     createUpdatedFilterSettings(
                         expectedSalary,
@@ -199,7 +187,6 @@ class FilterFragment : Fragment() {
                 postRegion(null)
                 postCountry(null)
                 postIndustry(null)
-                // Реализацию рендера для текстов место работы и отрасль сюда добавьте когда напишете
             }
             updateButtonsVisibility()
 
@@ -217,13 +204,11 @@ class FilterFragment : Fragment() {
         DataTransmitter.postRegion(null)
     }
 
-    // тут получаем отрасль из фрагмента выбора отрасли и экран не пересоздается
     private fun observeSelectedIndustry() {
         findNavController().currentBackStackEntry?.savedStateHandle
             ?.getLiveData<FilterIndustryValue>("selectedIndustry")
             ?.observe(viewLifecycleOwner) { industry ->
-                // Устанавливаем отрасль в текстовое поле
-                binding.tlIndustry.editText?.setText(industry.text)
+                 binding.tlIndustry.editText?.setText(industry.text)
                 viewModel.saveIndustry(industry)
                 findNavController().currentBackStackEntry?.savedStateHandle?.set(
                     "tempIndustry",
@@ -235,9 +220,10 @@ class FilterFragment : Fragment() {
     }
 
     private fun handleWorkplaceData() {
-        val args: FilterFragmentArgs by navArgs()
-        val countryName = args.countryName
-        val cityName = args.cityName
+        val country = DataTransmitter.getCountry()
+        val region = DataTransmitter.getRegion()
+        val countryName = country?.name
+        val cityName = region?.name
         val workplaceText = buildString {
             if (!countryName.isNullOrEmpty()) append(countryName)
             if (!cityName.isNullOrEmpty()) {
@@ -257,7 +243,7 @@ class FilterFragment : Fragment() {
                 restoreTemporaryIndustry(settings)
 
                 settings?.let {
-                    updateWorkplaceField(it)
+                    filterSettingsManager.updateWorkplaceField(it)
                     updateIndustryField(it)
                     updateSalaryField(it)
                     updateCheckbox(it)
@@ -266,18 +252,6 @@ class FilterFragment : Fragment() {
 
             }
         }
-    }
-
-    private fun updateWorkplaceField(settings: FilterSettings) {
-        binding.tiWorkPlace.setText(
-            buildString {
-                append(settings.country?.name.orEmpty())
-                if (!settings.region?.name.isNullOrEmpty()) {
-                    if (isNotEmpty()) append(", ")
-                    append(settings.region?.name.orEmpty())
-                }
-            }
-        )
     }
 
     private fun updateIndustryField(settings: FilterSettings) {
@@ -340,6 +314,43 @@ class FilterFragment : Fragment() {
             editTextSalaryField.text?.clear()
             clearButton.isVisible = false
         }
+    }
+    private fun updateEndIconBasedOnInput() {
+        binding.apply {
+            setupFieldWithEndIcon(
+                textInputLayout = tlWorkPlaceFilter,
+                editText = tiWorkPlace,
+                navigateAction = R.id.action_filterFragment_to_chooseWorkplaceFragment
+            )
+            setupFieldWithEndIcon(
+                textInputLayout = tlIndustry,
+                editText = tiIndustryField,
+                navigateAction = R.id.action_filterFragment_to_chooseIndustryFragment
+            )
+        }
+    }
+    private fun setupFieldWithEndIcon(
+        textInputLayout: TextInputLayout,
+        editText: TextInputEditText,
+        navigateAction: Int
+    ) {
+        editText.doOnTextChanged { text, _, _, _ ->
+            textInputLayout.endIconDrawable = ContextCompat.getDrawable(
+                textInputLayout.context,
+                if (!text.isNullOrEmpty()) R.drawable.ic_clear else R.drawable.ic_arrow_forward
+            )
+        }
+        textInputLayout.setEndIconOnClickListener {
+            if (!editText.text.isNullOrEmpty()) {
+                editText.text?.clear()
+            } else {
+                findNavController().navigate(navigateAction)
+            }
+        }
+    }
+    override fun onResume() {
+        super.onResume()
+        handleWorkplaceData()
     }
 
     private fun restoreTemporaryIndustry(settings: FilterSettings?) {
