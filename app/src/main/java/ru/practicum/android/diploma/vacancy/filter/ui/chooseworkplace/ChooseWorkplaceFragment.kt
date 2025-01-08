@@ -56,6 +56,9 @@ class ChooseWorkplaceFragment : Fragment() {
         binding.forwardArrowCountry.setOnClickListener {
             findNavController().navigate(R.id.action_chooseWorkplaceFragment_to_chooseCountryFragment)
         }
+        binding.chooseCountryTextInputEditText.setOnClickListener {
+            findNavController().navigate(R.id.action_chooseWorkplaceFragment_to_chooseCountryFragment)
+        }
         binding.clearCountryButton.setOnClickListener {
             countryId = null
             countryName = null
@@ -63,26 +66,31 @@ class ChooseWorkplaceFragment : Fragment() {
             regionName = null
             DataTransmitter.postCountry(null)
             DataTransmitter.postRegion(null)
-            showEmpty()
+            val area = Area("","", null, null, emptyList())
+            findNavController().currentBackStackEntry
+                ?.savedStateHandle
+                ?.set("selected_area", area)
+            viewModel.setContent(area)
         }
         binding.forwardArrowCity.setOnClickListener {
             val action = ChooseWorkplaceFragmentDirections
                 .actionChooseWorkplaceFragmentToChooseRegionFragment(countryId)
             findNavController().navigate(action)
         }
+        binding.chooseCityTextInputEditText.setOnClickListener {
+            val action = ChooseWorkplaceFragmentDirections
+                .actionChooseWorkplaceFragmentToChooseRegionFragment(countryId)
+            findNavController().navigate(action)
+        }
         binding.clearCityButton.setOnClickListener {
-            setCountryName(
-                Area(
-                    countryId!!,
-                    countryName!!,
-                    null,
-                    null,
-                    emptyList()
-                )
-            )
             regionId = null
             regionName = null
             DataTransmitter.postRegion(null)
+            val area = Area(countryId!!, countryName!!, null, null, emptyList())
+            findNavController().currentBackStackEntry
+                ?.savedStateHandle
+                ?.set("selected_area", area)
+            viewModel.setContent(area)
         }
         binding.backArrow.setOnClickListener {
             findNavController().popBackStack()
@@ -108,7 +116,7 @@ class ChooseWorkplaceFragment : Fragment() {
             is ChooseWorkplaceFragmentState.CountrySelected -> {
                 setCountryName(state.area)
             }
-            is ChooseWorkplaceFragmentState.CitySelected -> {
+            is ChooseWorkplaceFragmentState.RegionSelected -> {
                 setCityName(state.area)
             }
         }
@@ -117,7 +125,8 @@ class ChooseWorkplaceFragment : Fragment() {
     private fun showEmpty() {
         binding.chooseCountryTextInputEditText.text?.clear()
         binding.chooseCityTextInputEditText.text?.clear()
-
+        binding.chooseCountryTextInputEditText.isEnabled = true
+        binding.chooseCityTextInputEditText.isEnabled = true
         binding.clearCountryButton.gone()
         binding.forwardArrowCountry.show()
         binding.clearCityButton.gone()
@@ -129,8 +138,8 @@ class ChooseWorkplaceFragment : Fragment() {
         countryName = area.name
         binding.chooseCountryTextInputEditText.setText(countryName)
         binding.chooseCityTextInputEditText.text?.clear()
-        binding.forwardArrowCity.isEnabled = true
-        binding.chooseCountryTextInputLayout.isEnabled = true
+        binding.chooseCountryTextInputEditText.isEnabled = false
+        binding.chooseCityTextInputEditText.isEnabled = true
         binding.clearCountryButton.show()
         binding.forwardArrowCountry.gone()
         binding.clearCityButton.gone()
@@ -144,6 +153,8 @@ class ChooseWorkplaceFragment : Fragment() {
         regionName = area.name
         binding.chooseCountryTextInputEditText.setText(countryName)
         binding.chooseCityTextInputEditText.setText(regionName)
+        binding.chooseCountryTextInputEditText.isEnabled = false
+        binding.chooseCityTextInputEditText.isEnabled = false
         binding.clearCountryButton.show()
         binding.forwardArrowCountry.gone()
         binding.clearCityButton.show()

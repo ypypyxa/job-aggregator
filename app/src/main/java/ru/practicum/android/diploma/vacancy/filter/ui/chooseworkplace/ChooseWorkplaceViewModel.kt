@@ -5,26 +5,54 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import ru.practicum.android.diploma.common.utils.DataTransmitter
+import ru.practicum.android.diploma.vacancy.filter.domain.FilterSettingsInteractor
 import ru.practicum.android.diploma.vacancy.filter.domain.model.Area
 import ru.practicum.android.diploma.vacancy.filter.ui.chooseworkplace.model.ChooseWorkplaceFragmentState
 
-class ChooseWorkplaceViewModel : ViewModel() {
+class ChooseWorkplaceViewModel(
+    private val filterSettingsInteractor: FilterSettingsInteractor
+) : ViewModel() {
 
     private val stateLiveData = MutableLiveData<ChooseWorkplaceFragmentState>()
     fun observeState(): LiveData<ChooseWorkplaceFragmentState> = mediatorStateLiveData
 
     init {
+        val currentFilterSettings = filterSettingsInteractor.getFilterSettings()
         val country = DataTransmitter.getCountry()
         val region = DataTransmitter.getRegion()
 
-        if (country == null && region == null) {
-            renderState(ChooseWorkplaceFragmentState.Empty)
-        } else if (region != null) {
-            val regionArea = Area(region.id, region.name, country?.id, country?.name, emptyList())
-            renderState(ChooseWorkplaceFragmentState.CitySelected(regionArea))
-        } else if (country != null) {
-            val countryArea = Area(country.id, country.name, null, null, emptyList())
-            renderState(ChooseWorkplaceFragmentState.CountrySelected(countryArea))
+        if (region?.id.isNullOrEmpty()) {
+            if (country?.id.isNullOrEmpty()) {
+                if (currentFilterSettings.region?.id.isNullOrEmpty()) {
+                    if (currentFilterSettings.country?.id.isNullOrEmpty()) {
+                        renderState(ChooseWorkplaceFragmentState.Empty)
+                    } else {
+                        val countryArea = Area(
+                            currentFilterSettings.country!!.id,
+                            currentFilterSettings.country.name,
+                            null,
+                            null,
+                            emptyList()
+                        )
+                        renderState(ChooseWorkplaceFragmentState.CountrySelected(countryArea))
+                    }
+                } else {
+                    val regionArea = Area(
+                        currentFilterSettings.region!!.id,
+                        currentFilterSettings.region.name,
+                        currentFilterSettings.country?.id,
+                        currentFilterSettings.country?.name,
+                        emptyList()
+                    )
+                    renderState(ChooseWorkplaceFragmentState.RegionSelected(regionArea))
+                }
+            } else {
+                val countryArea = Area(country!!.id, country.name, null, null, emptyList())
+                renderState(ChooseWorkplaceFragmentState.CountrySelected(countryArea))
+            }
+        } else {
+            val regionArea = Area(region!!.id, region.name, country?.id, country?.name, emptyList())
+            renderState(ChooseWorkplaceFragmentState.RegionSelected(regionArea))
         }
     }
 
@@ -34,8 +62,8 @@ class ChooseWorkplaceViewModel : ViewModel() {
                 is ChooseWorkplaceFragmentState.Empty -> ChooseWorkplaceFragmentState.Empty
                 is ChooseWorkplaceFragmentState.CountrySelected ->
                     ChooseWorkplaceFragmentState.CountrySelected(state.area)
-                is ChooseWorkplaceFragmentState.CitySelected ->
-                    ChooseWorkplaceFragmentState.CitySelected(state.area)
+                is ChooseWorkplaceFragmentState.RegionSelected ->
+                    ChooseWorkplaceFragmentState.RegionSelected(state.area)
             }
         }
     }
@@ -44,7 +72,7 @@ class ChooseWorkplaceViewModel : ViewModel() {
         stateLiveData.postValue(state)
     }
     private fun setCountry(area: Area) {
-        if (!area.name.isNullOrEmpty()) {
+        if (area.name.isNotEmpty()) {
             renderState(ChooseWorkplaceFragmentState.CountrySelected(area))
         } else {
             renderState(ChooseWorkplaceFragmentState.Empty)
@@ -52,8 +80,8 @@ class ChooseWorkplaceViewModel : ViewModel() {
     }
 
     private fun setCity(area: Area) {
-        if (!area.name.isNullOrEmpty()) {
-            renderState(ChooseWorkplaceFragmentState.CitySelected(area))
+        if (area.name.isNotEmpty()) {
+            renderState(ChooseWorkplaceFragmentState.RegionSelected(area))
         } else {
             renderState(ChooseWorkplaceFragmentState.Empty)
         }

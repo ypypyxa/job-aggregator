@@ -6,5 +6,5 @@ sealed interface ChooseWorkplaceFragmentState {
     object Empty : ChooseWorkplaceFragmentState
 
     data class CountrySelected(val area: Area) : ChooseWorkplaceFragmentState
-    data class CitySelected(val area: Area) : ChooseWorkplaceFragmentState
+    data class RegionSelected(val area: Area) : ChooseWorkplaceFragmentState
 }

@@ -21,7 +21,7 @@ val viewModelModule = module {
     viewModel { (vacancyId: Int) ->
         DetailsViewModel(get(), get(), androidContext(), vacancyId)
     }
-    viewModel { ChooseWorkplaceViewModel() }
+    viewModel { ChooseWorkplaceViewModel(get()) }
 
     viewModel { ChooseCountryViewModel(get()) }
 
