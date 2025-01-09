@@ -18,4 +18,8 @@ class FilterSettingsInteractor(private val filterSettingsRepository: FilterSetti
     fun clearFilterSettings() {
         filterSettingsRepository.clearFilterSettings()
     }
+
+    fun clearRegionAndCountry() {
+        filterSettingsRepository.clearRegionAndCountry()
+    }
 }

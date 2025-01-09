@@ -67,4 +67,12 @@ class FilterSettingsRepositoryImpl(
             apply()
         }
     }
+
+    override fun clearRegionAndCountry() {
+        sharedPreferences?.edit()?.apply {
+            putString(COUNTRY_KEY, DEFAULT_JSON)
+            putString(REGION_KEY, DEFAULT_JSON)
+            apply()
+        }
+    }
 }
