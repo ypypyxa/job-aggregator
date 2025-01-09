@@ -32,11 +32,6 @@ class FilterViewModel(
     init {
         loadSelectedIndustry()
     }
-    var _initialFilterSettings: FilterSettings? = null
-
-    fun registerInitialState() {
-        _initialFilterSettings = _filterSettings.value
-    }
 
     // Загрузка сохраненной отрасли
     private fun loadSelectedIndustry() {
@@ -48,7 +43,6 @@ class FilterViewModel(
         interactor.saveSelectedIndustry(industry)
         _selectedIndustry.value = industry
     }
-
     fun setOnlyWithSalary(value: Boolean) {
         _onlyWithSalary.value = value
     }
@@ -110,13 +104,5 @@ class FilterViewModel(
         )
 
         _filterSettings.update { newSettings }
-    }
-
-    fun clearRegionAndCountry() {
-        viewModelScope.launch {
-            filterSettingsInteractor.clearRegionAndCountry()
-            val updatedSettings = filterSettingsInteractor.getFilterSettings()
-            _filterSettings.value = updatedSettings
-        }
     }
 }

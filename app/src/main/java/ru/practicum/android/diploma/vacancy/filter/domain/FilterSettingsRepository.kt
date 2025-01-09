@@ -6,5 +6,4 @@ interface FilterSettingsRepository {
     fun getFilterSettings(): FilterSettings
     fun saveFilterSettings(filterSettings: FilterSettings)
     fun clearFilterSettings()
-    fun clearRegionAndCountry()
 }
