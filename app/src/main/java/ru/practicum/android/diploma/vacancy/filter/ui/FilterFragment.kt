@@ -157,7 +157,6 @@ class FilterFragment : Fragment() {
         binding.btnReset.isVisible = hasFilters
     }
 
-
     private fun setConfirmButtonClickListener() {
         binding.btnApply.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
@@ -262,9 +261,9 @@ class FilterFragment : Fragment() {
                 }
             }
         )
-        // Передача данных в DataTransmitter
-        DataTransmitter.postCountry(settings.country)
-        DataTransmitter.postRegion(settings.region)
+//        // Передача данных в DataTransmitter
+//        DataTransmitter.postCountry(settings.country)
+//        DataTransmitter.postRegion(settings.region)
     }
 
     private fun updateIndustryField(settings: FilterSettings) {
