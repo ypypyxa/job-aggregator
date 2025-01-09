@@ -2,7 +2,6 @@ package ru.practicum.android.diploma.vacancy.filter.ui
 
 import android.content.res.ColorStateList
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -152,9 +151,12 @@ class FilterFragment : Fragment() {
         )
 
         val isFilterChanged = viewModel.hasFilterChanged(currentSettings)
+        val hasFilters = hasActiveFilters()
+
         binding.btnApply.isVisible = isFilterChanged
-        binding.btnReset.isVisible = isFilterChanged
+        binding.btnReset.isVisible = hasFilters
     }
+
 
     private fun setConfirmButtonClickListener() {
         binding.btnApply.setOnClickListener {
@@ -448,5 +450,14 @@ class FilterFragment : Fragment() {
             requireContext(),
             workplaceIcon
         )
+    }
+
+    private fun hasActiveFilters(): Boolean {
+        val workplaceFilled = !binding.tiWorkPlace.text.isNullOrEmpty()
+        val industryFilled = !binding.tiIndustryField.text.isNullOrEmpty()
+        val salaryFilled = !binding.tiSalaryField.text.isNullOrEmpty()
+        val hideWithoutSalaryChecked = binding.checkboxHideWithSalary.isChecked
+
+        return workplaceFilled || industryFilled || salaryFilled || hideWithoutSalaryChecked
     }
 }
