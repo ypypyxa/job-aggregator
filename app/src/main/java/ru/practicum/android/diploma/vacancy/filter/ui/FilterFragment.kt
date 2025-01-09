@@ -364,6 +364,7 @@ class FilterFragment : Fragment() {
                 viewModel.onClearWorkplacePressed()
                 editText.text?.clear()
                 updateButtonsVisibility()
+                viewModel.clearRegionAndCountry()
             } else {
                 findNavController().navigate(navigateAction)
             }
