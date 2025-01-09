@@ -261,9 +261,6 @@ class FilterFragment : Fragment() {
                 }
             }
         )
-//        // Передача данных в DataTransmitter
-//        DataTransmitter.postCountry(settings.country)
-//        DataTransmitter.postRegion(settings.region)
     }
 
     private fun updateIndustryField(settings: FilterSettings) {
