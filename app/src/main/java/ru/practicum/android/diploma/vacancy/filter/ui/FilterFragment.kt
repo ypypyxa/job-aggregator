@@ -391,6 +391,7 @@ class FilterFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         handleWorkplaceData()
+        updateEndIconsOnResume()
     }
 
     private fun restoreTemporaryIndustry(settings: FilterSettings?) {
@@ -427,4 +428,29 @@ class FilterFragment : Fragment() {
         Log.d("FilterFragment", "Industry selection cleared and signal sent")
     }
 
+    private fun updateEndIconsOnResume() {
+        val industryText = binding.tiIndustryField.text?.toString()
+        val industryIcon = if (!industryText.isNullOrEmpty()) {
+            R.drawable.ic_clear
+        } else {
+            R.drawable.ic_arrow_forward
+        }
+
+        binding.tlIndustry.endIconDrawable = ContextCompat.getDrawable(
+            requireContext(),
+            industryIcon
+        )
+
+        val workplaceText = binding.tiWorkPlace.text?.toString()
+        val workplaceIcon = if (!workplaceText.isNullOrEmpty()) {
+            R.drawable.ic_clear
+        } else {
+            R.drawable.ic_arrow_forward
+        }
+
+        binding.tlWorkPlaceFilter.endIconDrawable = ContextCompat.getDrawable(
+            requireContext(),
+            workplaceIcon
+        )
+    }
 }
