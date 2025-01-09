@@ -117,13 +117,15 @@ class FilterFragment : Fragment() {
         val country = getValidCountryOrNull(DataTransmitter.getCountry(), oldFilterSettings?.country)
         val region = getValidRegionOrNull(DataTransmitter.getRegion(), oldFilterSettings?.region)
         val industry = getValidIndustryOrNull(DataTransmitter.getIndustry(), oldFilterSettings?.industry)
-        return FilterSettings(
+
+        val newSettings = FilterSettings(
             country = country,
             region = region,
             industry = industry,
             expectedSalary = expectedSalary,
             notShowWithoutSalary = notShowWithoutSalary
         )
+        return newSettings
     }
 
     private fun getValidCountryOrNull(newCountry: Country?, oldCountry: Country?): Country? {
@@ -143,31 +145,31 @@ class FilterFragment : Fragment() {
     }
 
     private fun updateButtonsVisibility() {
-        val isFilterSet = binding.tiWorkPlace.text?.isNotEmpty() == true ||
-            binding.tiIndustryField.text?.isNotEmpty() == true ||
-            binding.tiSalaryField.text?.isNotEmpty() == true ||
-            binding.checkboxHideWithSalary.isChecked
-        showConfirmAndClearButtons(isFilterSet)
+        val currentSettings = createUpdatedFilterSettings(
+            parseExpectedSalary(),
+            binding.checkboxHideWithSalary.isChecked,
+            viewModel.filterSettings.value
+        )
+
+        val isFilterChanged = viewModel.hasFilterChanged(currentSettings)
+        binding.btnApply.isVisible = isFilterChanged
+        binding.btnReset.isVisible = isFilterChanged
     }
 
     private fun setConfirmButtonClickListener() {
         binding.btnApply.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
-                viewModel.loadFilterSettings()
-                val filterSettings = viewModel.filterSettings.value
-                val expectedSalary = parseExpectedSalary()
-                val notShowWithoutSalary = binding.checkboxHideWithSalary.isChecked
-                val updatedFilterSettings =
-                    createUpdatedFilterSettings(
-                        expectedSalary,
-                        notShowWithoutSalary,
-                        filterSettings
-                    )
+                val currentSettings = createUpdatedFilterSettings(
+                    parseExpectedSalary(),
+                    binding.checkboxHideWithSalary.isChecked,
+                    viewModel.filterSettings.value
+                )
 
-                viewModel.saveFilterSettings(updatedFilterSettings)
-                clearTemporaryIndustry()
-                updateButtonsVisibility()
-                navigateBackToSearch()
+                if (viewModel.hasFilterChanged(currentSettings)) {
+                    viewModel.saveFilterSettings(currentSettings)
+                    updateButtonsVisibility()
+                    navigateBackToSearch()
+                }
             }
         }
     }
@@ -189,11 +191,6 @@ class FilterFragment : Fragment() {
                 postIndustry(null)
             }
         }
-    }
-
-    private fun showConfirmAndClearButtons(isVisible: Boolean) {
-        binding.btnApply.isVisible = isVisible
-        binding.btnReset.isVisible = isVisible
     }
 
     private fun clearFields() {
@@ -247,7 +244,7 @@ class FilterFragment : Fragment() {
                     updateSalaryField(it)
                     updateCheckbox(it)
                 }
-
+                updateButtonsVisibility()
             }
         }
     }
@@ -392,6 +389,7 @@ class FilterFragment : Fragment() {
         super.onResume()
         handleWorkplaceData()
         updateEndIconsOnResume()
+        updateButtonsVisibility()
     }
 
     private fun restoreTemporaryIndustry(settings: FilterSettings?) {
@@ -402,14 +400,14 @@ class FilterFragment : Fragment() {
 
         val industryToShow = tempIndustry ?: settings?.industry?.toFilterIndustryValue()
         industryToShow?.let {
-            binding.tiIndustryField.setText(it.text) // Используем text вместо name
+            binding.tiIndustryField.setText(it.text)
             viewModel.saveIndustry(it)
         }
     }
     private fun Industry.toFilterIndustryValue(): FilterIndustryValue {
         return FilterIndustryValue(
             id = this.id,
-            text = this.name // Устанавливаем text из name
+            text = this.name
         )
     }
 
@@ -422,10 +420,8 @@ class FilterFragment : Fragment() {
 
     private fun clearTemporaryIndustry() {
         findNavController().currentBackStackEntry?.savedStateHandle?.remove<FilterIndustryValue>(TEMP_INDUSTRY_KEY)
-        findNavController().previousBackStackEntry?.savedStateHandle?.remove<FilterIndustryValue>("selectedIndustry")
         findNavController().currentBackStackEntry?.savedStateHandle?.set("clearIndustrySelection", true)
         findNavController().currentBackStackEntry?.savedStateHandle?.set("selectedIndustry", null)
-        Log.d("FilterFragment", "Industry selection cleared and signal sent")
     }
 
     private fun updateEndIconsOnResume() {

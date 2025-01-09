@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.vacancy.filter.ui
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +17,8 @@ class FilterViewModel(
     private val filterSettingsInteractor: FilterSettingsInteractor
 
 ) : ViewModel() {
+
+    private var _previousFilterSettings: FilterSettings? = null
 
     private val _selectedIndustry = MutableStateFlow<FilterIndustryValue?>(null)
     val selectedIndustry: StateFlow<FilterIndustryValue?> = _selectedIndustry
@@ -49,6 +52,7 @@ class FilterViewModel(
         viewModelScope.launch {
             val settings = filterSettingsInteractor.getFilterSettings()
             _filterSettings.value = settings
+            _previousFilterSettings = settings
         }
     }
 
@@ -66,6 +70,10 @@ class FilterViewModel(
             filterSettingsInteractor.clearFilterSettings()
             _filterSettings.value = null
         }
+    }
 
+    fun hasFilterChanged(newSettings: FilterSettings): Boolean {
+        val result = _previousFilterSettings != newSettings
+        return result
     }
 }
