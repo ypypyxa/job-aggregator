@@ -55,7 +55,8 @@ class FilterFragment : Fragment() {
         observeSelectedIndustry()
         handleWorkplaceData()
         updateHintColorOnTextChange()
-        updateEndIconBasedOnInput()
+        updateWorkPlaceBasedOnInput()
+        updateIndustryBasedOnInput()
         setupClearButtonForSalaryField()
     }
 
@@ -104,7 +105,6 @@ class FilterFragment : Fragment() {
         }
     }
 
-    // Вспомогательная функция для обработки поля зарплаты
     private fun parseExpectedSalary(): Int {
         return binding.tiSalaryField.text.toString().toIntOrNull() ?: -1
     }
@@ -246,7 +246,6 @@ class FilterFragment : Fragment() {
                     updateIndustryField(it)
                     updateSalaryField(it)
                     updateCheckbox(it)
-
                 }
 
             }
@@ -326,21 +325,28 @@ class FilterFragment : Fragment() {
             clearButton.isVisible = false
         }
     }
-    private fun updateEndIconBasedOnInput() {
+    private fun updateWorkPlaceBasedOnInput() {
         binding.apply {
-            setupFieldWithEndIcon(
+            setupWorkplaceEndIcon(
                 textInputLayout = tlWorkPlaceFilter,
                 editText = tiWorkPlace,
                 navigateAction = R.id.action_filterFragment_to_chooseWorkplaceFragment
             )
-            setupFieldWithEndIcon(
+
+        }
+    }
+
+    private fun updateIndustryBasedOnInput() {
+        binding.apply {
+            setupIndustryEndIcon(
                 textInputLayout = tlIndustry,
                 editText = tiIndustryField,
                 navigateAction = R.id.action_filterFragment_to_chooseIndustryFragment
             )
         }
     }
-    private fun setupFieldWithEndIcon(
+
+    private fun setupWorkplaceEndIcon(
         textInputLayout: TextInputLayout,
         editText: TextInputEditText,
         navigateAction: Int
@@ -351,6 +357,27 @@ class FilterFragment : Fragment() {
                 if (!text.isNullOrEmpty()) R.drawable.ic_clear else R.drawable.ic_arrow_forward
             )
         }
+        textInputLayout.setEndIconOnClickListener {
+            if (!editText.text.isNullOrEmpty()) {
+                editText.text?.clear()
+            } else {
+                findNavController().navigate(navigateAction)
+            }
+        }
+    }
+
+    private fun setupIndustryEndIcon(
+        textInputLayout: TextInputLayout,
+        editText: TextInputEditText,
+        navigateAction: Int
+    ) {
+        editText.doOnTextChanged { text, _, _, _ ->
+            textInputLayout.endIconDrawable = ContextCompat.getDrawable(
+                textInputLayout.context,
+                if (!text.isNullOrEmpty()) R.drawable.ic_clear else R.drawable.ic_arrow_forward
+            )
+        }
+
         textInputLayout.setEndIconOnClickListener {
             if (!editText.text.isNullOrEmpty()) {
                 editText.text?.clear()
@@ -384,17 +411,18 @@ class FilterFragment : Fragment() {
             text = this.name // Устанавливаем text из name
         )
     }
-    private fun saveTemporaryIndustry(industry: FilterIndustryValue) {
+
+    private fun saveTemporaryIndustry(industry: FilterIndustryValue?) {
         findNavController().currentBackStackEntry?.savedStateHandle?.set(
             TEMP_INDUSTRY_KEY,
             industry
         )
     }
+
     private fun clearTemporaryIndustry() {
         findNavController().currentBackStackEntry?.savedStateHandle?.remove<FilterIndustryValue>(TEMP_INDUSTRY_KEY)
         findNavController().previousBackStackEntry?.savedStateHandle?.remove<FilterIndustryValue>("selectedIndustry")
         findNavController().currentBackStackEntry?.savedStateHandle?.set("clearIndustrySelection", true)
-        // Передаем null для явного сброса данных
         findNavController().currentBackStackEntry?.savedStateHandle?.set("selectedIndustry", null)
         Log.d("FilterFragment", "Industry selection cleared and signal sent")
     }
