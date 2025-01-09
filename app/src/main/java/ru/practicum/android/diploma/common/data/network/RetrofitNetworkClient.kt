@@ -11,6 +11,7 @@ import ru.practicum.android.diploma.common.data.network.requests.SearchRequest
 import ru.practicum.android.diploma.common.data.network.requests.VacancyDetailRequest
 import ru.practicum.android.diploma.common.data.network.response.AreaResponse
 import ru.practicum.android.diploma.common.data.network.response.IndustryResponse
+import ru.practicum.android.diploma.common.data.network.response.SearchResponse
 import ru.practicum.android.diploma.common.data.network.response.VacancyDetailResponse
 import ru.practicum.android.diploma.common.utils.isInternetAvailable
 import java.io.IOException
@@ -49,7 +50,7 @@ class RetrofitNetworkClient(
                 Response().apply { resultCode = NO_INTERNET_ERROR }
             } catch (e: HttpException) {
                 e.printStackTrace()
-                getHttpExceptionResponse()
+                getHttpExceptionResponse(e.code())
             } catch (e: RuntimeException) {
                 e.printStackTrace()
                 getRuntimeExceptionResponse()
@@ -61,7 +62,7 @@ class RetrofitNetworkClient(
     }
 
     // поиск вакансий
-    private suspend fun makeVacancySearchRequest(dto: SearchRequest): Response {
+    private suspend fun makeVacancySearchRequest(dto: SearchRequest): SearchResponse {
         return headHunterApi.getVacancies(dto.params).apply {
             resultCode = SUCCESS
         }
@@ -77,11 +78,11 @@ class RetrofitNetworkClient(
     // регионы
     private suspend fun makeAreasRequest(dto: AreaRequest): Response {
         dto.id?.let {
-            return AreaResponse(areas = listOf(headHunterApi.getAreaById(areaId = it))).apply {
+            return AreaResponse(area = headHunterApi.getAreaById(areaId = it), areas = null).apply {
                 resultCode = SUCCESS
             }
         }
-        return AreaResponse(areas = headHunterApi.getAreas()).apply {
+        return AreaResponse(area = null, areas = headHunterApi.getCountres()).apply {
             resultCode = SUCCESS
         }
     }
@@ -109,8 +110,14 @@ class RetrofitNetworkClient(
     }
 
     // Обработка HttpException
-    private fun getHttpExceptionResponse(): Response {
-        return Response().apply { resultCode = CLIENT_ERROR }
+    private fun getHttpExceptionResponse(code: Int): Response {
+        val response: Response?
+        when (code) {
+            CLIENT_ERROR -> response = Response().apply { resultCode = CLIENT_ERROR }
+            NOT_FOUND -> response = Response().apply { resultCode = NOT_FOUND }
+            else -> response = Response().apply { resultCode = code }
+        }
+        return response
     }
 
     // Обработка RuntimeException
@@ -123,5 +130,7 @@ class RetrofitNetworkClient(
         const val SERVER_ERROR = 500
         const val NO_INTERNET_ERROR = -1
         const val SUCCESS = 200
+        const val NOT_FOUND = 404
+
     }
 }

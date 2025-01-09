@@ -4,6 +4,7 @@ plugins {
     id("ru.practicum.android.diploma.plugins.developproperties")
     id("com.google.devtools.ksp") version "2.1.0-1.0.29"
     id("kotlin-parcelize")
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
@@ -49,6 +50,7 @@ dependencies {
     // UI layer libraries
     implementation(libs.ui.material)
     implementation(libs.ui.constraintLayout)
+    implementation(libs.legacy.support.v4)
 
     // region Unit tests
     testImplementation(libs.unitTests.junit)

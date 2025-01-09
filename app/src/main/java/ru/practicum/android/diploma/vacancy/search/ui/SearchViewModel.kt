@@ -11,6 +11,7 @@ import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.common.utils.SingleLiveEvent
 import ru.practicum.android.diploma.common.utils.debounce
 import ru.practicum.android.diploma.vacancy.search.domain.api.SearchInteractor
+import ru.practicum.android.diploma.vacancy.search.domain.model.PagedData
 import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearch
 import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearchParams
 import ru.practicum.android.diploma.vacancy.search.ui.model.SearchFragmentState
@@ -23,17 +24,23 @@ class SearchViewModel(
     companion object {
         const val LOADING_DELAY_MS = 2000L
         const val TAG = "SearchViewModel"
+        const val PAGE_SIZE = 20
     }
 
     private var latestSearchText: String? = null
-    private var currentPage: Int = 0
+    var currentPage: Int = 0
+    private var totalPages = 1
+    private val pageSize = PAGE_SIZE
+    private var totalVacancies = 0
 
     private val debounceSearch: (String) -> Unit = debounce(
         delayMillis = LOADING_DELAY_MS,
         coroutineScope = viewModelScope,
         useLastParam = true
     ) { query ->
-        searchRequest(query)
+        if (latestSearchText != query) {
+            searchRequest(query)
+        }
     }
 
     private val stateLiveData = MutableLiveData<SearchFragmentState>()
@@ -42,11 +49,15 @@ class SearchViewModel(
         liveData.addSource(stateLiveData) { searchState ->
             liveData.value = when (searchState) {
                 is SearchFragmentState.Default -> searchState
-                is SearchFragmentState.Content -> SearchFragmentState.Content(searchState.vacancies)
+                is SearchFragmentState.Content -> SearchFragmentState.Content(
+                    searchState.vacancies,
+                    searchState.vacanciesCount
+                )
                 is SearchFragmentState.Empty -> searchState
                 is SearchFragmentState.ServerError -> searchState
                 is SearchFragmentState.InternetError -> searchState
                 is SearchFragmentState.Loading -> searchState
+                is SearchFragmentState.UpdateList -> searchState
             }
         }
     }
@@ -54,16 +65,19 @@ class SearchViewModel(
     fun observeShowToast(): LiveData<String> = showToast
 
     fun onSearchQueryChanged(query: String) {
+        if (query == latestSearchText) return
         currentPage = 0
         if (query.isBlank()) {
             latestSearchText = null
             clearVacancies()
             return
         }
+        debounceSearch(query)
+    }
 
-        if (latestSearchText != query) {
-            latestSearchText = query
-            debounceSearch(query)
+    fun onSearchButtonPress(query: String) {
+        if (latestSearchText == null) {
+            searchRequest(query)
         }
     }
 
@@ -73,9 +87,7 @@ class SearchViewModel(
     }
 
     private fun searchRequest(query: String) {
-        if (query.isBlank() || latestSearchText != query) {
-            return
-        }
+        latestSearchText = query
 
         renderState(SearchFragmentState.Loading)
 
@@ -100,11 +112,8 @@ class SearchViewModel(
         }
     }
 
-    private fun processResult(foundVacancies: List<VacancySearch>?, errorMessage: String?) {
-        val vacancies = mutableListOf<VacancySearch>()
-        if (foundVacancies != null) {
-            vacancies.addAll(foundVacancies)
-        }
+    private fun processResult(result: PagedData<VacancySearch>?, errorMessage: String?) {
+        val newVacancies = result?.items ?: emptyList()
         when {
             errorMessage != null -> {
                 when (errorMessage) {
@@ -113,13 +122,30 @@ class SearchViewModel(
                     else ->
                         renderState(SearchFragmentState.ServerError)
                 }
+                latestSearchText = null
                 showToast.postValue(errorMessage!!)
+                _isLoading = false
             }
-            vacancies.isEmpty() -> {
+
+            newVacancies.isEmpty() && currentPage == 0 -> {
                 renderState(SearchFragmentState.Empty)
+                _isLoading = false
             }
+
             else -> {
-                renderState(SearchFragmentState.Content(vacancies))
+                val currentState = stateLiveData.value
+                val updatedVacancies = when {
+                    currentPage == 0 -> newVacancies
+                    currentState is SearchFragmentState.Content -> currentState.vacancies + newVacancies
+                    else -> newVacancies
+                }
+                result?.let {
+                    totalPages = it.totalPages
+                    totalVacancies = it.totalItems
+                }
+
+                renderState(SearchFragmentState.Content(updatedVacancies, totalVacancies))
+                _isLoading = false
             }
         }
     }
@@ -127,4 +153,36 @@ class SearchViewModel(
     private fun renderState(state: SearchFragmentState) {
         stateLiveData.postValue(state)
     }
+
+    fun loadNextPage() {
+        if (currentPage >= totalPages || _isLoading) {
+            return
+        }
+
+        _isLoading = true
+        currentPage++
+        renderState(SearchFragmentState.UpdateList)
+
+        val params = VacancySearchParams(
+            text = latestSearchText,
+            page = currentPage + 1,
+            perPage = pageSize,
+            area = 1,
+            searchField = "name",
+            industry = null,
+            salary = null,
+            onlyWithSalary = false
+        )
+
+        viewModelScope.launch {
+            searchInteractor.fetchVacancies(params.toQueryMap())
+                .collect { resource ->
+                    processResult(resource.first, resource.second)
+                }
+        }
+    }
+
+    private var _isLoading = false
+    val isLoading: Boolean get() = _isLoading
+
 }

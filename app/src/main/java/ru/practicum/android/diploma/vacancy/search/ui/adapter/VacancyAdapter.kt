@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.common.data.dto.CurrencyIds
 import ru.practicum.android.diploma.databinding.ItemVacancyBinding
@@ -33,10 +34,14 @@ class VacancyAdapter(
         private val onVacancyClick: (VacancySearch) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
+        private val corner by lazy { itemView.resources.getDimension(R.dimen.dimens_12).toInt() }
+
         fun bind(vacancy: VacancySearch) {
             Glide.with(binding.itemVacancyCompanyImage.context)
                 .load(vacancy.logo)
+                .fitCenter()
                 .placeholder(R.drawable.placeholder)
+                .transform(RoundedCorners(corner))
                 .into(binding.itemVacancyCompanyImage)
 
             binding.itemVacancyName.text = vacancy.name
@@ -107,5 +112,11 @@ class VacancyAdapter(
     fun updateVacancies(newVacancies: List<VacancySearch>) {
         vacancies = newVacancies
         notifyDataSetChanged()
+    }
+
+    fun addVacancies(newVacancies: List<VacancySearch>) {
+        val startPosition = vacancies.size
+        vacancies = vacancies + newVacancies
+        notifyItemRangeInserted(startPosition, newVacancies.size)
     }
 }

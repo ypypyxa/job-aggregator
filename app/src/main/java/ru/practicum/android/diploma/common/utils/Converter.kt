@@ -1,9 +1,13 @@
 package ru.practicum.android.diploma.common.utils
 
 import com.google.gson.Gson
+import ru.practicum.android.diploma.common.data.dto.AreasDto
+import ru.practicum.android.diploma.common.data.dto.IndustriesDto
 import ru.practicum.android.diploma.common.data.network.response.SearchResponse
 import ru.practicum.android.diploma.common.data.network.response.VacancyDetailResponse
 import ru.practicum.android.diploma.vacancy.details.domain.model.VacancyDetails
+import ru.practicum.android.diploma.vacancy.filter.domain.model.Area
+import ru.practicum.android.diploma.vacancy.filter.domain.model.FilterIndustryValue
 import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearch
 
 class Converter {
@@ -41,7 +45,24 @@ class Converter {
             employerId = response.vacancy.employer?.id ?: 0,
             logosJSON = response.vacancy.employer?.logoUrls?.let { gson.toJson(it) },
             employerName = response.vacancy.employer?.name ?: "Unknown",
-            employerLogoUri = response.vacancy.employer?.logoUrls?.original
+            employerLogoUri = response.vacancy.employer?.logoUrls?.original,
+            vacancyUrl = response.vacancy.alternateUrl
+        )
+    }
+
+    fun convertAreaDtotoArea(dto: AreasDto, parentName: String? = null): Area {
+        return Area(
+            id = dto.id,
+            name = dto.name,
+            parentId = dto.parentId,
+            parentName = parentName,
+            areas = dto.areas?.map { convertAreaDtotoArea(it, dto.name) } ?: emptyList()
+        )
+    }
+    fun industriesDtoToDomain(dto: IndustriesDto): FilterIndustryValue {
+        return FilterIndustryValue(
+            id = dto.id,
+            text = dto.name
         )
     }
 }
