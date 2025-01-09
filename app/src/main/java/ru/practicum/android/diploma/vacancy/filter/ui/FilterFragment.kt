@@ -150,6 +150,8 @@ class FilterFragment : Fragment() {
             binding.checkboxHideWithSalary.isChecked,
             viewModel.filterSettings.value
         )
+        DataTransmitter.postCountry(currentSettings.country)
+        DataTransmitter.postRegion(currentSettings.region)
 
         val isFilterChanged = viewModel.hasFilterChanged(currentSettings)
         val hasFilters = hasActiveFilters()
@@ -359,12 +361,8 @@ class FilterFragment : Fragment() {
         }
         textInputLayout.setEndIconOnClickListener {
             if (!editText.text.isNullOrEmpty()) {
+                viewModel.onClearWorkplacePressed()
                 editText.text?.clear()
-                DataTransmitter.apply {
-                    postRegion(null)
-                    postCountry(null)
-                    updateButtonsVisibility()
-                }
                 updateButtonsVisibility()
             } else {
                 findNavController().navigate(navigateAction)
@@ -386,6 +384,7 @@ class FilterFragment : Fragment() {
 
         textInputLayout.setEndIconOnClickListener {
             if (!editText.text.isNullOrEmpty()) {
+                viewModel.onClearIndustryPressed()
                 editText.text?.clear()
                 clearTemporaryIndustry()
                 postIndustry(null)

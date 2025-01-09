@@ -129,7 +129,11 @@ class ChooseRegionViewModel(
                     Log.d(CHOOSE_AREA, "Такого места не существует")
                 } else {
                     foundingAreas = area.areas
-                    renderState(ChooseRegionFragmentState.ShowRegions(foundingAreas))
+                    if (foundingAreas.isEmpty()) {
+                        renderState(ChooseRegionFragmentState.ShowError)
+                    } else {
+                        renderState(ChooseRegionFragmentState.ShowRegions(foundingAreas))
+                    }
                 }
             }
             is Resource.Error -> {

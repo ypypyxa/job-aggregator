@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.common.utils.DataTransmitter
 import ru.practicum.android.diploma.vacancy.filter.domain.FilterSettingsInteractor
 import ru.practicum.android.diploma.vacancy.filter.domain.api.IndustryFilterInteractor
 import ru.practicum.android.diploma.vacancy.filter.domain.model.FilterIndustryValue
@@ -74,5 +75,34 @@ class FilterViewModel(
     fun hasFilterChanged(newSettings: FilterSettings): Boolean {
         val result = _previousFilterSettings != newSettings
         return result
+    }
+
+    fun onClearWorkplacePressed() {
+        val newSettings = FilterSettings(
+            null,
+            null,
+            _filterSettings.value?.industry,
+            _filterSettings.value?.expectedSalary ?: -1,
+            _filterSettings.value?.notShowWithoutSalary ?: false
+        )
+
+        DataTransmitter.apply {
+            postRegion(null)
+            postCountry(null)
+        }
+
+        _filterSettings.update { newSettings }
+    }
+
+    fun onClearIndustryPressed() {
+        val newSettings = FilterSettings(
+            _filterSettings.value?.country,
+            _filterSettings.value?.region,
+            null,
+            _filterSettings.value?.expectedSalary ?: -1,
+            _filterSettings.value?.notShowWithoutSalary ?: false
+        )
+
+        _filterSettings.update { newSettings }
     }
 }
