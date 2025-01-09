@@ -43,8 +43,6 @@ class FilterFragment : Fragment() {
         return binding.root
     }
 
-    private val filterSettingsManager by lazy { FilterSettingsManager(viewModel, binding) }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.loadFilterSettings()
@@ -209,17 +207,14 @@ class FilterFragment : Fragment() {
             ?.getLiveData<FilterIndustryValue>("selectedIndustry")
             ?.observe(viewLifecycleOwner) { industry ->
                 if (industry == null) {
-                    // Если значение пустое, очищаем поле
-                    Log.d("FilterFragment", "observeSelectedIndustry: Индустрия null, очищаем поле")
                     binding.tlIndustry.editText?.setText("")
                     viewModel.saveIndustry(null)
                 } else {
-                    // Если значение есть, обновляем
-                    Log.d("FilterFragment", "observeSelectedIndustry: Получено значение $industry")
                     binding.tlIndustry.editText?.setText(industry.text ?: "")
                     viewModel.saveIndustry(industry)
                 }
                 updateButtonsVisibility()
+                saveTemporaryIndustry(industry)
             }
     }
 
@@ -247,7 +242,7 @@ class FilterFragment : Fragment() {
                 restoreTemporaryIndustry(settings)
 
                 settings?.let {
-                    filterSettingsManager.updateWorkplaceField(it)
+                    updateWorkplaceField(it)
                     updateIndustryField(it)
                     updateSalaryField(it)
                     updateCheckbox(it)
@@ -256,6 +251,18 @@ class FilterFragment : Fragment() {
 
             }
         }
+    }
+
+    fun updateWorkplaceField(settings: FilterSettings) {
+        binding.tiWorkPlace.setText(
+            buildString {
+                append(settings.country?.name.orEmpty())
+                if (!settings.region?.name.isNullOrEmpty()) {
+                    if (isNotEmpty()) append(", ")
+                    append(settings.region?.name.orEmpty())
+                }
+            }
+        )
     }
 
     private fun updateIndustryField(settings: FilterSettings) {
