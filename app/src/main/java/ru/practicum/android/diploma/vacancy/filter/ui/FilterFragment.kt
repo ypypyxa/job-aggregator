@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.common.utils.DataTransmitter
+import ru.practicum.android.diploma.common.utils.DataTransmitter.postIndustry
 import ru.practicum.android.diploma.databinding.FragmentFilterBinding
 import ru.practicum.android.diploma.vacancy.filter.domain.model.Country
 import ru.practicum.android.diploma.vacancy.filter.domain.model.FilterIndustryValue
@@ -362,7 +363,9 @@ class FilterFragment : Fragment() {
                 DataTransmitter.apply {
                     postRegion(null)
                     postCountry(null)
+                    updateButtonsVisibility()
                 }
+                updateButtonsVisibility()
             } else {
                 findNavController().navigate(navigateAction)
             }
@@ -385,6 +388,8 @@ class FilterFragment : Fragment() {
             if (!editText.text.isNullOrEmpty()) {
                 editText.text?.clear()
                 clearTemporaryIndustry()
+                postIndustry(null)
+                updateButtonsVisibility()
             } else {
                 findNavController().navigate(navigateAction)
             }
@@ -410,6 +415,7 @@ class FilterFragment : Fragment() {
             viewModel.saveIndustry(it)
         }
     }
+
     private fun Industry.toFilterIndustryValue(): FilterIndustryValue {
         return FilterIndustryValue(
             id = this.id,
@@ -437,12 +443,10 @@ class FilterFragment : Fragment() {
         } else {
             R.drawable.ic_arrow_forward
         }
-
         binding.tlIndustry.endIconDrawable = ContextCompat.getDrawable(
             requireContext(),
             industryIcon
         )
-
         val workplaceText = binding.tiWorkPlace.text?.toString()
         val workplaceIcon = if (!workplaceText.isNullOrEmpty()) {
             R.drawable.ic_clear
