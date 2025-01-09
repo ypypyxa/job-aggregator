@@ -30,7 +30,6 @@ class DetailsFragment : Fragment() {
 
     private var vacancy: VacancyDetails? = null
     private var vacancyId: Int? = 0
-    private var vacancyUrl: String? = ""
 
     private val viewModel: DetailsViewModel by viewModel() {
         parametersOf(vacancyId)
@@ -71,6 +70,7 @@ class DetailsFragment : Fragment() {
         }
 
         binding.ivShareButton.setOnClickListener {
+            val vacancyUrl = vacancy?.vacancyUrl
             val intent = Intent().apply {
                 action = Intent.ACTION_SEND
                 putExtra(Intent.EXTRA_TEXT, vacancyUrl)
