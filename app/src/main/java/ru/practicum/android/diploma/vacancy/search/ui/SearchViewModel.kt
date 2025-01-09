@@ -24,6 +24,8 @@ class SearchViewModel(
     private val context: Context
 ) : ViewModel() {
 
+    private var previousFilterSettings: FilterSettings? = null
+
     private var currentFilterSettings: FilterSettings? = null
 
     companion object {
@@ -73,14 +75,15 @@ class SearchViewModel(
     fun observeShowToast(): LiveData<String> = showToast
 
     fun onSearchQueryChanged(query: String, forceUpdate: Boolean = false) {
-        if (forceUpdate || query != latestSearchText) {
+        val isFilterChanged = currentFilterSettings != previousFilterSettings
+        if (forceUpdate || isFilterChanged || query != latestSearchText) {
             currentPage = 0
             if (query.isBlank()) {
                 latestSearchText = null
                 clearVacancies()
                 return
             }
-            if (forceUpdate) {
+            if (forceUpdate || isFilterChanged) {
                 latestSearchText = query
                 searchRequest(query)
             } else {
@@ -207,8 +210,14 @@ class SearchViewModel(
     fun getFilterSettings(callback: (FilterSettings?) -> Unit) {
         viewModelScope.launch {
             val settings = filterSettingsInteractor.getFilterSettings()
+            val isFilterChanged = settings != previousFilterSettings
+            previousFilterSettings = settings
             currentFilterSettings = settings
             callback(settings)
+
+            if (isFilterChanged) {
+                onSearchQueryChanged(latestSearchText ?: "", forceUpdate = true)
+            }
         }
     }
 

@@ -57,8 +57,6 @@ class SearchFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         renderFilter()
 
-        applyFilterSettingsAndSearch()
-
         onVacancyClickDebounce = debounce(
             CLICK_DEBOUNCE_DELAY,
             viewLifecycleOwner.lifecycleScope,
@@ -238,26 +236,20 @@ class SearchFragment : Fragment() {
             "onlyWithSalary"
         )?.observe(viewLifecycleOwner) { onlyWithSalary ->
             viewModel.setOnlyWithSalary(onlyWithSalary)
-            viewModel.onSearchQueryChanged(viewModel.latestSearchText ?: "", forceUpdate = true)
+            viewModel.getFilterSettings { }
         }
-
     }
+
     private fun observeFilterResultsIndustry() {
         findNavController().currentBackStackEntry?.savedStateHandle
             ?.getLiveData<Boolean>("filterApplied")
             ?.observe(viewLifecycleOwner) { isApplied ->
                 if (isApplied) {
-                    applyFilterSettingsAndSearch()
+                    viewModel.getFilterSettings { }
                 }
             }
     }
 
-    private fun applyFilterSettingsAndSearch() {
-        viewModel.getFilterSettings {
-            val query = binding.editSearch.text.toString()
-            viewModel.onSearchQueryChanged(query, forceUpdate = true)
-        }
-    }
     private fun renderFilter() {
         viewModel.getFilterSettings { filters ->
             val isActive = filters?.let {
