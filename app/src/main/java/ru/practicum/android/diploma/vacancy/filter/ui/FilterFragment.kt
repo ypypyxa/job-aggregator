@@ -458,7 +458,7 @@ class FilterFragment : Fragment() {
             workplaceIcon
         )
     }
-
+// test
     private fun hasActiveFilters(): Boolean {
         val workplaceFilled = !binding.tiWorkPlace.text.isNullOrEmpty()
         val industryFilled = !binding.tiIndustryField.text.isNullOrEmpty()
