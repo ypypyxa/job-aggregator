@@ -125,12 +125,11 @@ class ChooseWorkplaceFragment : Fragment() {
     private fun showEmpty() {
         binding.chooseCountryTextInputEditText.text?.clear()
         binding.chooseCityTextInputEditText.text?.clear()
-        binding.chooseCountryTextInputEditText.isEnabled = true
-        binding.chooseCityTextInputEditText.isEnabled = true
         binding.clearCountryButton.gone()
         binding.forwardArrowCountry.show()
         binding.clearCityButton.gone()
         binding.forwardArrowCity.show()
+        binding.chooseButton.gone()
     }
 
     private fun setCountryName(area: Area) {
@@ -138,12 +137,11 @@ class ChooseWorkplaceFragment : Fragment() {
         countryName = area.name
         binding.chooseCountryTextInputEditText.setText(countryName)
         binding.chooseCityTextInputEditText.text?.clear()
-        binding.chooseCountryTextInputEditText.isEnabled = false
-        binding.chooseCityTextInputEditText.isEnabled = true
         binding.clearCountryButton.show()
         binding.forwardArrowCountry.gone()
         binding.clearCityButton.gone()
         binding.forwardArrowCity.show()
+        binding.chooseButton.show()
     }
 
     private fun setCityName(area: Area) {
@@ -153,12 +151,11 @@ class ChooseWorkplaceFragment : Fragment() {
         regionName = area.name
         binding.chooseCountryTextInputEditText.setText(countryName)
         binding.chooseCityTextInputEditText.setText(regionName)
-        binding.chooseCountryTextInputEditText.isEnabled = false
-        binding.chooseCityTextInputEditText.isEnabled = false
         binding.clearCountryButton.show()
         binding.forwardArrowCountry.gone()
         binding.clearCityButton.show()
         binding.forwardArrowCity.gone()
+        binding.chooseButton.show()
     }
 
     override fun onDestroyView() {

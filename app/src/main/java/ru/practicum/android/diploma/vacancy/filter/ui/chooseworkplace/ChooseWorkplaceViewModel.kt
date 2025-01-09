@@ -17,35 +17,12 @@ class ChooseWorkplaceViewModel(
     fun observeState(): LiveData<ChooseWorkplaceFragmentState> = mediatorStateLiveData
 
     init {
-        val currentFilterSettings = filterSettingsInteractor.getFilterSettings()
         val country = DataTransmitter.getCountry()
         val region = DataTransmitter.getRegion()
 
         if (region?.id.isNullOrEmpty()) {
             if (country?.id.isNullOrEmpty()) {
-                if (currentFilterSettings.region?.id.isNullOrEmpty()) {
-                    if (currentFilterSettings.country?.id.isNullOrEmpty()) {
-                        renderState(ChooseWorkplaceFragmentState.Empty)
-                    } else {
-                        val countryArea = Area(
-                            currentFilterSettings.country!!.id,
-                            currentFilterSettings.country.name,
-                            null,
-                            null,
-                            emptyList()
-                        )
-                        renderState(ChooseWorkplaceFragmentState.CountrySelected(countryArea))
-                    }
-                } else {
-                    val regionArea = Area(
-                        currentFilterSettings.region!!.id,
-                        currentFilterSettings.region.name,
-                        currentFilterSettings.country?.id,
-                        currentFilterSettings.country?.name,
-                        emptyList()
-                    )
-                    renderState(ChooseWorkplaceFragmentState.RegionSelected(regionArea))
-                }
+                renderState(ChooseWorkplaceFragmentState.Empty)
             } else {
                 val countryArea = Area(country!!.id, country.name, null, null, emptyList())
                 renderState(ChooseWorkplaceFragmentState.CountrySelected(countryArea))
