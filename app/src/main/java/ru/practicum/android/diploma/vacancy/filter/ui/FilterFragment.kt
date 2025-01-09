@@ -208,14 +208,18 @@ class FilterFragment : Fragment() {
         findNavController().currentBackStackEntry?.savedStateHandle
             ?.getLiveData<FilterIndustryValue>("selectedIndustry")
             ?.observe(viewLifecycleOwner) { industry ->
-                binding.tlIndustry.editText?.setText(industry.text)
-                viewModel.saveIndustry(industry)
-                findNavController().currentBackStackEntry?.savedStateHandle?.set(
-                    TEMP_INDUSTRY_KEY,
-                    industry
-                )
+                if (industry == null) {
+                    // Если значение пустое, очищаем поле
+                    Log.d("FilterFragment", "observeSelectedIndustry: Индустрия null, очищаем поле")
+                    binding.tlIndustry.editText?.setText("")
+                    viewModel.saveIndustry(null)
+                } else {
+                    // Если значение есть, обновляем
+                    Log.d("FilterFragment", "observeSelectedIndustry: Получено значение $industry")
+                    binding.tlIndustry.editText?.setText(industry.text ?: "")
+                    viewModel.saveIndustry(industry)
+                }
                 updateButtonsVisibility()
-                saveTemporaryIndustry(industry)
             }
     }
 
@@ -343,11 +347,13 @@ class FilterFragment : Fragment() {
         textInputLayout.setEndIconOnClickListener {
             if (!editText.text.isNullOrEmpty()) {
                 editText.text?.clear()
+                clearTemporaryIndustry()
             } else {
                 findNavController().navigate(navigateAction)
             }
         }
     }
+
     override fun onResume() {
         super.onResume()
         handleWorkplaceData()
@@ -381,6 +387,8 @@ class FilterFragment : Fragment() {
         findNavController().currentBackStackEntry?.savedStateHandle?.remove<FilterIndustryValue>(TEMP_INDUSTRY_KEY)
         findNavController().previousBackStackEntry?.savedStateHandle?.remove<FilterIndustryValue>("selectedIndustry")
         findNavController().currentBackStackEntry?.savedStateHandle?.set("clearIndustrySelection", true)
+        // Передаем null для явного сброса данных
+        findNavController().currentBackStackEntry?.savedStateHandle?.set("selectedIndustry", null)
         Log.d("FilterFragment", "Industry selection cleared and signal sent")
     }
 

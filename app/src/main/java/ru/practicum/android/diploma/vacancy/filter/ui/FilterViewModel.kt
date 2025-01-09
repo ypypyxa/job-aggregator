@@ -36,7 +36,7 @@ class FilterViewModel(
     }
 
     // Сохранение выбранной отрасли
-    fun saveIndustry(industry: FilterIndustryValue) {
+    fun saveIndustry(industry: FilterIndustryValue?) {
         interactor.saveSelectedIndustry(industry)
         _selectedIndustry.value = industry
     }

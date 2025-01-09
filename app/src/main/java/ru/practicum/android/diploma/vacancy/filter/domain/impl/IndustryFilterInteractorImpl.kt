@@ -23,7 +23,7 @@ class IndustryFilterInteractorImpl(
         return repository.getIndustryFilterSettings()
     }
 
-    override fun saveSelectedIndustry(industry: FilterIndustryValue) {
+    override fun saveSelectedIndustry(industry: FilterIndustryValue?) {
         localDataSource.saveIndustry(industry)
     }
 
