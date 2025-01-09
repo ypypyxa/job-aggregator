@@ -473,7 +473,7 @@ class FilterFragment : Fragment() {
         val industryFilled = !binding.tiIndustryField.text.isNullOrEmpty()
         val salaryFilled = !binding.tiSalaryField.text.isNullOrEmpty()
         val hideWithoutSalaryChecked = binding.checkboxHideWithSalary.isChecked
-
+            //
         return workplaceFilled || industryFilled || salaryFilled || hideWithoutSalaryChecked
     }
 }
