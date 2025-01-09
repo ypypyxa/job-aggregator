@@ -186,12 +186,13 @@ class FilterFragment : Fragment() {
             }
             clearTemporaryIndustry()
             viewModel.clearFilterSettings()
-            updateButtonsVisibility()
             DataTransmitter.apply {
                 postRegion(null)
                 postCountry(null)
                 postIndustry(null)
             }
+            updateButtonsVisibility()
+            viewModel.loadFilterSettings()
         }
     }
 
