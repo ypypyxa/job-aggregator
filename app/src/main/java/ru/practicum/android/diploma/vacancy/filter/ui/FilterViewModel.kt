@@ -32,6 +32,11 @@ class FilterViewModel(
     init {
         loadSelectedIndustry()
     }
+    var _initialFilterSettings: FilterSettings? = null
+
+    fun registerInitialState() {
+        _initialFilterSettings = _filterSettings.value
+    }
 
     // Загрузка сохраненной отрасли
     private fun loadSelectedIndustry() {

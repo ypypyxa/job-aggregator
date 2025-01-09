@@ -46,6 +46,7 @@ class FilterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.loadFilterSettings()
+        viewModel.registerInitialState()
         observeFilterSettings()
         setupNavigation()
         focusPocus()
@@ -82,9 +83,13 @@ class FilterFragment : Fragment() {
 
     private fun setupNavigation() {
         binding.toolBarFilter.setNavigationOnClickListener {
-            clearFields()
+            // Восстановление начального состояния
+            viewModel._initialFilterSettings?.let { initialSettings ->
+                viewModel.saveFilterSettings(initialSettings)
+            }
             findNavController().popBackStack(R.id.searchFragment, false)
         }
+
         setupNavigationClickListener(binding.tiWorkPlace, R.id.action_filterFragment_to_chooseWorkplaceFragment)
         setupNavigationClickListener(binding.tiIndustryField, R.id.action_filterFragment_to_chooseIndustryFragment)
     }
@@ -171,12 +176,15 @@ class FilterFragment : Fragment() {
 
                 if (viewModel.hasFilterChanged(currentSettings)) {
                     viewModel.saveFilterSettings(currentSettings)
+                    // Обновляем начальное состояние после сохранения
+                    viewModel.registerInitialState()
                     updateButtonsVisibility()
                     navigateBackToSearch()
                 }
             }
         }
     }
+
 
     private fun resetButtonClickListener() {
         binding.btnReset.setOnClickListener {
