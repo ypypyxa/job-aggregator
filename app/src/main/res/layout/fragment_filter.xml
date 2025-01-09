@@ -100,7 +100,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/ti_salary_field"
             style="@style/TextInputEditText"
-            android:maxLength="10"
+            android:maxLength="9"
             android:maxLines="1"
             android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>

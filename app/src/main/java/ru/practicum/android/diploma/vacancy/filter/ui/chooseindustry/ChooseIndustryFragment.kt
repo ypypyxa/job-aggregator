@@ -17,7 +17,6 @@ import ru.practicum.android.diploma.common.utils.DataTransmitter
 import ru.practicum.android.diploma.databinding.FragmentChooseIndustryBinding
 import ru.practicum.android.diploma.vacancy.filter.domain.model.FilterIndustryValue
 import ru.practicum.android.diploma.vacancy.filter.domain.model.Industry
-import ru.practicum.android.diploma.vacancy.filter.ui.FilterViewModel
 import ru.practicum.android.diploma.vacancy.filter.ui.adapter.IndustryAdapter
 
 class ChooseIndustryFragment : Fragment() {
@@ -26,7 +25,6 @@ class ChooseIndustryFragment : Fragment() {
     private var _binding: FragmentChooseIndustryBinding? = null
     private val binding get() = _binding!!
     private var industryAdapter: IndustryAdapter? = null
-    private val filterViewModel: FilterViewModel by viewModel()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -63,20 +61,13 @@ class ChooseIndustryFragment : Fragment() {
     private fun setupListeners() {
         binding.chooseButton.setOnClickListener {
             viewModel.selectedIndustry.value?.let { selectedIndustry ->
-                // Преобразование FilterIndustryValue в Industry
                 val industry = selectedIndustry.toIndustry()
                 DataTransmitter.postIndustry(industry)
-
-                // Преобразование обратно в FilterIndustryValue
-                filterViewModel.saveIndustry(industry.toFilterIndustryValue())
-
                 val navController = findNavController()
                 navController.previousBackStackEntry?.savedStateHandle?.set(
                     "selectedIndustry",
                     selectedIndustry
                 )
-
-                // Возврат на FilterFragment
                 navController.popBackStack(R.id.filterFragment, false)
             }
         }
@@ -101,7 +92,6 @@ class ChooseIndustryFragment : Fragment() {
 
     private fun setupRecyclerView() {
         industryAdapter = IndustryAdapter(emptyList()) { industry ->
-            // Логика при выборе отрасли
             viewModel.selectIndustry(industry)
         }
         binding.chooseIndustryListRecycleView.apply {
@@ -114,7 +104,6 @@ class ChooseIndustryFragment : Fragment() {
         lifecycleScope.launchWhenStarted {
             viewModel.industryState.collectLatest { list ->
                 industryAdapter = IndustryAdapter(list) { industry ->
-                    // Логика нажатия
                     viewModel.selectIndustry(industry)
 
                 }

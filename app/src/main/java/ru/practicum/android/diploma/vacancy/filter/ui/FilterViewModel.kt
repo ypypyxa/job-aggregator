@@ -17,6 +17,8 @@ class FilterViewModel(
 
 ) : ViewModel() {
 
+    private var _previousFilterSettings: FilterSettings? = null
+
     private val _selectedIndustry = MutableStateFlow<FilterIndustryValue?>(null)
     val selectedIndustry: StateFlow<FilterIndustryValue?> = _selectedIndustry
 
@@ -36,7 +38,7 @@ class FilterViewModel(
     }
 
     // Сохранение выбранной отрасли
-    fun saveIndustry(industry: FilterIndustryValue) {
+    fun saveIndustry(industry: FilterIndustryValue?) {
         interactor.saveSelectedIndustry(industry)
         _selectedIndustry.value = industry
     }
@@ -49,6 +51,7 @@ class FilterViewModel(
         viewModelScope.launch {
             val settings = filterSettingsInteractor.getFilterSettings()
             _filterSettings.value = settings
+            _previousFilterSettings = settings
         }
     }
 
@@ -66,6 +69,10 @@ class FilterViewModel(
             filterSettingsInteractor.clearFilterSettings()
             _filterSettings.value = null
         }
+    }
 
+    fun hasFilterChanged(newSettings: FilterSettings): Boolean {
+        val result = _previousFilterSettings != newSettings
+        return result
     }
 }
