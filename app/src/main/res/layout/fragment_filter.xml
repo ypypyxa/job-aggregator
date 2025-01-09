@@ -16,9 +16,8 @@
         android:layout_height="wrap_content"
         android:contentInsetStart="@dimen/dimens_16"
         android:navigationIcon="@drawable/ic_arrow_back"
-        android:paddingVertical="@dimen/dimens_8"
         android:title="@string/filter_toolbar"
-
+        android:titleTextColor="@color/night_day"
         app:layout_constraintTop_toTopOf="parent">
 
     </Toolbar>
