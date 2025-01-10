@@ -29,7 +29,7 @@ class FavoritesDBConverterImpl(
             name = from.title,
             address = from.city,
             company = from.employerName,
-            salary = formatSalary(from.salaryFrom, from.salaryTo, from.currency),
+            salary = "SalaryDto(from=${from.salaryFrom}, to=${from.salaryTo}, currency=${from.currency}",
             logo = from.employerLogoUri
         )
     }
