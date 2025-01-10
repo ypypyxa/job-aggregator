@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.vacancy.filter.ui.chooseindustry
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,13 +8,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import ru.practicum.android.diploma.common.utils.isInternetAvailable
 import ru.practicum.android.diploma.vacancy.filter.domain.api.IndustryFilterInteractor
 import ru.practicum.android.diploma.vacancy.filter.domain.model.FilterIndustryValue
 import java.io.IOException
 
 class ChooseIndustryViewModel(
-    private val interactor: IndustryFilterInteractor
-) : ViewModel() {
+    private val interactor: IndustryFilterInteractor,
+    private val context: Context
+    ) : ViewModel() {
 
     private val _industryState = MutableStateFlow<List<FilterIndustryValue>>(emptyList())
     val industryState: StateFlow<List<FilterIndustryValue>> = _industryState
@@ -33,11 +36,16 @@ class ChooseIndustryViewModel(
         fetchIndustries()
     }
 
-    private fun fetchIndustries() {
+    fun fetchIndustries() {
         viewModelScope.launch {
             _isLoading.value = true
             _hasError.value = false
             try {
+                if (!context.isInternetAvailable()) {
+                    _hasError.value = true
+                    _industryState.value = emptyList()
+                    return@launch
+                }
                 val industries = interactor.fetchIndustries()
                 allIndustries = industries
                 _industryState.value = industries
@@ -55,6 +63,7 @@ class ChooseIndustryViewModel(
             }
         }
     }
+
 
     fun filterIndustries(query: String) {
         val filteredList = if (query.isEmpty()) {

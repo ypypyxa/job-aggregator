@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.common.data.impl
 
+import android.content.Context
 import android.util.Log
 import retrofit2.HttpException
 import ru.practicum.android.diploma.common.data.dto.IndustriesDto
@@ -7,11 +8,13 @@ import ru.practicum.android.diploma.common.data.network.NetworkClient
 import ru.practicum.android.diploma.common.data.network.requests.IndustryRequest
 import ru.practicum.android.diploma.common.data.network.response.IndustryResponse
 import ru.practicum.android.diploma.common.utils.Converter
+import ru.practicum.android.diploma.common.utils.isInternetAvailable
 import ru.practicum.android.diploma.vacancy.filter.domain.api.IndustryFilterRepository
 import ru.practicum.android.diploma.vacancy.filter.domain.model.FilterIndustryValue
 import java.io.IOException
 
 class IndustryFilterRepositoryImpl(
+    private val context: Context,
     private val networkClient: NetworkClient,
     private val converter: Converter
 
@@ -33,6 +36,10 @@ class IndustryFilterRepositoryImpl(
     }
 
     override suspend fun fetchIndustries() {
+        if (!context.isInternetAvailable()) {
+            throw IOException("No internet connection")
+        }
+
         try {
             val response = networkClient.doRequest(IndustryRequest()) as IndustryResponse
             require(response.industries.isNotEmpty()) { "Industry list is empty" }
@@ -55,6 +62,7 @@ class IndustryFilterRepositoryImpl(
             throw e
         }
     }
+
     private fun addIndustryRecursively(industry: IndustriesDto) {
         industryCache.add(industry)
         industry.industries?.forEach { subIndustry ->

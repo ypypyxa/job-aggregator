@@ -137,8 +137,14 @@ class ChooseIndustryFragment : Fragment() {
     private fun observeErrorState() {
         lifecycleScope.launchWhenStarted {
             viewModel.hasError.collectLatest { hasError ->
-                binding.tvErrorMessage.visibility = if (hasError) View.VISIBLE else View.GONE
-                binding.chooseIndustryListRecycleView.visibility = if (hasError) View.GONE else View.VISIBLE
+                if (hasError) {
+                    binding.tvErrorMessage.text = getString(R.string.search_no_internet)
+                    binding.tvErrorMessage.visibility = View.VISIBLE
+                    binding.chooseIndustryListRecycleView.visibility = View.GONE
+                } else {
+                    binding.tvErrorMessage.visibility = View.GONE
+                    binding.chooseIndustryListRecycleView.visibility = View.VISIBLE
+                }
             }
         }
     }
