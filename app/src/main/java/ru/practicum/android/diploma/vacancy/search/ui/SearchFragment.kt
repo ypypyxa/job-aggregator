@@ -192,7 +192,7 @@ class SearchFragment : Fragment() {
         binding.searchState.text = requireContext().getString(R.string.search_state_nothing_found)
         binding.searchState.visibility = View.VISIBLE
     }
-// testdrive 2.0
+
     private fun showServerError() {
         hideAll()
         binding.placeholderServerNotResponding.visibility = View.VISIBLE
