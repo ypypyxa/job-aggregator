@@ -16,7 +16,7 @@ import java.io.IOException
 class ChooseIndustryViewModel(
     private val interactor: IndustryFilterInteractor,
     private val context: Context
-    ) : ViewModel() {
+) : ViewModel() {
 
     private val _industryState = MutableStateFlow<List<FilterIndustryValue>>(emptyList())
     val industryState: StateFlow<List<FilterIndustryValue>> = _industryState
@@ -63,7 +63,6 @@ class ChooseIndustryViewModel(
             }
         }
     }
-
 
     fun filterIndustries(query: String) {
         val filteredList = if (query.isEmpty()) {
