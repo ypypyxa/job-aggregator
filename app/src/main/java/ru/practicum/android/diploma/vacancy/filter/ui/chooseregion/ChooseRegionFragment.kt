@@ -124,6 +124,7 @@ class ChooseRegionFragment : Fragment() {
         binding.noRegion.show()
     }
     private fun showError() {
+        binding.chooseRegionEnterFieldEdittext.isEnabled = false
         binding.regionListRecyclerView.gone()
         binding.progressBar.gone()
         binding.noGetRegionList.show()
