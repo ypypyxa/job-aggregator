@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.practicum.android.diploma.common.utils.gone
+import ru.practicum.android.diploma.common.utils.isInternetAvailable
 import ru.practicum.android.diploma.common.utils.show
 import ru.practicum.android.diploma.databinding.FragmentChooseRegionBinding
 import ru.practicum.android.diploma.vacancy.filter.domain.model.Area
@@ -47,6 +48,12 @@ class ChooseRegionFragment : Fragment() {
         countryId = args.countryId
 
         setListeners()
+
+        if (!requireContext().isInternetAvailable()) {
+            showNoInternetError()
+            return
+        }
+
         setRecyclerView()
         setObservers()
     }
@@ -124,7 +131,6 @@ class ChooseRegionFragment : Fragment() {
         binding.noRegion.show()
     }
     private fun showError() {
-        binding.chooseRegionEnterFieldEdittext.isEnabled = false
         binding.regionListRecyclerView.gone()
         binding.progressBar.gone()
         binding.noGetRegionList.show()
@@ -139,4 +145,14 @@ class ChooseRegionFragment : Fragment() {
         binding.regionListRecyclerView.gone()
         binding.progressBar.show()
     }
+
+    private fun showNoInternetError() {
+        hidePlaceholders()
+        binding.noGetRegionList.show()
+        binding.regionListRecyclerView.gone()
+        binding.progressBar.gone()
+        binding.chooseRegionEnterFieldEdittext.isEnabled = true
+        binding.chooseRegionBack.isEnabled = true
+    }
+
 }
