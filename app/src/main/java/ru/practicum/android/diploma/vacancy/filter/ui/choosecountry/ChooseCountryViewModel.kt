@@ -29,6 +29,7 @@ class ChooseCountryViewModel(
             liveData.value = when (state) {
                 is ChooseCountryFragmentState.Content -> ChooseCountryFragmentState.Content(state.areas)
                 is ChooseCountryFragmentState.Loading -> ChooseCountryFragmentState.Loading
+                is ChooseCountryFragmentState.Error -> ChooseCountryFragmentState.Error
                 else -> { null }
             }
         }
@@ -47,6 +48,7 @@ class ChooseCountryViewModel(
     private fun countriesResult(areasResult: List<Area>?, errorMessage: String?) {
         when {
             errorMessage != null -> {
+                renderState(ChooseCountryFragmentState.Error)
                 Log.d(CHOOSE_AREA, "$errorMessage")
             }
             areasResult == null -> {
