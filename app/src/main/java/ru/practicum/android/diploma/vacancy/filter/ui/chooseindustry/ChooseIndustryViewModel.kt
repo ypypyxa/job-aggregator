@@ -38,28 +38,28 @@ class ChooseIndustryViewModel(
 
     fun fetchIndustries() {
         viewModelScope.launch {
-            _isLoading.value = true
+            _isLoading.value = false
             _hasError.value = false
-            try {
-                if (!context.isInternetAvailable()) {
-                    _hasError.value = true
+            if (!context.isInternetAvailable()) {
+                _hasError.value = true
+                _industryState.value = emptyList()
+            } else {
+                try {
+                    val industries = interactor.fetchIndustries()
+                    allIndustries = industries
+                    _industryState.value = industries
+                    _hasError.value = industries.isEmpty()
+                } catch (e: IOException) {
+                    Log.e(LOG_TAG, "$NETWORK_ERROR${e.message}")
                     _industryState.value = emptyList()
-                    return@launch
+                    _hasError.value = true
+                } catch (e: HttpException) {
+                    Log.e(LOG_TAG, "$SERVER_ERROR${e.code()}")
+                    _industryState.value = emptyList()
+                    _hasError.value = true
+                } finally {
+                    _isLoading.value = false
                 }
-                val industries = interactor.fetchIndustries()
-                allIndustries = industries
-                _industryState.value = industries
-                _hasError.value = industries.isEmpty()
-            } catch (e: IOException) {
-                Log.e(LOG_TAG, "$NETWORK_ERROR${e.message}")
-                _industryState.value = emptyList()
-                _hasError.value = true
-            } catch (e: HttpException) {
-                Log.e(LOG_TAG, "$SERVER_ERROR${e.code()}")
-                _industryState.value = emptyList()
-                _hasError.value = true
-            } finally {
-                _isLoading.value = false
             }
         }
     }
