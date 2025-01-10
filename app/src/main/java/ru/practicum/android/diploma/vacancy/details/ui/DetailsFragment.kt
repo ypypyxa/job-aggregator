@@ -20,6 +20,8 @@ import ru.practicum.android.diploma.common.utils.show
 import ru.practicum.android.diploma.databinding.FragmentDetailsBinding
 import ru.practicum.android.diploma.vacancy.details.domain.model.VacancyDetails
 import ru.practicum.android.diploma.vacancy.details.ui.model.DetailsFragmentState
+import java.text.NumberFormat
+import java.util.Locale
 
 class DetailsFragment : Fragment() {
 
@@ -184,10 +186,17 @@ class DetailsFragment : Fragment() {
     }
 
     private fun formatSalary(salaryFrom: Int?, salaryTo: Int?, currency: String?): String {
+        val numberFormat = NumberFormat.getNumberInstance(Locale("ru", "RU")).apply {
+            isGroupingUsed = true
+        }
+
+        val formattedFrom = salaryFrom?.let { numberFormat.format(it) }
+        val formattedTo = salaryTo?.let { numberFormat.format(it) }
+
         return when {
-            salaryFrom != null && salaryTo != null -> "ЗП от $salaryFrom до $salaryTo ${currency ?: ""}"
-            salaryFrom != null -> "ЗП от $salaryFrom ${currency ?: ""}"
-            salaryTo != null -> "ЗП до $salaryTo ${currency ?: ""}"
+            salaryFrom != null && salaryTo != null -> "ЗП от $formattedFrom до $formattedTo ${currency ?: ""}"
+            salaryFrom != null -> "ЗП от $formattedFrom ${currency ?: ""}"
+            salaryTo != null -> "ЗП до $formattedTo ${currency ?: ""}"
             else -> "Зарплата не указана"
         }
     }
