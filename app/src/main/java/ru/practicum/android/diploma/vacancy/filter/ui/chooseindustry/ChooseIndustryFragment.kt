@@ -173,7 +173,8 @@ class ChooseIndustryFragment : Fragment() {
                     )
                     binding.tvErrorMessage.visibility = View.GONE
                     binding.chooseIndustryListRecycleView.visibility = View.VISIBLE
-                    binding.chooseButton.visibility = if (viewModel.selectedIndustry.value != null) View.VISIBLE else View.GONE
+                    binding.chooseButton.visibility = if (viewModel.selectedIndustry.value != null)
+                        View.VISIBLE else View.GONE
                 }
             }
         }
