@@ -32,6 +32,9 @@ class ChooseIndustryViewModel(
     private val _hasError = MutableStateFlow(false)
     val hasError: StateFlow<Boolean> = _hasError
 
+    private val _noResultsFound = MutableStateFlow(false)
+    val noResultsFound: StateFlow<Boolean> = _noResultsFound
+
     init {
         fetchIndustries()
     }
@@ -65,6 +68,11 @@ class ChooseIndustryViewModel(
     }
 
     fun filterIndustries(query: String) {
+        if (!context.isInternetAvailable()) {
+            _noResultsFound.value = false
+            return
+        }
+
         val filteredList = if (query.isEmpty()) {
             allIndustries
         } else {
@@ -74,6 +82,7 @@ class ChooseIndustryViewModel(
         }
         _industryState.value = filteredList
         _hasError.value = filteredList.isEmpty()
+        _noResultsFound.value = filteredList.isEmpty() && query.isNotEmpty()
     }
 
     fun selectIndustry(industry: FilterIndustryValue?) {

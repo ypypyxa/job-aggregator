@@ -44,6 +44,7 @@ class ChooseIndustryFragment : Fragment() {
         observeSelectedIndustry()
         backToSearch()
         observeLoadingState()
+        observeNoResultsFound() 
         observeErrorState()
         setupSearchField()
         observeIndustryReset()
@@ -139,6 +140,21 @@ class ChooseIndustryFragment : Fragment() {
             viewModel.hasError.collectLatest { hasError ->
                 if (hasError) {
                     binding.tvErrorMessage.text = getString(R.string.search_no_internet)
+                    binding.tvErrorMessage.visibility = View.VISIBLE
+                    binding.chooseIndustryListRecycleView.visibility = View.GONE
+                } else {
+                    binding.tvErrorMessage.visibility = View.GONE
+                    binding.chooseIndustryListRecycleView.visibility = View.VISIBLE
+                }
+            }
+        }
+    }
+
+    private fun observeNoResultsFound() {
+        lifecycleScope.launchWhenStarted {
+            viewModel.noResultsFound.collectLatest { noResultsFound ->
+                if (noResultsFound) {
+                    binding.tvErrorMessage.text = getString(R.string.no_industry_found)
                     binding.tvErrorMessage.visibility = View.VISIBLE
                     binding.chooseIndustryListRecycleView.visibility = View.GONE
                 } else {
