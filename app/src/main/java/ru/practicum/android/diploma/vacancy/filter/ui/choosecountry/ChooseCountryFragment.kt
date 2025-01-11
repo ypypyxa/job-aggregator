@@ -76,18 +76,27 @@ class ChooseCountryFragment : Fragment() {
         when (state) {
             is ChooseCountryFragmentState.Content -> showContent(state.areas)
             is ChooseCountryFragmentState.Loading -> showLoading()
+            is ChooseCountryFragmentState.Error -> showError()
         }
     }
 
     private fun showContent(areas: List<Area>) {
         areaAdapter?.setAreas(areas)
         binding.progressBar.gone()
+        binding.noGetCountryList.gone()
         binding.countryListRecyclerView.show()
     }
 
     private fun showLoading() {
         binding.countryListRecyclerView.gone()
+        binding.noGetCountryList.gone()
         binding.progressBar.show()
+    }
+
+    private fun showError() {
+        binding.countryListRecyclerView.gone()
+        binding.progressBar.gone()
+        binding.noGetCountryList.show()
     }
 
     companion object {

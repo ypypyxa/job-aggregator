@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -44,6 +45,7 @@ class ChooseIndustryFragment : Fragment() {
         observeSelectedIndustry()
         backToSearch()
         observeLoadingState()
+        observeNoResultsFound()
         observeErrorState()
         setupSearchField()
         observeIndustryReset()
@@ -118,9 +120,8 @@ class ChooseIndustryFragment : Fragment() {
         lifecycleScope.launchWhenStarted {
             viewModel.selectedIndustry.collectLatest { selectedIndustry ->
                 binding.chooseButton.visibility =
-                    if (selectedIndustry != null) View.VISIBLE else View.GONE
+                    if (selectedIndustry != null && !viewModel.noResultsFound.value) View.VISIBLE else View.GONE
                 industryAdapter?.setSelectedIndustry(selectedIndustry)
-
             }
         }
     }
@@ -137,8 +138,44 @@ class ChooseIndustryFragment : Fragment() {
     private fun observeErrorState() {
         lifecycleScope.launchWhenStarted {
             viewModel.hasError.collectLatest { hasError ->
-                binding.tvErrorMessage.visibility = if (hasError) View.VISIBLE else View.GONE
-                binding.chooseIndustryListRecycleView.visibility = if (hasError) View.GONE else View.VISIBLE
+                if (hasError) {
+                    binding.tvErrorMessage.text = getString(R.string.search_no_internet)
+                    binding.tvErrorMessage.visibility = View.VISIBLE
+                    binding.chooseIndustryListRecycleView.visibility = View.GONE
+                } else {
+                    binding.tvErrorMessage.visibility = View.GONE
+                    binding.chooseIndustryListRecycleView.visibility = View.VISIBLE
+                }
+            }
+        }
+    }
+
+    private fun observeNoResultsFound() {
+        lifecycleScope.launchWhenStarted {
+            viewModel.noResultsFound.collectLatest { noResultsFound ->
+                if (noResultsFound) {
+                    binding.tvErrorMessage.text = getString(R.string.no_industry_found)
+                    binding.tvErrorMessage.setCompoundDrawablesWithIntrinsicBounds(
+                        0,
+                        R.drawable.placeholder_nothing_found,
+                        0,
+                        0
+                    )
+                    binding.tvErrorMessage.isVisible = true
+                    binding.chooseIndustryListRecycleView.isVisible = false
+                    binding.chooseButton.isVisible = false
+                } else {
+                    binding.tvErrorMessage.text = getString(R.string.industry_empty_list)
+                    binding.tvErrorMessage.setCompoundDrawablesWithIntrinsicBounds(
+                        0,
+                        R.drawable.placeholder_search_no_internet,
+                        0,
+                        0
+                    )
+                    binding.tvErrorMessage.isVisible = false
+                    binding.chooseIndustryListRecycleView.isVisible = true
+                    binding.chooseButton.isVisible = viewModel.selectedIndustry.value != null
+                }
             }
         }
     }
@@ -151,10 +188,11 @@ class ChooseIndustryFragment : Fragment() {
         binding.clearRegion.setOnClickListener {
             binding.chooseRegionEnterFieldEdittext.text.clear()
             viewModel.filterIndustries("")
-            toggleSearchIcon(false, false) // Сбрасываем значок на поиск
+            toggleSearchIcon(false, false)
         }
 
         binding.chooseRegionEnterFieldEdittext.addTextChangedListener { text ->
+            viewModel.filterIndustries(text.toString())
             toggleSearchIcon(true, !text.isNullOrEmpty())
         }
     }

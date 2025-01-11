@@ -7,4 +7,6 @@ interface ChooseCountryFragmentState {
     data class Content(val areas: List<Area>) : ChooseCountryFragmentState
 
     object Loading : ChooseCountryFragmentState
+
+    object Error : ChooseCountryFragmentState
 }

@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.vacancy.filter.ui.chooseindustry
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,12 +8,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import ru.practicum.android.diploma.common.utils.isInternetAvailable
 import ru.practicum.android.diploma.vacancy.filter.domain.api.IndustryFilterInteractor
 import ru.practicum.android.diploma.vacancy.filter.domain.model.FilterIndustryValue
 import java.io.IOException
 
 class ChooseIndustryViewModel(
-    private val interactor: IndustryFilterInteractor
+    private val interactor: IndustryFilterInteractor,
+    private val context: Context
 ) : ViewModel() {
 
     private val _industryState = MutableStateFlow<List<FilterIndustryValue>>(emptyList())
@@ -29,34 +32,47 @@ class ChooseIndustryViewModel(
     private val _hasError = MutableStateFlow(false)
     val hasError: StateFlow<Boolean> = _hasError
 
+    private val _noResultsFound = MutableStateFlow(false)
+    val noResultsFound: StateFlow<Boolean> = _noResultsFound
+
     init {
         fetchIndustries()
     }
 
-    private fun fetchIndustries() {
+    fun fetchIndustries() {
         viewModelScope.launch {
-            _isLoading.value = true
+            _isLoading.value = false
             _hasError.value = false
-            try {
-                val industries = interactor.fetchIndustries()
-                allIndustries = industries
-                _industryState.value = industries
-                _hasError.value = industries.isEmpty()
-            } catch (e: IOException) {
-                Log.e(LOG_TAG, "$NETWORK_ERROR${e.message}")
-                _industryState.value = emptyList()
+            if (!context.isInternetAvailable()) {
                 _hasError.value = true
-            } catch (e: HttpException) {
-                Log.e(LOG_TAG, "$SERVER_ERROR${e.code()}")
                 _industryState.value = emptyList()
-                _hasError.value = true
-            } finally {
-                _isLoading.value = false
+            } else {
+                try {
+                    val industries = interactor.fetchIndustries()
+                    allIndustries = industries
+                    _industryState.value = industries
+                    _hasError.value = industries.isEmpty()
+                } catch (e: IOException) {
+                    Log.e(LOG_TAG, "$NETWORK_ERROR${e.message}")
+                    _industryState.value = emptyList()
+                    _hasError.value = true
+                } catch (e: HttpException) {
+                    Log.e(LOG_TAG, "$SERVER_ERROR${e.code()}")
+                    _industryState.value = emptyList()
+                    _hasError.value = true
+                } finally {
+                    _isLoading.value = false
+                }
             }
         }
     }
 
     fun filterIndustries(query: String) {
+        if (!context.isInternetAvailable()) {
+            _noResultsFound.value = false
+            return
+        }
+
         val filteredList = if (query.isEmpty()) {
             allIndustries
         } else {
@@ -66,6 +82,7 @@ class ChooseIndustryViewModel(
         }
         _industryState.value = filteredList
         _hasError.value = filteredList.isEmpty()
+        _noResultsFound.value = filteredList.isEmpty() && query.isNotEmpty()
     }
 
     fun selectIndustry(industry: FilterIndustryValue?) {
