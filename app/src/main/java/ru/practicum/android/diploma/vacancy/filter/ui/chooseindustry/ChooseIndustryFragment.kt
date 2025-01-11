@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -160,9 +161,9 @@ class ChooseIndustryFragment : Fragment() {
                         0,
                         0
                     )
-                    binding.tvErrorMessage.visibility = View.VISIBLE
-                    binding.chooseIndustryListRecycleView.visibility = View.GONE
-                    binding.chooseButton.visibility = View.GONE
+                    binding.tvErrorMessage.isVisible = true
+                    binding.chooseIndustryListRecycleView.isVisible = false
+                    binding.chooseButton.isVisible = false
                 } else {
                     binding.tvErrorMessage.text = getString(R.string.industry_empty_list)
                     binding.tvErrorMessage.setCompoundDrawablesWithIntrinsicBounds(
@@ -171,10 +172,9 @@ class ChooseIndustryFragment : Fragment() {
                         0,
                         0
                     )
-                    binding.tvErrorMessage.visibility = View.GONE
-                    binding.chooseIndustryListRecycleView.visibility = View.VISIBLE
-                    binding.chooseButton.visibility = if (viewModel.selectedIndustry.value != null)
-                        View.VISIBLE else View.GONE
+                    binding.tvErrorMessage.isVisible = false
+                    binding.chooseIndustryListRecycleView.isVisible = true
+                    binding.chooseButton.isVisible = viewModel.selectedIndustry.value != null
                 }
             }
         }
