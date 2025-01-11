@@ -44,7 +44,7 @@ class ChooseIndustryFragment : Fragment() {
         observeSelectedIndustry()
         backToSearch()
         observeLoadingState()
-        observeNoResultsFound() 
+        observeNoResultsFound()
         observeErrorState()
         setupSearchField()
         observeIndustryReset()
@@ -118,10 +118,10 @@ class ChooseIndustryFragment : Fragment() {
     private fun observeSelectedIndustry() {
         lifecycleScope.launchWhenStarted {
             viewModel.selectedIndustry.collectLatest { selectedIndustry ->
+                // Показываем кнопку только если выбран элемент и нет ошибки "нет результатов"
                 binding.chooseButton.visibility =
-                    if (selectedIndustry != null) View.VISIBLE else View.GONE
+                    if (selectedIndustry != null && !viewModel.noResultsFound.value) View.VISIBLE else View.GONE
                 industryAdapter?.setSelectedIndustry(selectedIndustry)
-
             }
         }
     }
@@ -157,9 +157,12 @@ class ChooseIndustryFragment : Fragment() {
                     binding.tvErrorMessage.text = getString(R.string.no_industry_found)
                     binding.tvErrorMessage.visibility = View.VISIBLE
                     binding.chooseIndustryListRecycleView.visibility = View.GONE
+                    binding.chooseButton.visibility = View.GONE // Скрываем кнопку, если результаты не найдены
                 } else {
                     binding.tvErrorMessage.visibility = View.GONE
                     binding.chooseIndustryListRecycleView.visibility = View.VISIBLE
+                    // Показываем кнопку, если результаты найдены и выбран элемент
+                    binding.chooseButton.visibility = if (viewModel.selectedIndustry.value != null) View.VISIBLE else View.GONE
                 }
             }
         }
@@ -173,10 +176,11 @@ class ChooseIndustryFragment : Fragment() {
         binding.clearRegion.setOnClickListener {
             binding.chooseRegionEnterFieldEdittext.text.clear()
             viewModel.filterIndustries("")
-            toggleSearchIcon(false, false) // Сбрасываем значок на поиск
+            toggleSearchIcon(false, false)
         }
 
         binding.chooseRegionEnterFieldEdittext.addTextChangedListener { text ->
+            viewModel.filterIndustries(text.toString())
             toggleSearchIcon(true, !text.isNullOrEmpty())
         }
     }
