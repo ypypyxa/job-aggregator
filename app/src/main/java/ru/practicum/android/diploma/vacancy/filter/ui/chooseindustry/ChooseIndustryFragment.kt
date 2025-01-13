@@ -1,9 +1,11 @@
 package ru.practicum.android.diploma.vacancy.filter.ui.chooseindustry
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -12,8 +14,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.common.utils.DataTransmitter
 import ru.practicum.android.diploma.databinding.FragmentChooseIndustryBinding
-import ru.practicum.android.diploma.vacancy.filter.ui.FilterViewModel
+import ru.practicum.android.diploma.vacancy.filter.domain.model.FilterIndustryValue
+import ru.practicum.android.diploma.vacancy.filter.domain.model.Industry
 import ru.practicum.android.diploma.vacancy.filter.ui.adapter.IndustryAdapter
 
 class ChooseIndustryFragment : Fragment() {
@@ -22,7 +26,6 @@ class ChooseIndustryFragment : Fragment() {
     private var _binding: FragmentChooseIndustryBinding? = null
     private val binding get() = _binding!!
     private var industryAdapter: IndustryAdapter? = null
-    private val filterViewModel: FilterViewModel by viewModel()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -32,6 +35,8 @@ class ChooseIndustryFragment : Fragment() {
         return binding.root
     }
 
+    private var preselectedIndustry: FilterIndustryValue? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupListeners()
@@ -40,9 +45,13 @@ class ChooseIndustryFragment : Fragment() {
         observeSelectedIndustry()
         backToSearch()
         observeLoadingState()
+        observeNoResultsFound()
         observeErrorState()
         setupSearchField()
-
+        observeIndustryReset()
+        arguments?.let {
+            preselectedIndustry = it.getParcelable("selectedIndustry")
+        }
     }
 
     private fun backToSearch() {
@@ -54,15 +63,13 @@ class ChooseIndustryFragment : Fragment() {
     private fun setupListeners() {
         binding.chooseButton.setOnClickListener {
             viewModel.selectedIndustry.value?.let { selectedIndustry ->
+                val industry = selectedIndustry.toIndustry()
+                DataTransmitter.postIndustry(industry)
                 val navController = findNavController()
-
-                filterViewModel.saveIndustry(selectedIndustry)
-
                 navController.previousBackStackEntry?.savedStateHandle?.set(
                     "selectedIndustry",
                     selectedIndustry
                 )
-
                 navController.popBackStack(R.id.filterFragment, false)
             }
         }
@@ -71,9 +78,22 @@ class ChooseIndustryFragment : Fragment() {
         }
     }
 
+    private fun FilterIndustryValue.toIndustry(): Industry {
+        return Industry(
+            id = this.id ?: "",
+            name = this.text ?: ""
+        )
+    }
+
+    fun Industry.toFilterIndustryValue(): FilterIndustryValue {
+        return FilterIndustryValue(
+            id = this.id,
+            text = this.name
+        )
+    }
+
     private fun setupRecyclerView() {
         industryAdapter = IndustryAdapter(emptyList()) { industry ->
-            // Логика при выборе отрасли
             viewModel.selectIndustry(industry)
         }
         binding.chooseIndustryListRecycleView.apply {
@@ -86,10 +106,11 @@ class ChooseIndustryFragment : Fragment() {
         lifecycleScope.launchWhenStarted {
             viewModel.industryState.collectLatest { list ->
                 industryAdapter = IndustryAdapter(list) { industry ->
-                    // Логика нажатия
                     viewModel.selectIndustry(industry)
 
                 }
+                industryAdapter?.setSelectedIndustry(preselectedIndustry)
+
                 binding.chooseIndustryListRecycleView.adapter = industryAdapter
             }
         }
@@ -99,7 +120,7 @@ class ChooseIndustryFragment : Fragment() {
         lifecycleScope.launchWhenStarted {
             viewModel.selectedIndustry.collectLatest { selectedIndustry ->
                 binding.chooseButton.visibility =
-                    if (selectedIndustry != null) View.VISIBLE else View.GONE
+                    if (selectedIndustry != null && !viewModel.noResultsFound.value) View.VISIBLE else View.GONE
                 industryAdapter?.setSelectedIndustry(selectedIndustry)
             }
         }
@@ -117,8 +138,44 @@ class ChooseIndustryFragment : Fragment() {
     private fun observeErrorState() {
         lifecycleScope.launchWhenStarted {
             viewModel.hasError.collectLatest { hasError ->
-                binding.tvErrorMessage.visibility = if (hasError) View.VISIBLE else View.GONE
-                binding.chooseIndustryListRecycleView.visibility = if (hasError) View.GONE else View.VISIBLE
+                if (hasError) {
+                    binding.tvErrorMessage.text = getString(R.string.search_no_internet)
+                    binding.tvErrorMessage.visibility = View.VISIBLE
+                    binding.chooseIndustryListRecycleView.visibility = View.GONE
+                } else {
+                    binding.tvErrorMessage.visibility = View.GONE
+                    binding.chooseIndustryListRecycleView.visibility = View.VISIBLE
+                }
+            }
+        }
+    }
+
+    private fun observeNoResultsFound() {
+        lifecycleScope.launchWhenStarted {
+            viewModel.noResultsFound.collectLatest { noResultsFound ->
+                if (noResultsFound) {
+                    binding.tvErrorMessage.text = getString(R.string.no_industry_found)
+                    binding.tvErrorMessage.setCompoundDrawablesWithIntrinsicBounds(
+                        0,
+                        R.drawable.placeholder_nothing_found,
+                        0,
+                        0
+                    )
+                    binding.tvErrorMessage.isVisible = true
+                    binding.chooseIndustryListRecycleView.isVisible = false
+                    binding.chooseButton.isVisible = false
+                } else {
+                    binding.tvErrorMessage.text = getString(R.string.industry_empty_list)
+                    binding.tvErrorMessage.setCompoundDrawablesWithIntrinsicBounds(
+                        0,
+                        R.drawable.placeholder_search_no_internet,
+                        0,
+                        0
+                    )
+                    binding.tvErrorMessage.isVisible = false
+                    binding.chooseIndustryListRecycleView.isVisible = true
+                    binding.chooseButton.isVisible = viewModel.selectedIndustry.value != null
+                }
             }
         }
     }
@@ -131,13 +188,15 @@ class ChooseIndustryFragment : Fragment() {
         binding.clearRegion.setOnClickListener {
             binding.chooseRegionEnterFieldEdittext.text.clear()
             viewModel.filterIndustries("")
-            toggleSearchIcon(false, false) // Сбрасываем значок на поиск
+            toggleSearchIcon(false, false)
         }
 
         binding.chooseRegionEnterFieldEdittext.addTextChangedListener { text ->
+            viewModel.filterIndustries(text.toString())
             toggleSearchIcon(true, !text.isNullOrEmpty())
         }
     }
+
     private fun toggleSearchIcon(hasFocus: Boolean, hasText: Boolean) {
         if (hasFocus && hasText) {
             binding.clearRegion.visibility = View.VISIBLE
@@ -148,8 +207,30 @@ class ChooseIndustryFragment : Fragment() {
         }
     }
 
+    private fun observeIndustryReset() {
+        findNavController().currentBackStackEntry?.savedStateHandle
+            ?.getLiveData<Boolean>("clearIndustrySelection")
+            ?.observe(viewLifecycleOwner) { shouldClear ->
+                if (shouldClear) {
+                    resetIndustrySelection()
+                }
+            }
+    }
+
+    private fun resetIndustrySelection() {
+        viewModel.selectIndustry(null)
+        industryAdapter?.clearSelection()
+        findNavController().currentBackStackEntry?.savedStateHandle?.remove<Boolean>("clearIndustrySelection")
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+        observeIndustryReset() // Повторная подписка на сигнал сброса
+        Log.d("ChooseIndustryFragment", "onResume triggered observeIndustryReset")
     }
 }

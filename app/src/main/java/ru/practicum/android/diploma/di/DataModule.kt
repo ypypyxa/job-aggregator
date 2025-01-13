@@ -48,9 +48,6 @@ val dataModule = module {
     single<FavoritesDBConverter> { FavoritesDBConverterImpl(get()) }
     single { com.google.gson.Gson() }
 
-    single<SharedPreferences> {
-        androidContext().getSharedPreferences("filter_prefs", Context.MODE_PRIVATE)
-    }
     single { IndustryLocalDataSource(get()) }
 
     // Shared Preferences

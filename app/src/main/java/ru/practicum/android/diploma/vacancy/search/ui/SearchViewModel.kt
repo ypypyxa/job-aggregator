@@ -10,6 +10,8 @@ import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.common.utils.SingleLiveEvent
 import ru.practicum.android.diploma.common.utils.debounce
+import ru.practicum.android.diploma.vacancy.filter.domain.FilterSettingsInteractor
+import ru.practicum.android.diploma.vacancy.filter.domain.model.FilterSettings
 import ru.practicum.android.diploma.vacancy.search.domain.api.SearchInteractor
 import ru.practicum.android.diploma.vacancy.search.domain.model.PagedData
 import ru.practicum.android.diploma.vacancy.search.domain.model.VacancySearch
@@ -18,8 +20,13 @@ import ru.practicum.android.diploma.vacancy.search.ui.model.SearchFragmentState
 
 class SearchViewModel(
     private val searchInteractor: SearchInteractor,
+    private val filterSettingsInteractor: FilterSettingsInteractor,
     private val context: Context
 ) : ViewModel() {
+
+    private var previousFilterSettings: FilterSettings? = null
+
+    private var currentFilterSettings: FilterSettings? = null
 
     companion object {
         const val LOADING_DELAY_MS = 2000L
@@ -27,7 +34,9 @@ class SearchViewModel(
         const val PAGE_SIZE = 20
     }
 
-    private var latestSearchText: String? = null
+    private var onlyWithSalary: Boolean = false
+
+    var latestSearchText: String? = null
     var currentPage: Int = 0
     private var totalPages = 1
     private val pageSize = PAGE_SIZE
@@ -53,6 +62,7 @@ class SearchViewModel(
                     searchState.vacancies,
                     searchState.vacanciesCount
                 )
+
                 is SearchFragmentState.Empty -> searchState
                 is SearchFragmentState.ServerError -> searchState
                 is SearchFragmentState.InternetError -> searchState
@@ -64,15 +74,22 @@ class SearchViewModel(
     private val showToast = SingleLiveEvent<String>()
     fun observeShowToast(): LiveData<String> = showToast
 
-    fun onSearchQueryChanged(query: String) {
-        if (query == latestSearchText) return
-        currentPage = 0
-        if (query.isBlank()) {
-            latestSearchText = null
-            clearVacancies()
-            return
+    fun onSearchQueryChanged(query: String, forceUpdate: Boolean = false) {
+        val isFilterChanged = currentFilterSettings != previousFilterSettings
+        if (forceUpdate || isFilterChanged || query != latestSearchText) {
+            currentPage = 0
+            if (query.isBlank()) {
+                latestSearchText = null
+                clearVacancies()
+                return
+            }
+            if (forceUpdate || isFilterChanged) {
+                latestSearchText = query
+                searchRequest(query)
+            } else {
+                debounceSearch(query)
+            }
         }
-        debounceSearch(query)
     }
 
     fun onSearchButtonPress(query: String) {
@@ -94,13 +111,13 @@ class SearchViewModel(
         // собираем параметры запроса
         val params = VacancySearchParams(
             text = latestSearchText,
-            page = 0,
-            perPage = 20,
-            area = 1,
+            page = currentPage,
+            perPage = pageSize,
+            area = currentFilterSettings?.region?.id?.toIntOrNull(),
             searchField = "name",
-            industry = null,
-            salary = null,
-            onlyWithSalary = false
+            industry = currentFilterSettings?.industry?.id,
+            salary = currentFilterSettings?.expectedSalary.takeIf { it!! >= 0 },
+            onlyWithSalary = currentFilterSettings?.notShowWithoutSalary ?: onlyWithSalary
         )
 
         // выполняем запрос
@@ -119,6 +136,7 @@ class SearchViewModel(
                 when (errorMessage) {
                     context.getString(R.string.search_no_internet) ->
                         renderState(SearchFragmentState.InternetError)
+
                     else ->
                         renderState(SearchFragmentState.ServerError)
                 }
@@ -165,13 +183,13 @@ class SearchViewModel(
 
         val params = VacancySearchParams(
             text = latestSearchText,
-            page = currentPage + 1,
+            page = currentPage,
             perPage = pageSize,
-            area = 1,
+            area = currentFilterSettings?.region?.id?.toIntOrNull(),
             searchField = "name",
-            industry = null,
-            salary = null,
-            onlyWithSalary = false
+            industry = currentFilterSettings?.industry?.id,
+            salary = currentFilterSettings?.expectedSalary.takeIf { it!! >= 0 },
+            onlyWithSalary = currentFilterSettings?.notShowWithoutSalary ?: onlyWithSalary
         )
 
         viewModelScope.launch {
@@ -182,7 +200,25 @@ class SearchViewModel(
         }
     }
 
+    fun setOnlyWithSalary(value: Boolean) {
+        onlyWithSalary = value
+    }
+
     private var _isLoading = false
     val isLoading: Boolean get() = _isLoading
+
+    fun getFilterSettings(callback: (FilterSettings?) -> Unit) {
+        viewModelScope.launch {
+            val settings = filterSettingsInteractor.getFilterSettings()
+            val isFilterChanged = settings != previousFilterSettings
+            previousFilterSettings = settings
+            currentFilterSettings = settings
+            callback(settings)
+
+            if (isFilterChanged) {
+                onSearchQueryChanged(latestSearchText ?: "", forceUpdate = true)
+            }
+        }
+    }
 
 }

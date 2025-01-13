@@ -10,6 +10,8 @@ import ru.practicum.android.diploma.common.utils.EXPECTED_SALARY_KEY
 import ru.practicum.android.diploma.common.utils.INDUSTRY_KEY
 import ru.practicum.android.diploma.common.utils.NOT_SHOW_WITHOUT_SALARY_KEY
 import ru.practicum.android.diploma.common.utils.REGION_KEY
+import ru.practicum.android.diploma.common.utils.SELECTED_INDUSTRY_ID
+import ru.practicum.android.diploma.common.utils.SELECTED_INDUSTRY_NAME
 import ru.practicum.android.diploma.vacancy.filter.domain.FilterSettingsRepository
 import ru.practicum.android.diploma.vacancy.filter.domain.model.Country
 import ru.practicum.android.diploma.vacancy.filter.domain.model.FilterSettings
@@ -42,7 +44,7 @@ class FilterSettingsRepositoryImpl(
     }
 
     override fun getFilterSettings(): FilterSettings {
-        return FilterSettings(
+        val settings = FilterSettings(
             country = getObject<Country>(COUNTRY_KEY, null),
             region = getObject<Region>(REGION_KEY, null),
             industry = getObject<Industry>(INDUSTRY_KEY, null),
@@ -50,6 +52,7 @@ class FilterSettingsRepositoryImpl(
             notShowWithoutSalary = sharedPreferences?.
                 getBoolean(NOT_SHOW_WITHOUT_SALARY_KEY, DEFAULT_HIDE_FLAG) ?: DEFAULT_HIDE_FLAG
         )
+        return settings
     }
 
     override fun clearFilterSettings() {
@@ -57,6 +60,8 @@ class FilterSettingsRepositoryImpl(
             putString(COUNTRY_KEY, DEFAULT_JSON)
             putString(REGION_KEY, DEFAULT_JSON)
             putString(INDUSTRY_KEY, DEFAULT_JSON)
+            putString(SELECTED_INDUSTRY_NAME, DEFAULT_JSON)
+            putString(SELECTED_INDUSTRY_ID, DEFAULT_JSON)
             putInt(EXPECTED_SALARY_KEY, DEFAULT_SALARY)
             putBoolean(NOT_SHOW_WITHOUT_SALARY_KEY, DEFAULT_HIDE_FLAG)
             apply()

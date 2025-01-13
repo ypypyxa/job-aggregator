@@ -55,6 +55,8 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        renderFilter()
+
         onVacancyClickDebounce = debounce(
             CLICK_DEBOUNCE_DELAY,
             viewLifecycleOwner.lifecycleScope,
@@ -69,6 +71,8 @@ class SearchFragment : Fragment() {
         setupRecyclerView()
         setupListeners()
         observeViewModel()
+        observeFilterResults()
+        observeFilterResultsIndustry()
     }
 
     override fun onDestroyView() {
@@ -226,4 +230,40 @@ class SearchFragment : Fragment() {
         }
         this.text = text
     }
+
+    private fun observeFilterResults() {
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>(
+            "onlyWithSalary"
+        )?.observe(viewLifecycleOwner) { onlyWithSalary ->
+            viewModel.setOnlyWithSalary(onlyWithSalary)
+            viewModel.getFilterSettings { }
+        }
+    }
+
+    private fun observeFilterResultsIndustry() {
+        findNavController().currentBackStackEntry?.savedStateHandle
+            ?.getLiveData<Boolean>("filterApplied")
+            ?.observe(viewLifecycleOwner) { isApplied ->
+                if (isApplied) {
+                    viewModel.getFilterSettings { }
+                }
+            }
+    }
+
+    private fun renderFilter() {
+        viewModel.getFilterSettings { filters ->
+            val isActive = filters?.let {
+                it.expectedSalary >= 0 ||
+                    it.notShowWithoutSalary ||
+                    it.region != null ||
+                    it.industry != null ||
+                    it.country != null
+            } ?: false
+
+            binding.buttonFilter.setImageResource(
+                if (isActive) R.drawable.filter_active else R.drawable.ic_filter
+            )
+        }
+    }
+    // TESTDRIVE
 }

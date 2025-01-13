@@ -7,95 +7,146 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.common.utils.Resource
 import ru.practicum.android.diploma.vacancy.filter.domain.api.AreaInteractor
 import ru.practicum.android.diploma.vacancy.filter.domain.model.Area
 import ru.practicum.android.diploma.vacancy.filter.ui.chooseregion.model.ChooseRegionFragmentState
 
 class ChooseRegionViewModel(
     private val areaInteractor: AreaInteractor,
-    private val countryId: String
+    private val countryId: String?
 ) : ViewModel() {
 
     private val stateLiveData = MutableLiveData<ChooseRegionFragmentState>()
     fun observeState(): LiveData<ChooseRegionFragmentState> = mediatorStateLiveData
 
-    init {
-        loadAreaById(countryId)
-    }
+    private val areaCache = mutableMapOf<String, Area>()
 
-    private var countryName: String? = null
-    private var selectedCountry: Area? = null
+    private var foundingAreas = emptyList<Area>()
 
     private val mediatorStateLiveData = MediatorLiveData<ChooseRegionFragmentState>().also { liveData ->
         liveData.addSource(stateLiveData) { state ->
             liveData.value = when (state) {
-                is ChooseRegionFragmentState.ShowRegion ->
-                    ChooseRegionFragmentState.ShowRegion(state.areas, state.countryName)
-                is ChooseRegionFragmentState.ShowCity ->
-                    ChooseRegionFragmentState.ShowCity(state.areas)
+                is ChooseRegionFragmentState.ShowRegions ->
+                    ChooseRegionFragmentState.ShowRegions(state.areas)
                 is ChooseRegionFragmentState.ShowSearch ->
                     ChooseRegionFragmentState.ShowSearch(state.areas)
                 is ChooseRegionFragmentState.NothingFound ->
                     ChooseRegionFragmentState.NothingFound
+                is ChooseRegionFragmentState.Loading -> ChooseRegionFragmentState.Loading
                 else -> ChooseRegionFragmentState.ShowError
             }
         }
     }
-
-    fun loadAreaById(areaId: String?) {
-        viewModelScope.launch {
-            areaInteractor.fetchAreaById(areaId!!)
-                .collect { resource ->
-                    areaResult(resource.first, resource.second)
-                }
-        }
+    init {
+        // Проверяем кэш перед загрузкой данных
+        loadAreaById(countryId)
     }
-    private fun areaResult(areaResult: Area?, errorMessage: String?) {
-        var area = areaResult
-        when {
-            errorMessage != null -> {
-                renderState(ChooseRegionFragmentState.ShowError)
-                Log.d(CHOOSE_AREA, "$errorMessage")
+
+    private fun loadAreaById(areaId: String?) {
+        Log.d("ChooseRegionViewModel", "areaId: $areaId")
+
+        renderState(ChooseRegionFragmentState.Loading)
+
+        areaId?.let { id ->
+            areaCache[id]?.let { cachedArea ->
+                renderState(ChooseRegionFragmentState.ShowRegions(cachedArea.areas))
+                return
             }
-            area == null -> {
-                renderState(ChooseRegionFragmentState.ShowError)
-                Log.d(CHOOSE_AREA, "Такого места не существует")
-            }
-            else -> {
-                selectedCountry = area
-                countryName = area.name
-                renderState(ChooseRegionFragmentState.ShowRegion(area.areas, area.name))
-            }
+        }
+
+        if (areaId.isNullOrEmpty()) {
+            loadCountries()
+        } else {
+            loadAreaForId(areaId)
         }
     }
 
-    fun loadCityByAreaId(areaId: String?) {
+    private fun loadCountries() {
         viewModelScope.launch {
-            areaInteractor.fetchAreaById(areaId!!)
-                .collect { resource ->
-                    cityResult(resource.first, resource.second)
+            areaInteractor.fetchCountries()
+                .collect { pair ->
+                    val countries = pair.first
+                    val errorMessage = pair.second
+
+                    if (!countries.isNullOrEmpty()) {
+                        loadRegionsForCountries(countries)
+                    } else {
+                        Log.e(CHOOSE_AREA, "Error fetching countries: $errorMessage")
+                        renderState(ChooseRegionFragmentState.ShowError)
+                    }
                 }
         }
     }
-    private fun cityResult(areaResult: Area?, errorMessage: String?) {
-        var area = areaResult
-        when {
-            errorMessage != null -> {
-                Log.d(CHOOSE_AREA, "$errorMessage")
+
+    private fun loadRegionsForCountries(countries: List<Area>) {
+        viewModelScope.launch {
+            val allRegions = mutableListOf<Area>()
+
+            countries.forEach { country ->
+                areaInteractor.fetchAreaById(country.id)
+                    .collect { areaPair ->
+                        val region = areaPair.first
+                        val regionError = areaPair.second
+
+                        if (region != null) {
+                            allRegions.addAll(region.areas)
+                            // Кэшируем данные
+                            areaCache[country.id] = region
+                        } else {
+                            Log.e(CHOOSE_AREA, "Error fetching areas for country ${country.id}: $regionError")
+                        }
+                    }
             }
-            area == null -> {
-                Log.d(CHOOSE_AREA, "Такого места не существует")
+            foundingAreas = allRegions
+            renderState(ChooseRegionFragmentState.ShowRegions(allRegions))
+        }
+    }
+
+    private fun loadAreaForId(areaId: String) {
+        viewModelScope.launch {
+            areaInteractor.fetchAreaById(areaId)
+                .collect { areaPair ->
+                    val area = areaPair.first
+                    val errorMessage = areaPair.second
+
+                    if (area != null) {
+                        areaCache[areaId] = area
+                        areaResult(Resource.success(area))
+                    } else {
+                        areaResult(Resource.error(-1, errorMessage))
+                    }
+                }
+        }
+    }
+
+    private fun areaResult(resource: Resource<Area>) {
+        when (resource) {
+            is Resource.Success -> {
+                val area = resource.data
+                if (area == null) {
+                    renderState(ChooseRegionFragmentState.ShowError)
+                    Log.d(CHOOSE_AREA, "Такого места не существует")
+                } else {
+                    foundingAreas = area.areas
+                    if (foundingAreas.isEmpty()) {
+                        renderState(ChooseRegionFragmentState.ShowError)
+                    } else {
+                        renderState(ChooseRegionFragmentState.ShowRegions(foundingAreas))
+                    }
+                }
             }
-            else -> {
-                renderState(ChooseRegionFragmentState.ShowCity(area.areas))
+            is Resource.Error -> {
+                renderState(ChooseRegionFragmentState.ShowError)
+                Log.d(CHOOSE_AREA, resource.message ?: "Произошла ошибка")
             }
         }
     }
 
     fun searchArea(query: String) {
-        if (query.isBlank() || selectedCountry == null) {
+        if (query.isBlank() || foundingAreas == null) {
             renderState(
-                ChooseRegionFragmentState.ShowRegion(selectedCountry?.areas, selectedCountry?.name)
+                ChooseRegionFragmentState.ShowRegions(foundingAreas)
             )
             return
         }
@@ -104,7 +155,8 @@ class ChooseRegionViewModel(
         val nameMatches = mutableListOf<Area>()
         val parentNameMatches = mutableListOf<Area>()
 
-        fun searchRecursively(area: Area) {
+        // Поиск только на текущем уровне
+        foundingAreas.forEach { area ->
             // Проверяем совпадение с name
             if (area.name.lowercase().startsWith(lowerCaseQuery)) {
                 nameMatches.add(area)
@@ -113,14 +165,6 @@ class ChooseRegionViewModel(
             else if (area.parentName?.lowercase()?.startsWith(lowerCaseQuery) == true) {
                 parentNameMatches.add(area)
             }
-            // Рекурсивно ищем в вложенных areas
-            area.areas.forEach { subArea ->
-                searchRecursively(subArea)
-            }
-        }
-
-        selectedCountry!!.areas.forEach { area ->
-            searchRecursively(area)
         }
 
         // Объединяем результаты: сначала совпадения по name, затем по parentName
@@ -134,7 +178,7 @@ class ChooseRegionViewModel(
     }
 
     fun onClearSearch() {
-        renderState(ChooseRegionFragmentState.ShowRegion(selectedCountry?.areas, selectedCountry?.name))
+        renderState(ChooseRegionFragmentState.ShowRegions(foundingAreas))
     }
 
     private fun renderState(state: ChooseRegionFragmentState) {
