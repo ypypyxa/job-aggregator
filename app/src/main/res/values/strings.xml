@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Practicum-Android-Diploma</string>
+    <string name="app_name">Job Agregator</string>
     <!--    bottom_navigation_title-->
     <string name="bottom_navigation_title_main">Главная</string>
     <string name="bottom_navigation_title_favorite">Избранное</string>
